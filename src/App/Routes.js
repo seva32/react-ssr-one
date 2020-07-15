@@ -22,6 +22,21 @@ export const routes = [
     page: 'Home',
   },
   {
+    exact: true,
+    path: '/signin',
+    page: 'SigninFormUI',
+  },
+  {
+    exact: true,
+    path: '/signup',
+    page: 'SignupFormUI',
+  },
+  {
+    exact: true,
+    path: '/signout',
+    page: 'Signout',
+  },
+  {
     loadData: loadDataPosts,
     exact: true,
     path: '/posts',
@@ -43,7 +58,7 @@ export default (
           {...route}
         />
       ))}
-      <RedirectWithStatus status={301} exact from="/" to={`/${lang}`} />
+      <RedirectWithStatus status={301} exact from="/home" to="/" />
       <Route
         render={(routeProps) => (
           <UniversalComponent page="NotFound" {...routeProps} />

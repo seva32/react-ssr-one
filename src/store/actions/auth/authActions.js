@@ -23,8 +23,7 @@ export const signout = () => (dispatch) => {
     if (auth2 != null) {
       auth2.signOut().then(
         auth2.disconnect().then(() => {
-          // eslint-disable-next-line no-console
-          console.log('Exited from google...');
+          console.log('Exited from google...'); // eslint-disable-line
         }),
       );
     }

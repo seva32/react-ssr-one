@@ -11,20 +11,20 @@ import Routes, { routes } from '../App/Routes';
 // import createStore from './createStore';
 
 export default ({ clientStats }) => (req, res) => {
-  // const store = createStore();
   const { store } = req;
-  // prettier-ignore
-  // const promises = matchRoutes(routes, req.path)
-  //   .map(({ route }) => (route.loadData ? route.loadData(store) : Promise.resolve(null)));
 
-  const promises = matchRoutes(routes, req.path).map(({ route }) => {
-    if (route.loadData) {
-      const prom = route.loadData(store);
-      console.log(store.getState());
-      return prom;
-    }
-    return Promise.resolve(null);
-  });
+  const routesApp = matchRoutes(routes, req.path);
+
+  const promises = routesApp
+    .map(({ route }) => (route.loadData ? route.loadData(store) : null))
+    .map((promise) => {
+      if (promise) {
+        return new Promise((resolve, _reject) => {
+          promise.then(resolve).catch(resolve);
+        });
+      }
+      return null;
+    });
 
   Promise.all(promises).then(() => {
     const context = {};
@@ -48,8 +48,7 @@ export default ({ clientStats }) => (req, res) => {
     const status = context.status || 200;
 
     if (context.status === 404) {
-      // eslint-disable-next-line no-console
-      console.log('Error 404: ', req.originalUrl);
+      console.log('Error 404: ', req.originalUrl); // eslint-disable-line
     }
 
     if (context.url) {

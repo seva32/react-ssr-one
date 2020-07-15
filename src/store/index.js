@@ -31,9 +31,6 @@ const configureStore = () => {
     auth: { authenticated: token, errorMessage: '' },
   });
 
-  console.log('Preloaded state: ', preloadedState);
-  console.log('Initial state: ', initialState);
-
   return createStore(persistedReducer, initialState, enhancer);
 };
 

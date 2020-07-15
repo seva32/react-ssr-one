@@ -63,13 +63,10 @@ Posts.defaultProps = {
   onDataLoad: () => {},
 };
 
-const mapStateToProps = ({ posts }) => {
-  console.log(posts.list);
-  return {
-    posts: posts.list,
-    error: posts.error,
-  };
-};
+const mapStateToProps = ({ posts }) => ({
+  posts: posts.list,
+  error: posts.error,
+});
 
 // onDataLoad lo voy a usar para el CSR
 const mapDispatchToProps = (dispatch) => ({
@@ -78,7 +75,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 // funcion a usar en routes para SSR
 function loadDataPosts(store) {
-  store.dispatch(actionCreators.fetchPosts());
+  return store.dispatch(actionCreators.fetchPosts());
 }
 
 export { loadDataPosts };

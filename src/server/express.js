@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import express from 'express';
-// import cookieParser from 'cookie-parser';
-import Cookies from 'cookies';
+import cookieParser from 'cookie-parser';
+// import Cookies from 'cookies';
 import path from 'path'; // eslint-disable-line
 import webpack from 'webpack';
 import webpackHotServerMiddleware from 'webpack-hot-server-middleware';
@@ -13,8 +13,8 @@ import configProdServer from '../../config/webpack.prod-server';
 import storeMiddleware from './middleware/store';
 
 const server = express();
-// server.use(cookieParser());
-server.use(Cookies.express());
+server.use(cookieParser());
+// server.use(Cookies.express());
 const expressStaticGzip = require('express-static-gzip');
 
 const isProd = process.env.NODE_ENV === 'production';

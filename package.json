@@ -63,7 +63,6 @@
     "compression-webpack-plugin": "^4.0.0",
     "cookie-parser": "^1.4.5",
     "cookies": "^0.8.0",
-    "cookies-js": "^1.2.3",
     "copy-webpack-plugin": "^6.0.3",
     "css-hot-loader": "^1.4.4",
     "css-loader": "^3.6.0",

@@ -6,6 +6,8 @@ build/
 .idea
 *.iml
 
+LICENSE
+
 # OSX
 *.DS_Store
 .AppleDouble

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { List } from 'semantic-ui-react';
 import * as Styles from './Posts.style';
@@ -84,4 +83,4 @@ function loadDataPosts(store) {
 
 export { loadDataPosts };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps)(Posts));
+export default connect(mapStateToProps, mapDispatchToProps)(Posts);

@@ -8,7 +8,20 @@ const requireSignin = passport.authenticate('local', {
   failureRedirect: '/signin',
 });
 
+const logger = (req, res, next) => {
+  console.log('*******************************', req.params);
+  next();
+};
+
 export default (app) => {
-  app.post('/api/signup', signup);
-  app.post('/api/signin', requireSignin, signin);
+  app.use('/', logger);
+  app.get('/api/auth', (req, res, _next) => {
+    if (req.session.auth === 'true') {
+      res.redirect(301, 'https://www.google.com');
+    } else {
+      res.redirect(301, 'https://www.yahoo.com');
+    }
+  });
+  app.post('/api/signup', logger, signup);
+  app.post('/api/signin', logger, requireSignin, signin);
 };

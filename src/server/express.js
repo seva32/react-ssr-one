@@ -11,6 +11,7 @@ import configDevServer from '../../config/webpack.dev-server';
 import configProdClient from '../../config/webpack.prod-client';
 import configProdServer from '../../config/webpack.prod-server';
 import storeMiddleware from './middleware/store';
+// import appRouter from './router/router';
 
 const server = express();
 
@@ -51,6 +52,7 @@ if (isDev) {
     configDevClient.devServer,
   );
 
+  // appRouter(server);
   server.use(storeMiddleware());
   server.use(webpackDevMiddleware);
   server.use(webpackHotMiddlware);
@@ -71,6 +73,7 @@ if (isDev) {
         enableBrotli: true,
       }),
     );
+    // appRouter(server);
     server.use(storeMiddleware());
     server.use(render({ clientStats }));
     done();

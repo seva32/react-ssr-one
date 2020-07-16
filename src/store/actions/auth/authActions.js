@@ -5,15 +5,19 @@ import {
   AUTH_ERROR_SIGNIN,
 } from './authActionTypes';
 // formProps = { email, password }
+// eslint-disable-next-line consistent-return
 export const signup = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post('/api/signup', formProps);
+    const response = await axios.post(
+      'http://localhost:3000/api/signup',
+      formProps,
+    );
     dispatch({ type: AUTH_USER, payload: response.data.token });
     localStorage.setItem('token', response.data.token);
+    return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNUP, payload: 'Email in use' });
   }
-  return callback();
 };
 
 export const signout = () => (dispatch) => {
@@ -33,13 +37,17 @@ export const signout = () => (dispatch) => {
   dispatch({ type: AUTH_ERROR_SIGNIN, payload: '' });
 };
 
+// eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post('/api/signin', formProps);
+    const response = await axios.post(
+      'http://localhost:3000/api/signin',
+      formProps,
+    );
     dispatch({ type: AUTH_USER, payload: response.data.token });
     localStorage.setItem('token', response.data.token);
+    return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });
   }
-  return callback();
 };

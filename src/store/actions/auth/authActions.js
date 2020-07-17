@@ -8,10 +8,7 @@ import {
 // eslint-disable-next-line consistent-return
 export const signup = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post(
-      'http://localhost:3000/api/signup',
-      formProps,
-    );
+    const response = await axios.post('/api/signup', formProps);
     dispatch({ type: AUTH_USER, payload: response.data.token });
     localStorage.setItem('token', response.data.token);
     return callback();
@@ -40,11 +37,7 @@ export const signout = () => (dispatch) => {
 // eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post(
-      'http://localhost:3000/api/signin',
-      // '/api/signin',
-      formProps,
-    );
+    const response = await axios.post('/api/signin', formProps);
     dispatch({ type: AUTH_USER, payload: response.data.token });
     localStorage.setItem('token', response.data.token);
     return callback();

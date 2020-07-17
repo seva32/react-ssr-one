@@ -8,9 +8,8 @@ import { flushChunkNames } from 'react-universal-component/server';
 import flushChunks from 'webpack-flush-chunks';
 import serialize from 'serialize-javascript';
 import Routes, { routes } from '../App/Routes';
-// import createStore from './createStore';
 
-export default ({ clientStats }) => (req, res) => {
+export default ({ clientStats }) => async (req, res) => {
   const { store } = req;
 
   const routesApp = matchRoutes(routes, req.path);
@@ -19,7 +18,8 @@ export default ({ clientStats }) => (req, res) => {
     .map(({ route }) => (route.loadData ? route.loadData(store) : null))
     .map((promise) => {
       if (promise) {
-        return new Promise((resolve, _reject) => {
+        // eslint-disable-next-line no-unused-vars
+        return new Promise((resolve, reject) => {
           promise.then(resolve).catch(resolve);
         });
       }

@@ -12,7 +12,6 @@ const tokenForUser = (user) => {
 
 // eslint-disable-next-line consistent-return
 export const signup = (req, res, next) => {
-  // check if email exist
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -32,7 +31,6 @@ export const signup = (req, res, next) => {
     user
       .save()
       .then((user) => {
-        req.session.auth = 'true';
         res.json({ token: tokenForUser(user) });
       })
       .catch((err) => {
@@ -45,6 +43,5 @@ export const signup = (req, res, next) => {
 export const signin = (req, res, next) => {
   // eslint-disable-next-line max-len
   // user ya paso email y pass auth, doy token, ya tengo al user en req.user xq passport lo agrega al pasar por done(null, user);
-  req.session.auth = 'true';
   res.send({ token: tokenForUser(req.user) });
 };

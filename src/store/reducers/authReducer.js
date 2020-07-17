@@ -7,7 +7,7 @@ import {
 } from '../actions/auth/authActionTypes';
 
 const initialState = {
-  authenticated: 'yes',
+  authenticated: '',
   errorMessageSignUp: '',
   errorMessageSignIn: '',
 };

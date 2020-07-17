@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import express from 'express';
-import cookieParser from 'cookie-parser';
+// import express from 'express';
+// import cookieParser from 'cookie-parser';
 import path from 'path'; // eslint-disable-line
 import webpack from 'webpack';
 import webpackHotServerMiddleware from 'webpack-hot-server-middleware';
@@ -11,11 +11,12 @@ import configDevServer from '../../config/webpack.dev-server';
 import configProdClient from '../../config/webpack.prod-client';
 import configProdServer from '../../config/webpack.prod-server';
 import storeMiddleware from './middleware/store';
-// import appRouter from './router/router';
-
-const server = express();
 
 const expressStaticGzip = require('express-static-gzip');
+
+// const server = express();
+// const server = require('./auth0/auth0');
+const server = require('./auth-server/express');
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
@@ -24,7 +25,7 @@ let isBuilt = false;
 
 server.set('x-powered-by', false);
 server.use(bodyParser.json({ type: '*/*' }));
-server.use(cookieParser());
+// server.use(cookieParser());
 
 const done = () => {
   !isBuilt &&
@@ -52,7 +53,6 @@ if (isDev) {
     configDevClient.devServer,
   );
 
-  // appRouter(server);
   server.use(storeMiddleware());
   server.use(webpackDevMiddleware);
   server.use(webpackHotMiddlware);
@@ -73,7 +73,6 @@ if (isDev) {
         enableBrotli: true,
       }),
     );
-    // appRouter(server);
     server.use(storeMiddleware());
     server.use(render({ clientStats }));
     done();

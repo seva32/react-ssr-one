@@ -11,12 +11,13 @@ import configDevServer from '../../config/webpack.dev-server';
 import configProdClient from '../../config/webpack.prod-client';
 import configProdServer from '../../config/webpack.prod-server';
 import storeMiddleware from './middleware/store';
+import server from './auth-server/express';
 
 const expressStaticGzip = require('express-static-gzip');
 
 // const server = express();
 // const server = require('./auth0/auth0');
-const server = require('./auth-server/express');
+// const server = require('./auth-server/express');
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;

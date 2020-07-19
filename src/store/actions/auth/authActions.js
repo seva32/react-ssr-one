@@ -8,9 +8,14 @@ import {
 // eslint-disable-next-line consistent-return
 export const signup = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post('/api/signup', formProps);
-    dispatch({ type: AUTH_USER, payload: response.data.token });
-    localStorage.setItem('token', response.data.token);
+    const response = await axios.post('/api/signup', formProps, {
+      withCredentials: true,
+      headers: {
+        crossorigin: true,
+      },
+    });
+    dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+    localStorage.setItem('user', JSON.stringify(response.data));
     return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNUP, payload: 'Email in use' });
@@ -18,7 +23,7 @@ export const signup = (formProps, callback) => async (dispatch) => {
 };
 
 export const signout = () => (dispatch) => {
-  localStorage.removeItem('token');
+  localStorage.removeItem('user');
   if (window.gapi) {
     const auth2 = window.gapi.auth2.getAuthInstance();
     if (auth2 != null) {
@@ -43,9 +48,8 @@ export const signin = (formProps, callback) => async (dispatch) => {
         crossorigin: true,
       },
     });
-    console.log(response.data);
-    dispatch({ type: AUTH_USER, payload: response.data.token });
-    localStorage.setItem('token', response.data.token);
+    dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+    localStorage.setItem('user', JSON.stringify(response.data));
     return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });

@@ -37,7 +37,15 @@ export const signup = (req, res) => {
               return;
             }
 
-            res.send({ message: 'User was registered successfully!' });
+            const token = jwt.sign({ id: user.id }, config.secret, {
+              expiresIn: 86400, // 24 hours
+            });
+
+            res.send({
+              email: user.email,
+              roles: user.roles,
+              accessToken: token,
+            });
           });
         },
       );
@@ -55,7 +63,15 @@ export const signup = (req, res) => {
             return;
           }
 
-          res.send({ message: 'User was registered successfully!' });
+          const token = jwt.sign({ id: user.id }, config.secret, {
+            expiresIn: 86400, // 24 hours
+          });
+
+          res.send({
+            email: user.email,
+            roles: user.roles,
+            accessToken: token,
+          });
         });
       });
     }
@@ -103,7 +119,7 @@ export const signin = (req, res) => {
       }
       res.status(200).send({
         // eslint-disable-next-line no-underscore-dangle
-        id: user._id,
+        // id: user._id,
         email: user.email,
         roles: authorities,
         accessToken: token,

@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -10,18 +11,40 @@ const dataPost = require('./data-post.md');
 const dataSidePost = require('./data-side-post.md');
 
 // eslint-disable-next-line react/prop-types
-const Posts = ({ posts, error, onDataLoad }) => {
+const Posts = ({
+  posts,
+  error,
+  onDataLoad,
+  userData,
+  userError,
+  currentUser,
+  onGetCurrentUser,
+  onLoadUserData,
+}) => {
   useEffect(() => {
     if (!posts || posts < 1) {
       onDataLoad();
     }
+    onLoadUserData();
+    onGetCurrentUser();
+    console.log(userData);
+    console.log(userError);
+    console.log(currentUser);
     return console.log('Exiting posts...'); // eslint-disable-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onDataLoad, posts]);
 
   return (
     <>
       <Head title="Posts" />
       <h1>Post Page</h1>
+      {/* <button type="button" onClick={() => onLoadUserData()}>
+        {userData}
+      </button>
+      {userError}
+      <button type="button" onClick={() => onGetCurrentUser()}>
+        {currentUser}
+      </button> */}
       {posts && posts.length !== 0 ? (
         <List>
           {posts.map((post) => (
@@ -55,22 +78,37 @@ Posts.propTypes = {
   posts: PropTypes.array, // eslint-disable-line
   error: PropTypes.string,
   onDataLoad: PropTypes.func,
+  userData: PropTypes.object,
+  userError: PropTypes.string,
+  currentUser: PropTypes.object,
+  onGetCurrentUser: PropTypes.func,
+  onLoadUserData: PropTypes.func,
 };
 
 Posts.defaultProps = {
   posts: [],
   error: '',
   onDataLoad: () => {},
+  userData: {},
+  userError: '',
+  currentUser: {},
+  onGetCurrentUser: () => {},
+  onLoadUserData: () => {},
 };
 
-const mapStateToProps = ({ posts }) => ({
+const mapStateToProps = ({ posts, users }) => ({
   posts: posts.list,
   error: posts.error,
+  userData: users.userData,
+  userError: users.error,
+  currentUser: users.currentUser,
 });
 
 // onDataLoad lo voy a usar para el CSR
 const mapDispatchToProps = (dispatch) => ({
   onDataLoad: () => dispatch(actionCreators.fetchPosts()),
+  onGetCurrentUser: () => dispatch(actionCreators.getCurrentUser()),
+  onLoadUserData: () => dispatch(actionCreators.getUserData()),
 });
 
 // funcion a usar en routes para SSR

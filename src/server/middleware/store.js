@@ -10,11 +10,13 @@ import reduxPromise from 'redux-promise';
 
 import auth from '../../store/reducers/authReducer';
 import posts from '../../store/reducers/postsReducer';
+import users from '../../store/reducers/userDataReducer';
 
 const storeMiddleware = () => async (req, res, next) => {
   const rootReducer = combineReducers({
     auth,
     posts,
+    users,
   });
 
   const enhancer = compose(applyMiddleware(reduxPromise, reduxThunk));

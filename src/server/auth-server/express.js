@@ -112,10 +112,18 @@ server.use((req, res, next) => {
 
 // Authentication
 server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
-server.post('/api/signin', cors(corsOptions), signin);
+server.post('/api/signin', [cors(corsOptions)], signin);
 
 // Authorization
-server.use('/posts', [verifyToken], (req, res, next) => {
+server.get(
+  '/api/users',
+  [cors(corsOptions), verifyToken],
+  (req, res, _next) => {
+    res.send({ seb: 'data from seb' });
+  },
+);
+
+server.use('/posts', [cors(corsOptions), verifyToken], (req, res, next) => {
   next();
 });
 

@@ -71,6 +71,9 @@ export default ({ clientStats }) => async (req, res) => {
               ${styles}${helmet.title}
               ${helmet.meta.toString()}
               ${helmet.link.toString()}
+              <!--[if lt IE 9]>
+                <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+              <![endif]-->
             </head>
             <body>
               <div id="react-root">${app}</div>

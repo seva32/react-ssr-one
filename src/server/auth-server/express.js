@@ -43,10 +43,12 @@ db.mongoose
 const server = express();
 
 server.set('x-powered-by', false);
-server.use(bodyParser.json({ type: '*/*' }));
+server.use(bodyParser.json({ type: '*/*', limit: '10mb' }));
 server.use(
   bodyParser.urlencoded({
+    limit: '10mb',
     extended: true,
+    parameterLimit: 50000,
   }),
 );
 server.use(cookieParser());
@@ -125,6 +127,16 @@ server.get(
 
 server.use('/posts', [cors(corsOptions), verifyToken], (req, res, next) => {
   next();
+});
+
+// error handler
+// eslint-disable-next-line consistent-return
+server.use((err, req, res, _next) => {
+  if (err) {
+    console.error(err.message);
+    console.error(err.stack);
+    return res.status(err.output.statusCode || 500).json(err.output.payload);
+  }
 });
 
 export default server;

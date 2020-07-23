@@ -6,6 +6,7 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import AppRoot from './App/AppRoot';
 import storeConfig from './store';
+import './utils/fetch/interceptor';
 
 const { store, persistor } = storeConfig;
 
@@ -41,18 +42,18 @@ if (module.hot) {
   });
 }
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(
-      (registration) => {
-        console.log(
-          'Service worker registered with scope: ',
-          registration.scope,
-        );
-      },
-      (err) => {
-        console.log('ServiceWorker registration failed: ', err);
-      },
-    );
-  });
-}
+// if ('serviceWorker' in navigator) {
+//   window.addEventListener('load', () => {
+//     navigator.serviceWorker.register('sw.js').then(
+//       (registration) => {
+//         console.log(
+//           'Service worker registered with scope: ',
+//           registration.scope,
+//         );
+//       },
+//       (err) => {
+//         console.log('ServiceWorker registration failed: ', err);
+//       },
+//     );
+//   });
+// }

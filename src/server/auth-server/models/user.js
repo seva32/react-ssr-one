@@ -45,6 +45,12 @@ const userSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    token: [
+      {
+        ref: 'token',
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
   },
   { strict: false }, // aceptar datos que aun no estan en el schema
 );
@@ -86,3 +92,14 @@ export default ModelClass;
 // find User by username: User.findOne({ username: … })
 // find all Roles which name in given roles array: Role.find({ name: { $in: roles } })
 // These functions will be used in our Controllers and Middlewares.
+
+// SchemaName.findById(_id, function (e, data) {
+//   if (e) console.log(e);
+//   data.sub1.id(_id1).sub2.id(_id2).field = req.body.something;
+
+//   // or if you want to change more then one field -
+//   //=> var t = data.sub1.id(_id1).sub2.id(_id2);
+//   //=> t.field = req.body.something;
+
+//   data.save();
+// });

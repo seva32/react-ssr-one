@@ -1,8 +1,8 @@
 /* eslint-disable no-shadow */
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import config from './config';
 import db from '../models/index';
+import { getAccessToken, getRefreshToken } from '../irina/jwt';
 
 const User = db.user;
 const Role = db.role;
@@ -37,10 +37,15 @@ export const signup = (req, res) => {
               return;
             }
 
-            const token = jwt.sign({ id: user.id }, config.secret, {
-              expiresIn: 900, // 15m
-            });
+            const token = getAccessToken(user.id);
+            const refreshToken = getRefreshToken(user.id, req.fingerprint);
 
+            const cookiesOptions = {
+              secure: false,
+              httpOnly: false,
+              domain: 'localhost',
+            };
+            res.cookie('refreshToken', refreshToken, cookiesOptions);
             res.send({
               email: user.email,
               roles: user.roles,
@@ -63,10 +68,15 @@ export const signup = (req, res) => {
             return;
           }
 
-          const token = jwt.sign({ id: user.id }, config.secret, {
-            expiresIn: 86400, // 24 hours
-          });
+          const token = getAccessToken(user.id);
+          const refreshToken = getRefreshToken(user.id, req.fingerprint);
 
+          const cookiesOptions = {
+            secure: false,
+            httpOnly: false,
+            domain: 'localhost',
+          };
+          res.cookie('refreshToken', refreshToken, cookiesOptions);
           res.send({
             email: user.email,
             roles: user.roles,
@@ -83,7 +93,7 @@ export const signin = (req, res) => {
     email: req.body.email,
   })
     .populate('roles', '-__v')
-    .exec((err, user) => {
+    .exec(async (err, user) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
@@ -107,22 +117,28 @@ export const signin = (req, res) => {
         return;
       }
 
-      const token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400, // 24 hours
-      });
+      const token = getAccessToken(user.id);
+      getRefreshToken(user.id, req.fingerprint).then((refreshToken) => {
+        const authorities = [];
 
-      const authorities = [];
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < user.roles.length; i++) {
+          authorities.push(`ROLE_${user.roles[i].name.toUpperCase()}`);
+        }
 
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < user.roles.length; i++) {
-        authorities.push(`ROLE_${user.roles[i].name.toUpperCase()}`);
-      }
-      res.status(200).send({
-        // eslint-disable-next-line no-underscore-dangle
-        // id: user._id,
-        email: user.email,
-        roles: authorities,
-        accessToken: token,
+        const cookiesOptions = {
+          secure: false,
+          httpOnly: false,
+          domain: 'localhost',
+        };
+        res.cookie('refreshToken', refreshToken, cookiesOptions);
+        res.status(200).send({
+          // eslint-disable-next-line no-underscore-dangle
+          // id: user._id,
+          email: user.email,
+          roles: authorities,
+          accessToken: token,
+        });
       });
     });
 };

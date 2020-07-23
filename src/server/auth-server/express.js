@@ -6,6 +6,8 @@ import path from 'path'; // eslint-disable-line
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import fingerprint from 'express-fingerprint';
+// import csrf from 'csurf';
 // import passport from 'passport';
 // import { signup, signin } from './contollers/authentications';
 import { signin, signup } from './contollers/authController';
@@ -13,10 +15,12 @@ import {
   checkDuplicateEmail,
   checkRolesExisted,
 } from './middleware/verifySignUp';
-import { verifyToken } from './middleware/authJWT';
+// import { verifyToken } from './middleware/authJWT';
+import { jwtMiddleware } from './middleware/jwtMiddleware';
 // import passportConfig from './passport'; // eslint-disable-line
 import db from './models';
 import initial from './models/initial';
+import { processRefreshToken } from './irina/jwt';
 
 const Role = db.role;
 
@@ -52,6 +56,11 @@ server.use(
   }),
 );
 server.use(cookieParser());
+server.use(
+  fingerprint({
+    parameters: [fingerprint.useragent],
+  }),
+);
 
 // const corsOptions = {
 //   origin: 'http://localhost:8080',
@@ -68,21 +77,33 @@ const corsOptions = {
 // intercept pre-flight check for all routes
 server.options('*', cors(corsOptions));
 
+// falta impl en cliente
+// const csrfProtection = csrf({
+//   cookie: true,
+// });
+// server.use(csrfProtection);
+// server.get('/csrf-token', (req, res) => {
+//   res.json({ csrfToken: req.csrfToken() });
+// });
+
 // express-session para passport.session (aqui local es session: false)
-// const session = require('express-session');
-// const MongoStore = require('connect-mongo')(session);
-// server.use(
-//   session({
-//     secret: process.env.LOGIN_SERVER_SECRET,
-//     store: new MongoStore({ mongooseConnection: mongoose.connection }),
-//     saveUninitialized: true,
-//     resave: true,
-//     cookie: {
-//       httpOnly: false,
-//       secure: false,
-//     },
-//   }),
-// );
+const session = require('express-session');
+
+const MongoStore = require('connect-mongo')(session);
+
+server.use(
+  session({
+    secret: process.env.LOGIN_SERVER_SECRET,
+    store: new MongoStore({ url: process.env.MONGOOSE }),
+    saveUninitialized: true,
+    resave: true,
+    cookie: {
+      httpOnly: false,
+      secure: false,
+    },
+    name: 'seva',
+  }),
+);
 
 // server.get('/api/auth', (req, res, next) => {
 //   req.session.user = 'Seb'; // los otros middle puede usar el objeto session
@@ -116,18 +137,44 @@ server.use((req, res, next) => {
 server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
 server.post('/api/signin', [cors(corsOptions)], signin);
 
+// eslint-disable-next-line consistent-return
+server.post('/refresh-token', (req, res) => {
+  const refreshToken = req.headers.cookie
+    .split(';')
+    .filter((c) => c.includes('refreshToken'))[0]
+    .split('=')[1];
+  if (!refreshToken) {
+    return res.status(403).send('Access is forbidden without token');
+  }
+
+  processRefreshToken(refreshToken, req.fingerprint)
+    .then((tokens) => {
+      const cookiesOptions = {
+        secure: false,
+        httpOnly: false,
+        domain: 'localhost',
+      };
+      res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
+      res.send(tokens.accessToken);
+    })
+    .catch((err) => {
+      const message = (err && err.message) || err;
+      res.status(403).send(message);
+    });
+});
+
 // Authorization
 server.get(
   '/api/users',
-  [cors(corsOptions), verifyToken],
+  [cors(corsOptions), jwtMiddleware],
   (req, res, _next) => {
     res.send({ seb: 'data from seb' });
   },
 );
 
-server.use('/posts', [cors(corsOptions), verifyToken], (req, res, next) => {
-  next();
-});
+// server.use('/posts', [cors(corsOptions), verifyToken], (req, res, next) => {
+//   next();
+// });
 
 // error handler
 // eslint-disable-next-line consistent-return

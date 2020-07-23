@@ -29,11 +29,12 @@ const SigninFormUI = ({ error, signin, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          if (res.Qt.Au && res.googleId) {
+          console.log(res);
+          if ((res.Ot.yu || res.Pt.zu) && res.googleId) {
             toggleShow(false);
             signin(
               {
-                email: res.Qt.Au,
+                email: res.Ot.yu || res.Pt.zu,
                 password: res.googleId,
               },
               () => {

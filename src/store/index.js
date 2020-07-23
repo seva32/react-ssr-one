@@ -15,8 +15,7 @@ import persistedReducer from './reducers';
 // };
 
 const configureStore = () => {
-  const user = localStorage.getItem('user') || '';
-
+  const user = JSON.parse(localStorage.getItem('user')) || '';
   const composeEnhancers =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -28,7 +27,11 @@ const configureStore = () => {
   const preloadedState = window.REDUX_DATA;
 
   const initialState = merge(preloadedState, {
-    auth: { authenticated: user.accessToken, errorMessage: '' },
+    auth: {
+      authenticated: user.accessToken,
+      errorMessageSignUp: '',
+      errorMessageSignIn: '',
+    },
   });
 
   return createStore(persistedReducer, initialState, enhancer);

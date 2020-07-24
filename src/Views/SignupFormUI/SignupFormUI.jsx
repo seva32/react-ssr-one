@@ -28,12 +28,11 @@ const SignupFormUI = ({ error, signup, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          console.log(res);
-          if (res.Ot.yu && res.googleId) {
+          if ((res.Ot.yu || res.Pt.zu) && res.googleId) {
             toggleShow(false);
             signup(
               {
-                email: res.Ot.yu,
+                email: res.Ot.yu || res.Pt.zu,
                 password: res.googleId,
               },
               () => {

@@ -22,9 +22,11 @@ export const signup = (formProps, callback) => async (dispatch) => {
   }
 };
 
-export const signout = () => (dispatch) => {
-  localStorage.removeItem('user');
-  if (window.gapi) {
+export const signout = (callback) => async (dispatch) => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('user');
+  }
+  if (typeof window !== 'undefined' && window.gapi) {
     const auth2 = window.gapi.auth2.getAuthInstance();
     if (auth2 != null) {
       auth2.signOut().then(
@@ -37,6 +39,7 @@ export const signout = () => (dispatch) => {
   dispatch({ type: AUTH_USER, payload: '' });
   dispatch({ type: AUTH_ERROR_SIGNUP, payload: '' });
   dispatch({ type: AUTH_ERROR_SIGNIN, payload: '' });
+  return callback();
 };
 
 // eslint-disable-next-line consistent-return

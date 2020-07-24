@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { Container } from 'semantic-ui-react';
 import NavBar from '../NavBar';
 import CookieConsent from '../CookieBanner';
+import countDownHOC from '../../utils/countdown';
+import interceptorHOC from '../../utils/interceptor';
 
 // eslint-disable-next-line react/prop-types
 function Layout({ children, auth }) {
@@ -36,4 +38,9 @@ function Layout({ children, auth }) {
   );
 }
 
-export default connect(({ auth }) => ({ auth: auth.authenticated }))(Layout);
+// export default connect(({ auth }) => ({ auth: auth.authenticated }))(
+//   interceptorHOC(Layout),
+// );
+export default connect(({ auth }) => ({ auth: auth.authenticated }))(
+  interceptorHOC(countDownHOC(Layout)),
+);

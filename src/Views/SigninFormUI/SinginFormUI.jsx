@@ -29,7 +29,6 @@ const SigninFormUI = ({ error, signin, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          console.log(res);
           if ((res.Ot.yu || res.Pt.zu) && res.googleId) {
             toggleShow(false);
             signin(

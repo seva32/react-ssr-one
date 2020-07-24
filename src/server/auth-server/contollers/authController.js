@@ -2,6 +2,7 @@
 // import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db from '../models/index';
+import config from './config';
 import { getAccessToken, getRefreshToken } from '../jwt/jwt';
 
 const User = db.user;
@@ -50,6 +51,7 @@ export const signup = (req, res) => {
                   email: user.email,
                   roles: user.roles,
                   accessToken: token,
+                  expiryToken: config.expiry,
                 });
               })
               .catch((error) => {
@@ -85,6 +87,7 @@ export const signup = (req, res) => {
                 email: user.email,
                 roles: user.roles,
                 accessToken: token,
+                expiryToken: config.expiry,
               });
             })
             .catch((error) => {
@@ -147,6 +150,7 @@ export const signin = (req, res) => {
             email: user.email,
             roles: authorities,
             accessToken: token,
+            expiryToken: config.expiry,
           });
         })
         .catch((error) => {

@@ -8,7 +8,7 @@ const Token = db.token;
 
 export function getAccessToken(payload) {
   return jwt.sign({ id: payload }, config.secret, {
-    expiresIn: 9000, // 15m
+    expiresIn: config.expiry, // 15m
   });
 }
 

@@ -27,9 +27,9 @@ const Posts = ({
     }
     onLoadUserData();
     onGetCurrentUser();
-    console.log(userData);
-    console.log(userError);
-    console.log(currentUser);
+    console.log('/api/users', userData);
+    console.log('/api/users', userError);
+    console.log('/api/users', currentUser);
     return console.log('Exiting posts...'); // eslint-disable-line
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onDataLoad, posts]);

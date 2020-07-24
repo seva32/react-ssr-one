@@ -11,7 +11,6 @@ export default class extends React.Component {
   }
 
   render() {
-    // eslint-disable-next-line no-restricted-globals
     return (
       <Router>
         <ScrollToTop>

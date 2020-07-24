@@ -6,7 +6,7 @@ import * as actions from '../../store/actions';
 
 function Signout({ signout }) {
   useEffect(() => {
-    signout();
+    signout(() => console.log('Signed out!'));
   }, [signout]);
   return (
     <div>

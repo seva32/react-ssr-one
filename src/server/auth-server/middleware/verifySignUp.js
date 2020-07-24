@@ -4,7 +4,6 @@ const { ROLES } = db;
 const User = db.user;
 
 export const checkDuplicateEmail = (req, res, next) => {
-  // Email
   User.findOne({
     email: req.body.email,
   }).exec((err, user) => {

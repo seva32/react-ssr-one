@@ -2,25 +2,20 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path'; // eslint-disable-line
-// import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import fingerprint from 'express-fingerprint';
 // import csrf from 'csurf';
-// import passport from 'passport';
-// import { signup, signin } from './contollers/authentications';
 import { signin, signup } from './contollers/authController';
 import {
   checkDuplicateEmail,
   checkRolesExisted,
 } from './middleware/verifySignUp';
-// import { verifyToken } from './middleware/authJWT';
 import { jwtMiddleware } from './middleware/jwtMiddleware';
-// import passportConfig from './passport'; // eslint-disable-line
 import db from './models';
 import initial from './models/initial';
-import { processRefreshToken } from './irina/jwt';
+import { processRefreshToken } from './jwt/jwt';
 
 const Role = db.role;
 
@@ -39,10 +34,6 @@ db.mongoose
     console.error('Connection error', err);
     process.exit();
   });
-
-// const requireSignin = passport.authenticate('local', {
-//   session: false,
-// });
 
 const server = express();
 
@@ -86,7 +77,6 @@ server.options('*', cors(corsOptions));
 //   res.json({ csrfToken: req.csrfToken() });
 // });
 
-// express-session para passport.session (aqui local es session: false)
 const session = require('express-session');
 
 const MongoStore = require('connect-mongo')(session);
@@ -105,26 +95,6 @@ server.use(
   }),
 );
 
-// server.get('/api/auth', (req, res, next) => {
-//   req.session.user = 'Seb'; // los otros middle puede usar el objeto session
-//   next();
-// });
-
-// server.get('/cookie', (req, res) => {
-//   const options = {
-//     secure: false,
-//     httpOnly: false,
-//     domain: '.your.domain.com',
-//   };
-//   if (!req.isAuthenticated()) {
-//     return res.status(400).send('Unauthorized');
-//   }
-//   return res
-//     .cookie('Secure', 'Secure', options)
-//     .status(200)
-//     .send('cookie sent');
-// });
-
 server.use((req, res, next) => {
   res.header(
     'Access-Control-Allow-Headers',
@@ -139,10 +109,11 @@ server.post('/api/signin', [cors(corsOptions)], signin);
 
 // eslint-disable-next-line consistent-return
 server.post('/refresh-token', (req, res) => {
-  const refreshToken = req.headers.cookie
-    .split(';')
-    .filter((c) => c.includes('refreshToken'))[0]
-    .split('=')[1];
+  const refreshToken =
+    req.headers.cookie
+      .split(';')
+      .filter((c) => c.includes('refreshToken'))[0]
+      .split('=')[1] || '';
   if (!refreshToken) {
     return res.status(403).send('Access is forbidden without token');
   }
@@ -171,10 +142,6 @@ server.get(
     res.send({ seb: 'data from seb' });
   },
 );
-
-// server.use('/posts', [cors(corsOptions), verifyToken], (req, res, next) => {
-//   next();
-// });
 
 // error handler
 // eslint-disable-next-line consistent-return

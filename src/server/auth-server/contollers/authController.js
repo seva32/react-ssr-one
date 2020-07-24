@@ -2,7 +2,7 @@
 // import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db from '../models/index';
-import { getAccessToken, getRefreshToken } from '../irina/jwt';
+import { getAccessToken, getRefreshToken } from '../jwt/jwt';
 
 const User = db.user;
 const Role = db.role;
@@ -38,19 +38,23 @@ export const signup = (req, res) => {
             }
 
             const token = getAccessToken(user.id);
-            const refreshToken = getRefreshToken(user.id, req.fingerprint);
-
-            const cookiesOptions = {
-              secure: false,
-              httpOnly: false,
-              domain: 'localhost',
-            };
-            res.cookie('refreshToken', refreshToken, cookiesOptions);
-            res.send({
-              email: user.email,
-              roles: user.roles,
-              accessToken: token,
-            });
+            getRefreshToken(user.id, req.fingerprint)
+              .then((refreshToken) => {
+                const cookiesOptions = {
+                  secure: false,
+                  httpOnly: false,
+                  domain: 'localhost',
+                };
+                res.cookie('refreshToken', refreshToken, cookiesOptions);
+                res.send({
+                  email: user.email,
+                  roles: user.roles,
+                  accessToken: token,
+                });
+              })
+              .catch((error) => {
+                res.status(500).send({ message: error });
+              });
           });
         },
       );
@@ -69,19 +73,23 @@ export const signup = (req, res) => {
           }
 
           const token = getAccessToken(user.id);
-          const refreshToken = getRefreshToken(user.id, req.fingerprint);
-
-          const cookiesOptions = {
-            secure: false,
-            httpOnly: false,
-            domain: 'localhost',
-          };
-          res.cookie('refreshToken', refreshToken, cookiesOptions);
-          res.send({
-            email: user.email,
-            roles: user.roles,
-            accessToken: token,
-          });
+          getRefreshToken(user.id, req.fingerprint)
+            .then((refreshToken) => {
+              const cookiesOptions = {
+                secure: false,
+                httpOnly: false,
+                domain: 'localhost',
+              };
+              res.cookie('refreshToken', refreshToken, cookiesOptions);
+              res.send({
+                email: user.email,
+                roles: user.roles,
+                accessToken: token,
+              });
+            })
+            .catch((error) => {
+              res.status(500).send({ message: error });
+            });
         });
       });
     }
@@ -118,27 +126,31 @@ export const signin = (req, res) => {
       }
 
       const token = getAccessToken(user.id);
-      getRefreshToken(user.id, req.fingerprint).then((refreshToken) => {
-        const authorities = [];
+      getRefreshToken(user.id, req.fingerprint)
+        .then((refreshToken) => {
+          const authorities = [];
 
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < user.roles.length; i++) {
-          authorities.push(`ROLE_${user.roles[i].name.toUpperCase()}`);
-        }
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < user.roles.length; i++) {
+            authorities.push(`ROLE_${user.roles[i].name.toUpperCase()}`);
+          }
 
-        const cookiesOptions = {
-          secure: false,
-          httpOnly: false,
-          domain: 'localhost',
-        };
-        res.cookie('refreshToken', refreshToken, cookiesOptions);
-        res.status(200).send({
-          // eslint-disable-next-line no-underscore-dangle
-          // id: user._id,
-          email: user.email,
-          roles: authorities,
-          accessToken: token,
+          const cookiesOptions = {
+            secure: false,
+            httpOnly: false,
+            domain: 'localhost',
+          };
+          res.cookie('refreshToken', refreshToken, cookiesOptions);
+          res.status(200).send({
+            // eslint-disable-next-line no-underscore-dangle
+            // id: user._id,
+            email: user.email,
+            roles: authorities,
+            accessToken: token,
+          });
+        })
+        .catch((error) => {
+          res.status(500).send({ message: error });
         });
-      });
     });
 };

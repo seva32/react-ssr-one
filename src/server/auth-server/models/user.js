@@ -1,9 +1,8 @@
 /* eslint-disable consistent-return */
 /* eslint-disable func-names */
 import mongoose from 'mongoose';
-// import bcrypt from 'bcrypt';
-// eslint-disable-next-line prefer-destructuring
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 mongoose.set('useCreateIndex', true);
 
 // define model
@@ -103,3 +102,6 @@ export default ModelClass;
 
 //   data.save();
 // });
+
+// const { ObjectId } = require('mongoose').Types;
+// const objId = new ObjectId(payload);

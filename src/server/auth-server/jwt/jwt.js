@@ -1,13 +1,11 @@
 /* eslint-disable consistent-return */
 import jwt from 'jsonwebtoken';
-// import { v1 as uuidv1 } from 'uuid';
 import config from '../contollers/config';
 import db from '../models/index';
 
 const User = db.user;
 const Token = db.token;
 
-// eslint-disable-next-line import/prefer-default-export
 export function getAccessToken(payload) {
   return jwt.sign({ id: payload }, config.secret, {
     expiresIn: 9000, // 15m
@@ -15,9 +13,7 @@ export function getAccessToken(payload) {
 }
 
 export function getRefreshToken(payload, fingerprint) {
-  // const { ObjectId } = require('mongoose').Types;
-  // const objId = new ObjectId(payload);
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const {
       hash,
       components: {
@@ -32,8 +28,7 @@ export function getRefreshToken(payload, fingerprint) {
 
     User.findOne({ _id: payload }, (err, user) => {
       if (err) {
-        console.log(err);
-        return;
+        return reject(new Error(err));
       }
 
       userRefreshTokensArr = user.token;
@@ -52,16 +47,16 @@ export function getRefreshToken(payload, fingerprint) {
         browserfamily,
       }).save((error, token) => {
         if (error) {
-          console.log('error', err);
+          return reject(new Error(error));
         }
 
         userRefreshTokensArr.push(token);
         user.token = userRefreshTokensArr; // eslint-disable-line
         user.save((e) => {
           if (e) {
-            console.log(e);
+            return reject(new Error(e));
           }
-          resolve(refreshToken);
+          return resolve(refreshToken);
         });
       });
     });
@@ -70,15 +65,14 @@ export function getRefreshToken(payload, fingerprint) {
 
 export function verifyJWTToken(token) {
   return new Promise((resolve, reject) => {
-    // eslint-disable-next-line consistent-return
     jwt.verify(token, config.secret, (err, decodedToken) => {
       if (err) {
         return reject(new Error(err.message));
-      } // Check the decoded user
+      }
       if (!decodedToken || !decodedToken.id) {
         return reject(new Error('Token is invalid'));
       }
-      resolve(decodedToken.id);
+      return resolve(decodedToken.id);
     });
   });
 }
@@ -94,7 +88,7 @@ export function processRefreshToken(token, fingerprint) {
         } = {},
       },
     } = fingerprint;
-    // get decoded data
+
     const decodedToken = jwt.verify(token, config.secret);
 
     User.findOne({ _id: decodedToken.id }, (err, user) => {
@@ -116,7 +110,7 @@ export function processRefreshToken(token, fingerprint) {
         const newRefreshToken = jwt.sign({ id: user.id }, config.secret, {
           expiresIn: '30d',
         });
-        rToken.update(
+        rToken.updateOne(
           {
             refreshToken: newRefreshToken,
             hash,

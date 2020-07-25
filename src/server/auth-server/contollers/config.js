@@ -4,5 +4,5 @@ dotenv.config();
 
 export default {
   secret: process.env.TOKEN_SECRET,
-  expiry: 60,
+  expiry: 10,
 };

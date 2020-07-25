@@ -26,11 +26,19 @@ const configureStore = () => {
 
   const preloadedState = window.REDUX_DATA;
 
-  const initialState = merge(preloadedState, {
+  let initialState = merge(preloadedState, {
     auth: {
       authenticated: user.accessToken,
       errorMessageSignUp: '',
       errorMessageSignIn: '',
+    },
+  });
+
+  initialState = merge(initialState, {
+    users: {
+      userData: user.userData,
+      error: user.error,
+      currentUser: user.currentUser,
     },
   });
 

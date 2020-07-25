@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
 // if (typeof window !== 'undefined') {
 //   window.onstorage = () => {
@@ -8,15 +9,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { signout } from '../../store/actions';
+import { signout, getCurrentUser } from '../../store/actions';
 
 export default (ChildComponent) => {
   class ComposedComponent extends Component {
     constructor(props) {
       super(props);
       this.state = {
-        warningTime: 1000 * 60 * 0.1,
-        signoutTime: 1000 * 60 * 0.2,
+        warningTime: 1000 * 60 * 0.2,
+        signoutTime: 1000 * 60 * 0.3,
       };
     }
 
@@ -26,7 +27,6 @@ export default (ChildComponent) => {
 
     clearTimeoutFunc = () => {
       if (this.warnTimeout) clearTimeout(this.warnTimeout);
-
       if (this.logoutTimeout) clearTimeout(this.logoutTimeout);
     };
 
@@ -41,9 +41,7 @@ export default (ChildComponent) => {
     };
 
     warn = () => {
-      window.alert('You will be logged out automatically in 1 minute');
-      // eslint-disable-next-line react/prop-types
-      console.log(this.props.auth);
+      console.log('You will be logged out automatically in 1 minute');
     };
 
     logout = () => {
@@ -57,6 +55,7 @@ export default (ChildComponent) => {
       this.props.signout(() => {
         // eslint-disable-next-line react/prop-types
         push('/signin');
+        window.location.assign('/signin');
       });
     };
 
@@ -64,10 +63,15 @@ export default (ChildComponent) => {
       return <ChildComponent {...this.props} />;
     }
   }
-  function mapStateToProps(state) {
-    return { auth: state.auth.authenticated };
+  function mapStateToProps({ auth }) {
+    return {
+      expiry: auth.expiry,
+      auth: auth.authenticated,
+    };
   }
-  return connect(mapStateToProps, { signout })(withRouter(ComposedComponent));
+  return connect(mapStateToProps, { signout, getCurrentUser })(
+    withRouter(ComposedComponent),
+  );
 };
 
 // opcion a withRouter

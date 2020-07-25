@@ -3,7 +3,13 @@ import {
   AUTH_USER,
   AUTH_ERROR_SIGNUP,
   AUTH_ERROR_SIGNIN,
+  AUTH_EXPIRY_TOKEN,
 } from './authActionTypes';
+import {
+  GET_USER_DATA,
+  GET_USER_DATA_ERROR,
+  GET_CURRENT_USER,
+} from '../users/userDataTypes';
 // formProps = { email, password }
 // eslint-disable-next-line consistent-return
 export const signup = (formProps, callback) => async (dispatch) => {
@@ -15,6 +21,7 @@ export const signup = (formProps, callback) => async (dispatch) => {
       },
     });
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+    dispatch({ type: AUTH_EXPIRY_TOKEN, payload: response.data.expiryToken });
     localStorage.setItem('user', JSON.stringify(response.data));
     return callback();
   } catch (e) {
@@ -39,6 +46,10 @@ export const signout = (callback) => async (dispatch) => {
   dispatch({ type: AUTH_USER, payload: '' });
   dispatch({ type: AUTH_ERROR_SIGNUP, payload: '' });
   dispatch({ type: AUTH_ERROR_SIGNIN, payload: '' });
+  dispatch({ type: AUTH_EXPIRY_TOKEN, payload: null });
+  dispatch({ type: GET_USER_DATA, payload: {} });
+  dispatch({ type: GET_USER_DATA_ERROR, payload: '' });
+  dispatch({ type: GET_CURRENT_USER, payload: {} });
   return callback();
 };
 
@@ -52,6 +63,7 @@ export const signin = (formProps, callback) => async (dispatch) => {
       },
     });
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+    dispatch({ type: AUTH_EXPIRY_TOKEN, payload: response.data.expiryToken });
     localStorage.setItem('user', JSON.stringify(response.data));
     return callback();
   } catch (e) {

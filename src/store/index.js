@@ -31,6 +31,7 @@ const configureStore = () => {
       authenticated: user.accessToken,
       errorMessageSignUp: '',
       errorMessageSignIn: '',
+      expiry: { expiryToken: user.expiryToken, startTime: user.startTime },
     },
   });
 

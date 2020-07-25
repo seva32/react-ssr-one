@@ -1,28 +1,18 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable react/destructuring-assignment */
-// if (typeof window !== 'undefined') {
-//   window.onstorage = () => {
-//     console.log(JSON.parse(window.localStorage.getItem('user')));
-//   };
-// }
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { signout, getCurrentUser } from '../../store/actions';
 
 export default (ChildComponent) => {
   class ComposedComponent extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        warningTime: 1000 * 60 * 0.2,
-        signoutTime: 1000 * 60 * 0.3,
-      };
+    componentDidMount() {
+      this.startCountdown();
     }
 
-    componentDidMount() {
-      this.setTimeout();
+    componentDidUpdate() {
+      this.startCountdown();
     }
 
     clearTimeoutFunc = () => {
@@ -30,42 +20,72 @@ export default (ChildComponent) => {
       if (this.logoutTimeout) clearTimeout(this.logoutTimeout);
     };
 
-    setTimeout = () => {
-      this.warnTimeout = setTimeout(this.warn, this.state.warningTime);
-      this.logoutTimeout = setTimeout(this.logout, this.state.signoutTime);
+    setTimeoutRun = () => {
+      if (this.timeRemainingUntilLogout) {
+        if (this.timeRemainingUntilLogout <= 0) {
+          this.logout();
+        } else {
+          this.timer = setInterval(this.logout, this.timeRemainingUntilLogout);
+        }
+      }
+      // this.logoutTimeout = setTimeout(this.logout, signoutTime);
     };
 
     resetTimeout = () => {
       this.clearTimeoutFunc();
-      this.setTimeout();
+      this.setTimeoutRun();
     };
 
     warn = () => {
-      console.log('You will be logged out automatically in 1 minute');
+      clearInterval(this.timer);
     };
 
     logout = () => {
       const {
-        // eslint-disable-next-line react/prop-types
-        history: { push },
+        history: { push }, // eslint-disable-line
       } = this.props;
-      // Send a logout request to the API
-      console.log('Sending a logout::::', this.props);
-      // eslint-disable-next-line react/prop-types
+      clearInterval(this.timer);
       this.props.signout(() => {
-        // eslint-disable-next-line react/prop-types
         push('/signin');
         window.location.assign('/signin');
       });
     };
 
+    startCountdown() {
+      if (
+        this.props.auth !== null &&
+        this.props.auth !== undefined &&
+        this.props.auth
+      ) {
+        const timeFromLogin = Date.now() - this.props.startTime;
+        this.timeRemainingUntilLogout = this.props.expiry - timeFromLogin;
+        this.setTimeoutRun();
+      }
+    }
+
     render() {
       return <ChildComponent {...this.props} />;
     }
   }
+
+  ComposedComponent.propTypes = {
+    auth: PropTypes.string,
+    startTime: PropTypes.number,
+    expiry: PropTypes.number,
+    signout: PropTypes.func,
+  };
+
+  ComposedComponent.defaultProps = {
+    auth: '',
+    startTime: null,
+    expiry: null,
+    signout: () => {},
+  };
+
   function mapStateToProps({ auth }) {
     return {
-      expiry: auth.expiry,
+      expiry: auth.expiry.expiryToken * 1000, // llega en segundos
+      startTime: auth.expiry.startTime, // llega en milisegundos
       auth: auth.authenticated,
     };
   }

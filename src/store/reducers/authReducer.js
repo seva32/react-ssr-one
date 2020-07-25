@@ -11,7 +11,7 @@ const initialState = {
   authenticated: '',
   errorMessageSignUp: '',
   errorMessageSignIn: '',
-  expiry: null,
+  expiry: {},
 };
 
 export default (state = initialState, action) => {

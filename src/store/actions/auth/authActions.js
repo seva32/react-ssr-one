@@ -20,9 +20,19 @@ export const signup = (formProps, callback) => async (dispatch) => {
         crossorigin: true,
       },
     });
+    const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
-    dispatch({ type: AUTH_EXPIRY_TOKEN, payload: response.data.expiryToken });
-    localStorage.setItem('user', JSON.stringify(response.data));
+    dispatch({
+      type: AUTH_EXPIRY_TOKEN,
+      payload: {
+        expiryToken: response.data.expiryToken,
+        startTime: dateNow,
+      },
+    });
+    localStorage.setItem(
+      'user',
+      JSON.stringify({ ...response.data, startTime: dateNow }),
+    );
     return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNUP, payload: 'Email in use' });
@@ -46,7 +56,7 @@ export const signout = (callback) => async (dispatch) => {
   dispatch({ type: AUTH_USER, payload: '' });
   dispatch({ type: AUTH_ERROR_SIGNUP, payload: '' });
   dispatch({ type: AUTH_ERROR_SIGNIN, payload: '' });
-  dispatch({ type: AUTH_EXPIRY_TOKEN, payload: null });
+  dispatch({ type: AUTH_EXPIRY_TOKEN, payload: {} });
   dispatch({ type: GET_USER_DATA, payload: {} });
   dispatch({ type: GET_USER_DATA_ERROR, payload: '' });
   dispatch({ type: GET_CURRENT_USER, payload: {} });
@@ -62,9 +72,19 @@ export const signin = (formProps, callback) => async (dispatch) => {
         crossorigin: true,
       },
     });
+    const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
-    dispatch({ type: AUTH_EXPIRY_TOKEN, payload: response.data.expiryToken });
-    localStorage.setItem('user', JSON.stringify(response.data));
+    dispatch({
+      type: AUTH_EXPIRY_TOKEN,
+      payload: {
+        expiryToken: response.data.expiryToken,
+        startTime: dateNow,
+      },
+    });
+    localStorage.setItem(
+      'user',
+      JSON.stringify({ ...response.data, startTime: dateNow }),
+    );
     return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });

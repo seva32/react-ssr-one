@@ -4,6 +4,7 @@ import {
   AUTH_ERROR_SIGNUP,
   AUTH_ERROR_SIGNIN,
   AUTH_EXPIRY_TOKEN,
+  REFRESH_TOKEN_ERROR, // para el nuevo token uso nuevamente AUTH_USER
 } from './authActionTypes';
 import {
   GET_USER_DATA,
@@ -88,5 +89,24 @@ export const signin = (formProps, callback) => async (dispatch) => {
     return callback();
   } catch (e) {
     dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });
+  }
+};
+
+export const refreshToken = (callback) => async (dispatch) => {
+  try {
+    const response = await axios.post('/refresh-token', {
+      withCredentials: true,
+      headers: {
+        crossorigin: true,
+      },
+    });
+    dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+    return callback(true);
+  } catch (e) {
+    dispatch({
+      type: REFRESH_TOKEN_ERROR,
+      payload: 'Invalid authentication using refresh token',
+    });
+    return callback(false);
   }
 };

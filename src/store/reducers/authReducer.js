@@ -5,6 +5,7 @@ import {
   AUTH_ERROR_SIGNUP,
   AUTH_ERROR_SIGNIN,
   AUTH_EXPIRY_TOKEN,
+  REFRESH_TOKEN_ERROR,
 } from '../actions/auth/authActionTypes';
 
 const initialState = {
@@ -24,6 +25,8 @@ export default (state = initialState, action) => {
       return { ...state, errorMessageSignIn: action.payload };
     case AUTH_EXPIRY_TOKEN:
       return { ...state, expiry: action.payload };
+    case REFRESH_TOKEN_ERROR:
+      return state;
     default:
       return state;
   }

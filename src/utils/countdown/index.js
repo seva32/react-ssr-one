@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { signout, getCurrentUser } from '../../store/actions';
+import { signout, getCurrentUser, refreshToken } from '../../store/actions';
 
 export default (ChildComponent) => {
   class ComposedComponent extends Component {
@@ -45,9 +45,16 @@ export default (ChildComponent) => {
         history: { push }, // eslint-disable-line
       } = this.props;
       clearInterval(this.timer);
-      this.props.signout(() => {
-        push('/signin');
-        window.location.assign('/signin');
+
+      // check for refresh token help
+      this.props.refreshToken((success) => {
+        if (!success) {
+          this.props.signout(() => {
+            push('/signin');
+            window.location.assign('/signin');
+          });
+        }
+        alert('Keep going!');
       });
     };
 
@@ -73,6 +80,7 @@ export default (ChildComponent) => {
     startTime: PropTypes.number,
     expiry: PropTypes.number,
     signout: PropTypes.func,
+    refreshToken: PropTypes.func,
   };
 
   ComposedComponent.defaultProps = {
@@ -80,6 +88,7 @@ export default (ChildComponent) => {
     startTime: null,
     expiry: null,
     signout: () => {},
+    refreshToken: () => {},
   };
 
   function mapStateToProps({ auth }) {
@@ -89,7 +98,7 @@ export default (ChildComponent) => {
       auth: auth.authenticated,
     };
   }
-  return connect(mapStateToProps, { signout, getCurrentUser })(
+  return connect(mapStateToProps, { signout, getCurrentUser, refreshToken })(
     withRouter(ComposedComponent),
   );
 };

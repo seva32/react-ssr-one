@@ -16,6 +16,7 @@ import { jwtMiddleware } from './middleware/jwtMiddleware';
 import db from './models';
 import initial from './models/initial';
 import { processRefreshToken } from './jwt/jwt';
+import config from './contollers/config';
 
 const Role = db.role;
 
@@ -127,7 +128,10 @@ server.post('/refresh-token', (req, res) => {
       };
       console.log('refresh exitoso!');
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
-      res.send({ accessToken: tokens.accessToken });
+      res.send({
+        accessToken: tokens.accessToken,
+        expiryToken: config.expiryToken,
+      });
     })
     .catch((err) => {
       const message = (err && err.message) || err;

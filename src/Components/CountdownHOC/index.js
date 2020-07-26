@@ -3,7 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { signout, refreshToken } from '../../store/actions';
+import {
+  signout,
+  refreshToken,
+  resfreshTokenRestartTimeout,
+} from '../../store/actions';
 
 export default (ChildComponent) => {
   class ComposedComponent extends Component {
@@ -26,23 +30,15 @@ export default (ChildComponent) => {
 
     setTimeoutRun = () => {
       if (this.timeRemainingUntilLogout && this.timeRemainingUntilLogout > 0) {
+        // flag a STO running
         this.timeoutRunning = true;
         this.timer = setTimeout(this.logout, this.timeRemainingUntilLogout);
       }
     };
 
+    // send action and update component store
     resetTimeout = () => {
-      console.log('++++++++++');
-      console.log(this.timeRemainingUntilLogout);
-      console.log(this.timeoutRunning);
-      console.log('props :::::: ', this.props);
-      // this.setState((prevState) => ({ ...prevState }));
-      this.clearTimeoutFunc();
-      this.setTimeoutRun();
-    };
-
-    warn = () => {
-      clearTimeout(this.timer);
+      this.props.resfreshTokenRestartTimeout();
     };
 
     logout = () => {
@@ -50,17 +46,27 @@ export default (ChildComponent) => {
         history: { push }, // eslint-disable-line
       } = this.props;
 
-      this.props.refreshToken((success) => {
-        if (!success) {
-          this.props.signout(() => {
-            console.log('----------');
-            push('/signin');
-            // window.location.assign('/signin');
-          });
-        } else {
-          this.resetTimeout();
-        }
-      });
+      // this check is for the case when user signed out
+      // to stop refresh token process
+      if (
+        !(
+          this.props.auth !== null &&
+          this.props.auth !== undefined &&
+          this.props.auth
+        )
+      ) {
+        this.clearTimeoutFunc();
+      } else {
+        this.props.refreshToken((success) => {
+          if (!success) {
+            this.props.signout(() => {
+              push('/signin');
+            });
+          } else {
+            this.resetTimeout();
+          }
+        });
+      }
     };
 
     startCountdown() {
@@ -69,14 +75,18 @@ export default (ChildComponent) => {
         this.props.auth !== undefined &&
         this.props.auth
       ) {
+        // check time from actual singin session
         const timeFromLogin = Date.now() - this.props.startTime;
+        // private prop, useless in state and accesible from STO func
         this.timeRemainingUntilLogout = this.props.expiry - timeFromLogin;
-
+        // check if there is a timeout already running from previous store change
+        // if true invalidate the STO and start with the last component update
         if (this.timeoutRunning) {
           this.clearTimeoutFunc();
           this.timeoutRunning = false;
         }
-
+        // timeRemainingUntilLogout is < when component updates and
+        // refresh token process doesnt updated the store yet
         if (this.timeRemainingUntilLogout > 0) {
           this.setTimeoutRun();
         }
@@ -94,6 +104,7 @@ export default (ChildComponent) => {
     expiry: PropTypes.number,
     signout: PropTypes.func,
     refreshToken: PropTypes.func,
+    resfreshTokenRestartTimeout: PropTypes.func,
   };
 
   ComposedComponent.defaultProps = {
@@ -102,6 +113,7 @@ export default (ChildComponent) => {
     expiry: null,
     signout: () => {},
     refreshToken: () => {},
+    resfreshTokenRestartTimeout: () => {},
   };
 
   function mapStateToProps({ auth }) {
@@ -111,9 +123,11 @@ export default (ChildComponent) => {
       auth: auth.authenticated,
     };
   }
-  return connect(mapStateToProps, { signout, refreshToken })(
-    withRouter(ComposedComponent),
-  );
+  return connect(mapStateToProps, {
+    signout,
+    refreshToken,
+    resfreshTokenRestartTimeout,
+  })(withRouter(ComposedComponent));
 };
 
 // opcion a withRouter

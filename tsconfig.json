@@ -25,7 +25,9 @@
 	},
 	"include": [
 		"./src/**/*.tsx",
-		"src/Components/Head.ts"
+		"src/Components/Head.ts",
+		"src/Components/Heading/makeHeading.jsx",
+		"src/Components/Heading/index.jsx"
 	],
 	"exclude": [
 		"node_modules/**"

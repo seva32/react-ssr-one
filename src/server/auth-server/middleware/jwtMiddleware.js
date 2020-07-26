@@ -1,4 +1,5 @@
 /* eslint-disable consistent-return */
+// the middleware attach the actual user to req
 import { verifyJWTToken } from '../jwt/jwt';
 
 // eslint-disable-next-line import/prefer-default-export

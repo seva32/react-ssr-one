@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import fingerprint from 'express-fingerprint';
 // import csrf from 'csurf';
+
 import { signin, signup } from './contollers/authController';
 import {
   checkDuplicateEmail,
@@ -18,10 +19,9 @@ import initial from './models/initial';
 import { processRefreshToken } from './jwt/jwt';
 import config from './contollers/config';
 
-const Role = db.role;
-
 dotenv.config({ silent: true });
 
+const Role = db.role;
 db.mongoose
   .connect(process.env.MONGOOSE, {
     useNewUrlParser: true,
@@ -37,7 +37,6 @@ db.mongoose
   });
 
 const server = express();
-
 server.set('x-powered-by', false);
 server.use(bodyParser.json({ type: '*/*', limit: '10mb' }));
 server.use(
@@ -54,17 +53,10 @@ server.use(
   }),
 );
 
-// const corsOptions = {
-//   origin: 'http://localhost:8080',
-// };
-// server.use(cors(corsOptions));
-
 const corsOptions = {
-  // origin: /\.your.domain\.com$/,
-  origin: /localhost/,
+  origin: /localhost/, // origin: /\.your.domain\.com$/
   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
-  credentials: true, // required to pass allowedHeaders:
-  // "Content-Type, Authorization, X-Requested-With",
+  credentials: true, // required to pass allowedHeaders
 };
 // intercept pre-flight check for all routes
 server.options('*', cors(corsOptions));
@@ -79,7 +71,6 @@ server.options('*', cors(corsOptions));
 // });
 
 const session = require('express-session');
-
 const MongoStore = require('connect-mongo')(session);
 
 server.use(
@@ -149,13 +140,13 @@ server.get(
 );
 
 // error handler
-// eslint-disable-next-line consistent-return
-server.use((err, req, res, _next) => {
+server.use((err, req, res, next) => {
   if (err) {
     console.error(err.message);
     console.error(err.stack);
     return res.status(err.output.statusCode || 500).json(err.output.payload);
   }
+  return next(); // never called =)
 });
 
 export default server;

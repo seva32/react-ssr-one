@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+// logic for an angular base interceptor
 // intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 //  const accessToken = this.localStorageService.getItem('token'); return next.handle(this.addAuthorizationHeader(req, accessToken)).pipe(
 //   catchError(err => {

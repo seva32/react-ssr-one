@@ -1,5 +1,4 @@
 /* eslint-disable no-shadow */
-// import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db from '../models/index';
 import config from './config';
@@ -145,8 +144,6 @@ export const signin = (req, res) => {
           };
           res.cookie('refreshToken', refreshToken, cookiesOptions);
           res.status(200).send({
-            // eslint-disable-next-line no-underscore-dangle
-            // id: user._id,
             email: user.email,
             roles: authorities,
             accessToken: token,

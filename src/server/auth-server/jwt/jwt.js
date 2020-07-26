@@ -12,6 +12,8 @@ export function getAccessToken(payload) {
   });
 }
 
+// promise based to check that new refresh token got saved in db
+// fingerprint to add extra security check
 export function getRefreshToken(payload, fingerprint) {
   return new Promise((resolve, reject) => {
     const {
@@ -24,6 +26,8 @@ export function getRefreshToken(payload, fingerprint) {
       },
     } = fingerprint;
 
+    // the user may started different sessions on diff devices
+    // if accessToken expires check to delete prev refreshtokens
     let userRefreshTokensArr;
 
     User.findOne({ _id: payload }, (err, user) => {
@@ -33,8 +37,8 @@ export function getRefreshToken(payload, fingerprint) {
 
       userRefreshTokensArr = user.token;
       if (userRefreshTokensArr.length >= 5) {
-        userRefreshTokensArr = userRefreshTokensArr.slice(-4);
-      }
+        userRefreshTokensArr = userRefreshTokensArr.slice(-4); // up to 5 sessions active
+      } // this 4 and the new one
 
       const refreshToken = jwt.sign({ id: payload }, config.secret, {
         expiresIn: config.expiryRefreshToken,
@@ -119,7 +123,7 @@ export function processRefreshToken(token, fingerprint) {
           },
           (error, _doc) => {
             if (error) {
-              return reject(new Error('Refresh token doesnt exist'));
+              return reject(new Error('Refresh token not generated'));
             }
 
             const newAccessToken = getAccessToken(user.id);

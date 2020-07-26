@@ -4,7 +4,6 @@
 import path from 'path'; // eslint-disable-line
 import webpack from 'webpack';
 import webpackHotServerMiddleware from 'webpack-hot-server-middleware';
-import bodyParser from 'body-parser';
 
 import configDevClient from '../../config/webpack.dev-client';
 import configDevServer from '../../config/webpack.dev-server';
@@ -15,18 +14,12 @@ import server from './auth-server/express';
 
 const expressStaticGzip = require('express-static-gzip');
 
-// const server = express();
 // const server = require('./auth0/auth0');
-// const server = require('./auth-server/express');
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
 const PORT = process.env.PORT || 8080;
 let isBuilt = false;
-
-server.set('x-powered-by', false);
-server.use(bodyParser.json({ type: '*/*' }));
-// server.use(cookieParser());
 
 const done = () => {
   !isBuilt &&

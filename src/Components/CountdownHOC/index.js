@@ -37,7 +37,7 @@ export default (ChildComponent) => {
     };
 
     // send action and update component store
-    resetTimeout = () => {
+    resetCountdown = () => {
       this.props.resfreshTokenRestartTimeout();
     };
 
@@ -63,7 +63,7 @@ export default (ChildComponent) => {
               push('/signin');
             });
           } else {
-            this.resetTimeout();
+            this.resetCountdown();
           }
         });
       }

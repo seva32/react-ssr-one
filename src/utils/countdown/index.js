@@ -3,10 +3,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { signout, getCurrentUser, refreshToken } from '../../store/actions';
+import { signout, refreshToken } from '../../store/actions';
 
 export default (ChildComponent) => {
   class ComposedComponent extends Component {
+    // constructor(props) {
+    //   super(props);
+    //   this.state = { signinState: false };
+    // }
+
     componentDidMount() {
       this.startCountdown();
     }
@@ -16,45 +21,45 @@ export default (ChildComponent) => {
     }
 
     clearTimeoutFunc = () => {
-      if (this.warnTimeout) clearTimeout(this.warnTimeout);
-      if (this.logoutTimeout) clearTimeout(this.logoutTimeout);
+      if (this.timer) clearTimeout(this.timer);
     };
 
     setTimeoutRun = () => {
-      if (this.timeRemainingUntilLogout) {
-        if (this.timeRemainingUntilLogout <= 0) {
-          this.logout();
-        } else {
-          this.timer = setInterval(this.logout, this.timeRemainingUntilLogout);
-        }
+      if (this.timeRemainingUntilLogout && this.timeRemainingUntilLogout > 0) {
+        this.timeoutRunning = true;
+        this.timer = setTimeout(this.logout, this.timeRemainingUntilLogout);
       }
-      // this.logoutTimeout = setTimeout(this.logout, signoutTime);
     };
 
     resetTimeout = () => {
+      console.log('++++++++++');
+      console.log(this.timeRemainingUntilLogout);
+      console.log(this.timeoutRunning);
+      console.log('props :::::: ', this.props);
+      // this.setState((prevState) => ({ ...prevState }));
       this.clearTimeoutFunc();
       this.setTimeoutRun();
     };
 
     warn = () => {
-      clearInterval(this.timer);
+      clearTimeout(this.timer);
     };
 
     logout = () => {
       const {
         history: { push }, // eslint-disable-line
       } = this.props;
-      clearInterval(this.timer);
 
-      // check for refresh token help
       this.props.refreshToken((success) => {
         if (!success) {
           this.props.signout(() => {
+            console.log('----------');
             push('/signin');
-            window.location.assign('/signin');
+            // window.location.assign('/signin');
           });
+        } else {
+          this.resetTimeout();
         }
-        alert('Keep going!');
       });
     };
 
@@ -66,7 +71,15 @@ export default (ChildComponent) => {
       ) {
         const timeFromLogin = Date.now() - this.props.startTime;
         this.timeRemainingUntilLogout = this.props.expiry - timeFromLogin;
-        this.setTimeoutRun();
+
+        if (this.timeoutRunning) {
+          this.clearTimeoutFunc();
+          this.timeoutRunning = false;
+        }
+
+        if (this.timeRemainingUntilLogout > 0) {
+          this.setTimeoutRun();
+        }
       }
     }
 
@@ -98,7 +111,7 @@ export default (ChildComponent) => {
       auth: auth.authenticated,
     };
   }
-  return connect(mapStateToProps, { signout, getCurrentUser, refreshToken })(
+  return connect(mapStateToProps, { signout, refreshToken })(
     withRouter(ComposedComponent),
   );
 };

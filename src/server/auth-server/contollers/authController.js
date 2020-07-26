@@ -51,7 +51,7 @@ export const signup = (req, res) => {
                   email: user.email,
                   roles: user.roles,
                   accessToken: token,
-                  expiryToken: config.expiry,
+                  expiryToken: config.expiryToken,
                 });
               })
               .catch((error) => {
@@ -87,7 +87,7 @@ export const signup = (req, res) => {
                 email: user.email,
                 roles: user.roles,
                 accessToken: token,
-                expiryToken: config.expiry,
+                expiryToken: config.expiryToken,
               });
             })
             .catch((error) => {
@@ -150,7 +150,7 @@ export const signin = (req, res) => {
             email: user.email,
             roles: authorities,
             accessToken: token,
-            expiryToken: config.expiry,
+            expiryToken: config.expiryToken,
           });
         })
         .catch((error) => {

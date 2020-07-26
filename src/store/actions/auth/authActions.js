@@ -101,6 +101,7 @@ export const refreshToken = (callback) => async (dispatch) => {
       },
     });
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+    // agregar los cambios al localstorage del
     return callback(true);
   } catch (e) {
     dispatch({

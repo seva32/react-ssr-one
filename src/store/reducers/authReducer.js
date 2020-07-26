@@ -26,6 +26,7 @@ export default (state = initialState, action) => {
     case AUTH_EXPIRY_TOKEN:
       return { ...state, expiry: action.payload };
     case REFRESH_TOKEN_ERROR:
+      // console.log('refresh token expired');
       return state;
     default:
       return state;

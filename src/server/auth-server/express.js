@@ -115,7 +115,7 @@ server.post('/refresh-token', (req, res) => {
       .filter((c) => c.includes('refreshToken'))[0]
       .split('=')[1] || '';
   if (!refreshToken) {
-    return res.status(403).send('Access is forbidden without token');
+    return res.status(403).send('Access is forbidden');
   }
 
   processRefreshToken(refreshToken, req.fingerprint)
@@ -125,8 +125,9 @@ server.post('/refresh-token', (req, res) => {
         httpOnly: false,
         domain: 'localhost',
       };
+      console.log('refresh exitoso!');
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
-      res.send(tokens.accessToken);
+      res.send({ accessToken: tokens.accessToken });
     })
     .catch((err) => {
       const message = (err && err.message) || err;

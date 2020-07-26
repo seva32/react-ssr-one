@@ -8,7 +8,7 @@ const Token = db.token;
 
 export function getAccessToken(payload) {
   return jwt.sign({ id: payload }, config.secret, {
-    expiresIn: config.expiry, // 15m
+    expiresIn: config.expiryToken,
   });
 }
 
@@ -37,7 +37,7 @@ export function getRefreshToken(payload, fingerprint) {
       }
 
       const refreshToken = jwt.sign({ id: payload }, config.secret, {
-        expiresIn: '15d', // 15m
+        expiresIn: config.expiryRefreshToken,
       });
 
       new Token({
@@ -108,7 +108,7 @@ export function processRefreshToken(token, fingerprint) {
           return reject(new Error('Refresh token doesnt exist'));
         }
         const newRefreshToken = jwt.sign({ id: user.id }, config.secret, {
-          expiresIn: '30d',
+          expiresIn: config.expiryRefreshToken,
         });
         rToken.updateOne(
           {

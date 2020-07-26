@@ -50,7 +50,7 @@ export const signout = (callback) => async (dispatch) => {
     if (auth2 != null) {
       auth2.signOut().then(
         auth2.disconnect().then(() => {
-          console.log('Exited from google...'); // eslint-disable-line
+          console.log('Signed out from google...'); // eslint-disable-line
         }),
       );
     }
@@ -62,7 +62,7 @@ export const signout = (callback) => async (dispatch) => {
   dispatch({ type: GET_USER_DATA, payload: {} });
   dispatch({ type: GET_USER_DATA_ERROR, payload: '' });
   dispatch({ type: GET_CURRENT_USER, payload: {} });
-  return callback();
+  return callback(); // callback for token expire timeout
 };
 
 // eslint-disable-next-line consistent-return
@@ -115,7 +115,7 @@ export const refreshToken = (callback) => async (dispatch) => {
     localStorage.setItem(
       'user',
       JSON.stringify({
-        ...user,
+        ...user, // keep other info without change
         accessToken: response.data.accessToken,
         startTime: dateNow,
         expiryToken: response.data.expiryToken,
@@ -125,7 +125,7 @@ export const refreshToken = (callback) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: REFRESH_TOKEN_ERROR,
-      payload: e, // just for logging
+      payload: e, // logging
     });
     return callback(false);
   }

@@ -24,7 +24,7 @@ export const getUserData = () => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: GET_USER_DATA_ERROR,
-      payload: 'No user data available!',
+      payload: 'User data not available!',
     });
   }
 };

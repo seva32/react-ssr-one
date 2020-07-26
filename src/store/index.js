@@ -15,7 +15,7 @@ import persistedReducer from './reducers';
 // };
 
 const configureStore = () => {
-  const user = JSON.parse(localStorage.getItem('user')) || '';
+  const user = JSON.parse(localStorage.getItem('user'));
   const composeEnhancers =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -25,23 +25,28 @@ const configureStore = () => {
       : composeEnhancers(applyMiddleware(reduxPromise, reduxThunk));
 
   const preloadedState = window.REDUX_DATA;
+  let initialState;
 
-  let initialState = merge(preloadedState, {
-    auth: {
-      authenticated: user.accessToken,
-      errorMessageSignUp: '',
-      errorMessageSignIn: '',
-      expiry: { expiryToken: user.expiryToken, startTime: user.startTime },
-    },
-  });
+  if (user !== null && user !== undefined && user) {
+    initialState = merge(preloadedState, {
+      auth: {
+        authenticated: user.accessToken,
+        errorMessageSignUp: '',
+        errorMessageSignIn: '',
+        expiry: { expiryToken: user.expiryToken, startTime: user.startTime },
+      },
+    });
 
-  initialState = merge(initialState, {
-    users: {
-      userData: user.userData,
-      error: user.error,
-      currentUser: user.currentUser,
-    },
-  });
+    initialState = merge(initialState, {
+      users: {
+        userData: user.userData,
+        error: user.error,
+        currentUser: user.currentUser,
+      },
+    });
+  } else {
+    initialState = preloadedState;
+  }
 
   return createStore(persistedReducer, initialState, enhancer);
 };

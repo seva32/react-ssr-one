@@ -2,9 +2,9 @@
   "name": "react-fondue",
   "version": "0.0.1",
   "main": "main.js",
+  "license": "ISC",
   "keywords": [
     "babel",
-    "boilerplate",
     "css",
     "express",
     "front-end",
@@ -17,7 +17,6 @@
     "server",
     "ssr",
     "styles",
-    "typescript",
     "webpack",
     "website"
   ],
@@ -163,7 +162,8 @@
     "yup": "^0.29.1"
   },
   "scripts": {
-    "\\": "prod & deve",
+    "//1": "prod & deve",
+    "//2": "ts not impl",
     "pro": "concurrently --kill-others \"yarn run server\" \"yarn run prod\"",
     "prod": "NODE_ENV=production node src/server/main.js",
     "server": "node src/auth-server/main.js",

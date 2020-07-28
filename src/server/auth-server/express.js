@@ -100,7 +100,7 @@ server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
 server.post('/api/signin', [cors(corsOptions)], signin);
 
 // eslint-disable-next-line consistent-return
-server.post('/refresh-token', (req, res) => {
+server.use('/refresh-token', (req, res) => {
   const refreshToken =
     req.headers.cookie
       .split(';')
@@ -108,6 +108,14 @@ server.post('/refresh-token', (req, res) => {
       .split('=')[1] || '';
   if (!refreshToken) {
     return res.status(403).send('Access is forbidden');
+  }
+
+  if (req.cookies.protectedPath) {
+    const originalPath = req.headers.cookie
+      .split(';')
+      .filter((c) => c.includes('protectedPath'))[0]
+      .split('=')[1];
+    req.originalPath = decodeURIComponent(originalPath);
   }
 
   processRefreshToken(refreshToken, req.fingerprint)
@@ -118,6 +126,11 @@ server.post('/refresh-token', (req, res) => {
         domain: 'localhost',
       };
       console.log('refresh exitoso!');
+      if (req.originalPath) {
+        res.accessToken = tokens.accessToken;
+        res.expiryToken = config.expiryToken;
+        res.redirect(req.originalPath);
+      }
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
       res.send({
         accessToken: tokens.accessToken,
@@ -132,7 +145,7 @@ server.post('/refresh-token', (req, res) => {
 
 // Authorization
 server.get(
-  '/api/users',
+  ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
   (req, res, _next) => {
     res.send({ seb: 'data from seb' });

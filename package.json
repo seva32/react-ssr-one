@@ -178,5 +178,8 @@
   },
   "engines": {
     "node": ">= 12"
+  },
+  "resolutions": {
+    "react-is": "^16.13.1"
   }
 }

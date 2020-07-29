@@ -7,6 +7,7 @@ import {
   AUTH_EXPIRY_TOKEN,
   REFRESH_TOKEN_ERROR,
   REFRESH_TOKEN_RESTART_TIMEOUT,
+  ACCESS_TOKEN_DELETE_ERROR,
 } from '../actions/auth/authActionTypes';
 
 const initialState = {
@@ -27,7 +28,10 @@ export default (state = initialState, action) => {
     case AUTH_EXPIRY_TOKEN:
       return { ...state, expiry: action.payload };
     case REFRESH_TOKEN_ERROR:
-      // console.log('refresh token expired');
+      console.log('refresh token expired');
+      return state;
+    case ACCESS_TOKEN_DELETE_ERROR:
+      console.log('access token not found');
       return state;
     case REFRESH_TOKEN_RESTART_TIMEOUT:
       return state;

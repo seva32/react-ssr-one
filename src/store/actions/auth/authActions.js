@@ -6,6 +6,7 @@ import {
   AUTH_EXPIRY_TOKEN,
   REFRESH_TOKEN_ERROR,
   REFRESH_TOKEN_RESTART_TIMEOUT, // para el nuevo token uso nuevamente AUTH_USER
+  ACCESS_TOKEN_DELETE_ERROR,
 } from './authActionTypes';
 import {
   GET_USER_DATA,
@@ -43,7 +44,28 @@ export const signup = (formProps, callback) => async (dispatch) => {
 
 export const signout = (callback) => async (dispatch) => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('user');
+    const user = JSON.parse(localStorage.getItem('user'));
+    try {
+      const response = await axios.post(
+        '/api/signout',
+        { email: user.email },
+        {
+          withCredentials: true,
+          headers: {
+            crossorigin: true,
+          },
+        },
+      );
+      console.log(`${user.email} signout success: ${response.data.ok}`);
+    } catch (e) {
+      console.log(`${user.email} signout failure.`);
+      dispatch({
+        type: ACCESS_TOKEN_DELETE_ERROR,
+        payload: { e, user }, // logging
+      });
+    } finally {
+      localStorage.removeItem('user');
+    }
   }
   if (typeof window !== 'undefined' && window.gapi) {
     const auth2 = window.gapi.auth2.getAuthInstance();
@@ -62,7 +84,7 @@ export const signout = (callback) => async (dispatch) => {
   dispatch({ type: GET_USER_DATA, payload: {} });
   dispatch({ type: GET_USER_DATA_ERROR, payload: '' });
   dispatch({ type: GET_CURRENT_USER, payload: {} });
-  return callback(); // callback for token expire timeout
+  return callback(); // callback for token expire timeout countdownHOC
 };
 
 // eslint-disable-next-line consistent-return

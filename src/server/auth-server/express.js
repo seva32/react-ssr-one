@@ -8,7 +8,7 @@ import cors from 'cors';
 import fingerprint from 'express-fingerprint';
 // import csrf from 'csurf';
 
-import { signin, signup } from './contollers/authController';
+import { signin, signup, signout } from './contollers/authController';
 import {
   checkDuplicateEmail,
   checkRolesExisted,
@@ -98,6 +98,7 @@ server.use((req, res, next) => {
 // Authentication
 server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
 server.post('/api/signin', [cors(corsOptions)], signin);
+server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
@@ -110,6 +111,7 @@ server.use('/refresh-token', (req, res) => {
     return res.status(403).send('Access is forbidden');
   }
 
+  // cookies exists if rederected from auth path
   if (req.cookies.protectedPath) {
     const originalPath = req.headers.cookie
       .split(';')
@@ -126,13 +128,17 @@ server.use('/refresh-token', (req, res) => {
         domain: 'localhost',
       };
       console.log('refresh exitoso!');
+
+      // if refresh token was from auth path
       if (req.originalPath) {
         res.accessToken = tokens.accessToken;
         res.expiryToken = config.expiryToken;
-        res.redirect(req.originalPath);
+        return res.redirect(req.originalPath);
       }
+
+      // regular STO refreshToken
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
-      res.send({
+      return res.send({
         accessToken: tokens.accessToken,
         expiryToken: config.expiryToken,
       });
@@ -147,9 +153,7 @@ server.use('/refresh-token', (req, res) => {
 server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
-  (req, res, _next) => {
-    res.send({ seb: 'data from seb' });
-  },
+  (req, res, _next) => res.send({ seb: 'data from seb' }),
 );
 
 // error handler

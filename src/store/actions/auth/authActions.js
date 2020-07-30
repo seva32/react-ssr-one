@@ -89,6 +89,7 @@ export const signout = (callback) => async (dispatch) => {
 
 // eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch) => {
+  console.log(formProps);
   try {
     const response = await axios.post('/api/signin', formProps, {
       withCredentials: true,

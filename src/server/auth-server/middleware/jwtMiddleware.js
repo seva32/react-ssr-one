@@ -9,7 +9,9 @@ export function jwtMiddleware(req, res, next) {
 
   // cliente sin accesstoken ni refresh token
   if (!token && !req.cookies.refreshToken) {
-    return res.status(401).send({ message: 'Invalid credentials' });
+    console.log('invalid credentials');
+    // return res.status(401).send({ message: 'Invalid credentials' });
+    return res.redirect(301, '/signin');
   }
 
   // cliente se auth e hizo refresh/reload y/o api request
@@ -21,7 +23,6 @@ export function jwtMiddleware(req, res, next) {
           httpOnly: false,
           domain: 'localhost',
         };
-        console.log('refresh exitoso en path auth/ api auth!');
 
         res.cookie('refreshToken', newTokens.refreshToken, cookiesOptions);
         res.setHeader('x-update-token', newTokens.accessToken);
@@ -35,7 +36,9 @@ export function jwtMiddleware(req, res, next) {
             })
             .catch((err) => {
               // accesstoken no valido
-              return res.status(401).send({ message: err.message });
+              console.log(err.message);
+              // return res.status(401).send({ message: err.message });
+              return res.redirect(301, '/signin');
             });
         } else {
           // no existe access token pero si refreshtoken
@@ -43,7 +46,9 @@ export function jwtMiddleware(req, res, next) {
         }
       })
       .catch((err) => {
-        return res.status(401).send({ message: err.message });
+        console.log(err.message);
+        // return res.status(401).send({ message: err.message });
+        return res.redirect(301, '/signin');
       });
   }
 }

@@ -13,9 +13,6 @@ const renderApp =
   typeof window === 'undefined' ? ReactDOM.render : ReactDOM.hydrate;
 
 function render(Component) {
-  // persistor.subscribe(() => {
-  //   const { bootstrapped } = persistor.getState();
-  //   if (bootstrapped) {
   renderApp(
     <HelmetProvider>
       <AppContainer>
@@ -28,8 +25,6 @@ function render(Component) {
     </HelmetProvider>,
     document.getElementById('react-root'),
   );
-  // }
-  // });
 }
 
 render(AppRoot);
@@ -40,19 +35,3 @@ if (module.hot) {
     render(NewAppRoot);
   });
 }
-
-// if ('serviceWorker' in navigator) {
-//   window.addEventListener('load', () => {
-//     navigator.serviceWorker.register('sw.js').then(
-//       (registration) => {
-//         console.log(
-//           'Service worker registered with scope: ',
-//           registration.scope,
-//         );
-//       },
-//       (err) => {
-//         console.log('ServiceWorker registration failed: ', err);
-//       },
-//     );
-//   });
-// }

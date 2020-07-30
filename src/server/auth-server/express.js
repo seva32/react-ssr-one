@@ -118,7 +118,6 @@ server.use('/refresh-token', (req, res) => {
         httpOnly: false,
         domain: 'localhost',
       };
-      console.log('refresh exitoso!');
 
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
       return res.send({
@@ -136,10 +135,7 @@ server.use('/refresh-token', (req, res) => {
 server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
-  (req, res, next) => {
-    console.log('auth middleware', req.originalUrl);
-    return next();
-  },
+  (req, res, next) => next(),
 );
 
 server.get('/api/users', (req, res, _next) => {

@@ -29,12 +29,15 @@ const SigninFormUI = ({ error, signin, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          console.log(res);
+          const emailAll = res.Ot.yu !== undefined ? res.Ot.yu : res.Pt.zu; // chrome opera
+          // const emailPt = res.Pt.zu; // firefox safari
+          // const emailAll = emailOt || emailPt;
+          console.log(emailAll);
           if ((res.Ot.yu || res.Pt.zu) && res.googleId) {
             toggleShow(false);
             signin(
               {
-                email: res.Ot.yu || res.Pt.zu,
+                email: emailAll,
                 password: res.googleId,
               },
               () => {

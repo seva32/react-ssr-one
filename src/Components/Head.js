@@ -16,7 +16,7 @@ function Head({
 }) {
   return (
     <Helmet>
-      <meta name="author" content="Luan Gjokaj, and ReactFondue contributors" />
+      <meta name="author" content="Sebastian Fantini 2020" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="shortcut icon" href={favicon} type="image/x-icon" />
       <link rel="apple-touch-icon" sizes="512x512" href={icon512} />

@@ -5,6 +5,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
@@ -160,6 +161,10 @@ module.exports = {
     }),
     new CompressionPlugin({
       algorithm: 'gzip',
+    }),
+    new UglifyJsPlugin({
+      cache: true,
+      parallel: true,
     }),
     new BrotliPlugin(),
   ],

@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
@@ -134,6 +135,10 @@ module.exports = {
           },
         ],
       },
+    }),
+    new UglifyJsPlugin({
+      cache: true,
+      parallel: true,
     }),
     new CopyWebpackPlugin({
       patterns: [{ from: './**', to: './', context: './public' }],

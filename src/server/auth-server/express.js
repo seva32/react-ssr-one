@@ -108,16 +108,7 @@ server.use('/refresh-token', (req, res) => {
       .filter((c) => c.includes('refreshToken'))[0]
       .split('=')[1] || '';
   if (!refreshToken) {
-    return res.status(403).send('Access is forbidden');
-  }
-
-  // cookies exists if rederected from auth path
-  if (req.cookies.protectedPath) {
-    const originalPath = req.headers.cookie
-      .split(';')
-      .filter((c) => c.includes('protectedPath'))[0]
-      .split('=')[1];
-    req.originalPath = decodeURIComponent(originalPath);
+    return res.status(403).send({ message: 'Access is forbidden' });
   }
 
   processRefreshToken(refreshToken, req.fingerprint)
@@ -129,14 +120,6 @@ server.use('/refresh-token', (req, res) => {
       };
       console.log('refresh exitoso!');
 
-      // if refresh token was from auth path
-      if (req.originalPath) {
-        res.accessToken = tokens.accessToken;
-        res.expiryToken = config.expiryToken;
-        return res.redirect(req.originalPath);
-      }
-
-      // regular STO refreshToken
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
       return res.send({
         accessToken: tokens.accessToken,
@@ -153,15 +136,23 @@ server.use('/refresh-token', (req, res) => {
 server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
-  (req, res, _next) => res.send({ seb: 'data from seb' }),
+  (req, res, next) => {
+    console.log('auth middleware', req.originalUrl);
+    return next();
+  },
 );
+
+server.get('/api/users', (req, res, _next) => {
+  res.send({ seb: 'data from seb' });
+});
 
 // error handler
 server.use((err, req, res, next) => {
   if (err) {
     console.error(err.message);
     console.error(err.stack);
-    return res.status(err.output.statusCode || 500).json(err.output.payload);
+    const message = (err && err.message) || err;
+    return res.status(500).send(message);
   }
   return next(); // never called =)
 });

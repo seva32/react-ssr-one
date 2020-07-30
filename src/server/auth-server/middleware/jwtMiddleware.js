@@ -1,32 +1,49 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable consistent-return */
 // the middleware attach the actual user to req
-import { verifyJWTToken } from '../jwt/jwt';
+import { verifyJWTToken, verifyRefreshToken } from '../jwt/jwt';
 
 // eslint-disable-next-line import/prefer-default-export
 export function jwtMiddleware(req, res, next) {
-  console.log('token:::::::', req.accessToken);
   const token = req.get('x-access-token');
-  if (!token) {
-    // cuando el cliente hace un reload/refresh en ruta con auth
-    // va a tener un token refresh si fue auth previamente
-    if (req.cookies.refreshToken) {
-      const cookiesOptions = {
-        secure: false,
-        httpOnly: false,
-        domain: 'localhost',
-      };
-      res.cookie('protectedPath', req.originalUrl, cookiesOptions);
-      return res.redirect(301, '/refresh-token');
-    }
-    return res.status(401).send('Invalid credentials');
+
+  // cliente sin accesstoken ni refresh token
+  if (!token && !req.cookies.refreshToken) {
+    return res.status(401).send({ message: 'Invalid credentials' });
   }
 
-  verifyJWTToken(token)
-    .then((userId) => {
-      req.user = { userId };
-      next();
-    })
-    .catch((err) => {
-      res.status(401).send(err);
-    });
+  // cliente se auth e hizo refresh/reload y/o api request
+  if (req.cookies.refreshToken) {
+    verifyRefreshToken(req.cookies.refreshToken, req.fingerprint)
+      .then((newTokens) => {
+        const cookiesOptions = {
+          secure: false,
+          httpOnly: false,
+          domain: 'localhost',
+        };
+        console.log('refresh exitoso en path auth/ api auth!');
+
+        res.cookie('refreshToken', newTokens.refreshToken, cookiesOptions);
+        res.setHeader('x-update-token', newTokens.accessToken);
+        // si hay access token valido es api request
+        if (token) {
+          verifyJWTToken(token)
+            .then((accessTokenUserId) => {
+              // esta situacion cuando consumo api no por navegacion api/users
+              req.accessTokenUserId = accessTokenUserId;
+              return next();
+            })
+            .catch((err) => {
+              // accesstoken no valido
+              return res.status(401).send({ message: err.message });
+            });
+        } else {
+          // no existe access token pero si refreshtoken
+          return next();
+        }
+      })
+      .catch((err) => {
+        return res.status(401).send({ message: err.message });
+      });
+  }
 }

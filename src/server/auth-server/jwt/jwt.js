@@ -81,6 +81,33 @@ export function verifyJWTToken(token) {
   });
 }
 
+export function verifyRefreshToken(token, fingerprint) {
+  return new Promise((resolve, reject) => {
+    Token.findOne({ refreshToken: token }, (e, rToken) => {
+      if (e) {
+        return reject(new Error(e.message));
+      }
+      if (!rToken || rToken === undefined || rToken === null) {
+        return reject(new Error('Refresh token doesnt exist'));
+      }
+
+      jwt.verify(rToken.refreshToken, config.secret, (err, decodedToken) => {
+        if (err) {
+          return reject(new Error(err.message));
+        }
+        if (!decodedToken || !decodedToken.id) {
+          return reject(new Error('Token is invalid'));
+        }
+
+        // si el refresh token es valido actualizarlo
+        processRefreshToken(token, fingerprint)
+          .then((tokens) => resolve(tokens))
+          .catch((error) => reject(new Error(error.message)));
+      });
+    });
+  });
+}
+
 export function processRefreshToken(token, fingerprint) {
   return new Promise((resolve, reject) => {
     const {
@@ -97,7 +124,7 @@ export function processRefreshToken(token, fingerprint) {
 
     User.findOne({ _id: decodedToken.id }, (err, user) => {
       if (err) {
-        return reject(new Error('Access is forbidden'));
+        return reject(new Error('Internal server error'));
       }
 
       if (!user.token.length) {
@@ -106,7 +133,7 @@ export function processRefreshToken(token, fingerprint) {
 
       Token.findOne({ refreshToken: token }, (e, rToken) => {
         if (e) {
-          return reject(new Error('Refresh token doesnt exist'));
+          return reject(new Error('Internal server error'));
         }
         if (!rToken || rToken === undefined || rToken === null) {
           return reject(new Error('Refresh token doesnt exist'));
@@ -123,7 +150,7 @@ export function processRefreshToken(token, fingerprint) {
           },
           (error, _doc) => {
             if (error) {
-              return reject(new Error('Refresh token not generated'));
+              return reject(new Error('Refresh token failure'));
             }
 
             const newAccessToken = getAccessToken(user.id);

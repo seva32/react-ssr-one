@@ -121,7 +121,7 @@ export const signin = (formProps, callback) => async (dispatch) => {
 
 export const refreshToken = (callback) => async (dispatch) => {
   try {
-    const response = await axios.post('/refresh-token', {
+    const response = await axios.post(`${apiUrl}/refresh-token`, {
       withCredentials: true,
       headers: {
         crossorigin: true,

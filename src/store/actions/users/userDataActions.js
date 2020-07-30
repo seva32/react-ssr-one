@@ -6,6 +6,8 @@ import {
 } from './userDataTypes';
 import authHeader from './auth-header';
 
+const apiUrl = process.env.SERVER_URL || '';
+
 export const getCurrentUser = () => ({
   type: GET_CURRENT_USER,
   payload: JSON.parse(localStorage.getItem('user')) || {},
@@ -13,7 +15,7 @@ export const getCurrentUser = () => ({
 
 export const getUserData = () => async (dispatch) => {
   try {
-    const response = await axios.get('/api/users', {
+    const response = await axios.get(`${apiUrl}/api/users`, {
       headers: authHeader(),
     });
     dispatch({ type: GET_USER_DATA, payload: response.data });

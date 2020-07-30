@@ -28,10 +28,10 @@ export default (state = initialState, action) => {
     case AUTH_EXPIRY_TOKEN:
       return { ...state, expiry: action.payload };
     case REFRESH_TOKEN_ERROR:
-      console.log('refresh token expired');
+      console.log('refresh token expired|error');
       return state;
     case ACCESS_TOKEN_DELETE_ERROR:
-      console.log('access token not found');
+      console.log('access token not found for delete action');
       return state;
     case REFRESH_TOKEN_RESTART_TIMEOUT:
       return state;

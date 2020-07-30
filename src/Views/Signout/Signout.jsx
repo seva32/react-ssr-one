@@ -7,7 +7,6 @@ import * as actions from '../../store/actions';
 function Signout({ signout, history }) {
   useEffect(() => {
     signout(() => {
-      console.log('Signed out!');
       history.push('/');
     });
   }, [signout, history]);

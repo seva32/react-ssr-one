@@ -162,7 +162,7 @@
     "yup": "^0.29.1"
   },
   "scripts": {
-    "start": "NODE_ENV=production node src/server/main.js",
+    "start": "NODE_ENV=production node --optimize_for_size --max_old_space_size=460 --gc_interval=100 src/server/main.js",
     "//1": "prod & deve",
     "//2": "ts not impl",
     "pro": "concurrently --kill-others \"yarn run server\" \"yarn run prod\"",

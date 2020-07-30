@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import axios from 'axios';
 import {
   AUTH_USER,
@@ -15,9 +16,12 @@ import {
 } from '../users/userDataTypes';
 // formProps = { email, password }
 // eslint-disable-next-line consistent-return
+
+const apiUrl = process.env.SERVER_URL || '';
+
 export const signup = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post('/api/signup', formProps, {
+    const response = await axios.post(`${apiUrl}/api/signup`, formProps, {
       withCredentials: true,
       headers: {
         crossorigin: true,
@@ -47,7 +51,7 @@ export const signout = (callback) => async (dispatch) => {
     const user = JSON.parse(localStorage.getItem('user'));
     try {
       const response = await axios.post(
-        '/api/signout',
+        `${apiUrl}/api/signout`,
         { email: user.email },
         {
           withCredentials: true,
@@ -89,9 +93,8 @@ export const signout = (callback) => async (dispatch) => {
 
 // eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch) => {
-  console.log(formProps);
   try {
-    const response = await axios.post('/api/signin', formProps, {
+    const response = await axios.post(`${apiUrl}/api/signin`, formProps, {
       withCredentials: true,
       headers: {
         crossorigin: true,

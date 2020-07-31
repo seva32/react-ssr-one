@@ -2,12 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
-  .default;
-
 const externals = require('./node-externals');
-
-const styledComponentsTransformer = createStyledComponentsTransformer();
 
 module.exports = {
   name: 'server',
@@ -29,21 +24,6 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-          },
-        ],
-      },
-      {
-        test: /\.tsx?$/,
-        loader: [
-          'babel-loader',
-          {
-            loader: 'awesome-typescript-loader',
-            options: {
-              useCache: true,
-              getCustomTransformers: () => ({
-                before: [styledComponentsTransformer],
-              }),
-            },
           },
         ],
       },

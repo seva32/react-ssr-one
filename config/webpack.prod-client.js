@@ -7,11 +7,6 @@ const BrotliPlugin = require('brotli-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
-  .default;
-
-const styledComponentsTransformer = createStyledComponentsTransformer();
-
 module.exports = {
   name: 'client',
   entry: {
@@ -36,7 +31,7 @@ module.exports = {
     },
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json', '.jsx', '.scss'],
+    extensions: ['.js', '.json', '.jsx', '.scss'],
   },
   module: {
     rules: [
@@ -51,16 +46,6 @@ module.exports = {
             },
           },
         ],
-      },
-      {
-        test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader',
-        options: {
-          useCache: true,
-          getCustomTransformers: () => ({
-            before: [styledComponentsTransformer],
-          }),
-        },
       },
       {
         test: /\.css$/,

@@ -9,7 +9,6 @@ import {
   Sidebar,
   Responsive,
 } from 'semantic-ui-react';
-// import MobileDetect from 'mobile-detect';
 import map from 'lodash.map';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
@@ -125,15 +124,6 @@ NavBarChildren.propTypes = {
     PropTypes.node,
   ]).isRequired,
 };
-
-// const getWidthFactory = isMobileFromSSR => () => {
-//   const isSSR = typeof window === "undefined";
-//   const ssrValue = isMobileFromSSR
-//     ? Responsive.onlyMobile.maxWidth
-//     : Responsive.onlyTablet.minWidth;
-
-//   return isSSR ? ssrValue : window.innerWidth;
-// };
 
 const NavBar = ({ children, leftItems, rightItems }) => {
   const [visible, setVisible] = useState(false);

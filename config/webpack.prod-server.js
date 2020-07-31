@@ -4,12 +4,7 @@ const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
-  .default;
-
 const externals = require('./node-externals');
-
-const styledComponentsTransformer = createStyledComponentsTransformer();
 
 module.exports = {
   name: 'server',
@@ -23,7 +18,7 @@ module.exports = {
     libraryTarget: 'commonjs2',
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json', '.jsx', '.scss'],
+    extensions: ['.js', '.json', '.jsx', '.scss'],
   },
   module: {
     rules: [
@@ -38,16 +33,6 @@ module.exports = {
             },
           },
         ],
-      },
-      {
-        test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader',
-        options: {
-          useCache: true,
-          getCustomTransformers: () => ({
-            before: [styledComponentsTransformer],
-          }),
-        },
       },
       {
         test: /\.css$/,

@@ -3,11 +3,6 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
-  .default;
-
-const styledComponentsTransformer = createStyledComponentsTransformer();
-
 module.exports = {
   name: 'client',
   entry: {
@@ -35,21 +30,6 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-          },
-        ],
-      },
-      {
-        test: /\.tsx?$/,
-        loader: [
-          'babel-loader',
-          {
-            loader: 'awesome-typescript-loader',
-            options: {
-              useCache: true,
-              getCustomTransformers: () => ({
-                before: [styledComponentsTransformer],
-              }),
-            },
           },
         ],
       },

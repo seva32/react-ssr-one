@@ -4,6 +4,6 @@ dotenv.config();
 
 export default {
   secret: process.env.TOKEN_SECRET,
-  expiryToken: 10,
+  expiryToken: 14,
   expiryRefreshToken: 60, // '30d'
 };

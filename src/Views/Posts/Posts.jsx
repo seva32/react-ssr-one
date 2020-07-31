@@ -23,7 +23,7 @@ const Posts = ({
   onLoadUserData,
 }) => {
   useEffect(() => {
-    if (!posts || posts < 1) {
+    if (!posts || posts.length < 1) {
       onDataLoad();
     }
     if (!userData || Object.keys(userData).length === 0) {
@@ -35,7 +35,7 @@ const Posts = ({
     }
     return console.log('Exiting posts...'); // eslint-disable-line
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onDataLoad, posts]);
+  }, []); // cuidado al agregar parametros, se va a llamar mas de una vez
 
   return (
     <>

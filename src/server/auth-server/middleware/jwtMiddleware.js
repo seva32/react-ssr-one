@@ -5,6 +5,9 @@ import { verifyJWTToken, verifyRefreshToken } from '../jwt/jwt';
 
 // eslint-disable-next-line import/prefer-default-export
 export function jwtMiddleware(req, res, next) {
+  // refresh token tiene que estar siempre presente si el
+  // cliente esta auth, en cambio access token puede faltar
+  // en un reload/refresh
   const token = req.get('x-access-token');
 
   // cliente sin accesstoken ni refresh token
@@ -37,17 +40,21 @@ export function jwtMiddleware(req, res, next) {
             .catch((err) => {
               // accesstoken no valido
               console.log(err.message);
-              // return res.status(401).send({ message: err.message });
-              return res.redirect(301, '/signin');
+              return res.status(401).send({ message: err.message });
             });
         } else {
-          // no existe access token pero si refreshtoken
+          // no existe access token pero si refreshtoken (refresh/reload)
           return next();
         }
       })
       .catch((err) => {
         console.log(err.message);
-        // return res.status(401).send({ message: err.message });
+        if (req.originalUrl === '/api/users') {
+          // si fue llamada a api no puedo devolver redirect, sino el
+          // response seria la pagina a la que redirijo
+          return res.status(401).send({ message: err.message });
+        }
+        // aqui como solamente es una ruta como posts puedo redirect
         return res.redirect(301, '/signin');
       });
   }

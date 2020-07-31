@@ -29,11 +29,12 @@ const SigninFormUI = ({ error, signin, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
+          // si alguno de los dos da undefined se cae la auth
+          if (res.Ot.yu === undefined && res.Pt.zu === undefined) {
+            alert(res);
+          }
           const emailAll = res.Ot.yu !== undefined ? res.Ot.yu : res.Pt.zu; // chrome opera
-          // const emailPt = res.Pt.zu; // firefox safari
-          // const emailAll = emailOt || emailPt;
-          console.log(emailAll);
-          if ((res.Ot.yu || res.Pt.zu) && res.googleId) {
+          if (emailAll && res.googleId) {
             toggleShow(false);
             signin(
               {

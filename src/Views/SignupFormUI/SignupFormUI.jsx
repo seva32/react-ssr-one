@@ -28,11 +28,13 @@ const SignupFormUI = ({ error, signup, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          if ((res.Ot.yu || res.Pt.zu) && res.googleId) {
+          // no puede haber opcion undefined
+          const emailAll = res.Ot.yu !== undefined ? res.Ot.yu : res.Pt.zu; // chrome opera
+          if (emailAll && res.googleId) {
             toggleShow(false);
             signup(
               {
-                email: res.Ot.yu || res.Pt.zu,
+                email: emailAll,
                 password: res.googleId,
               },
               () => {

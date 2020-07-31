@@ -162,7 +162,7 @@
     "yup": "^0.29.1"
   },
   "scripts": {
-    "start": "node --max_old_space_size=350 src/server/main.js",
+    "start": "node --max_old_space_size=200 src/server/main.js",
     "//1": "prod & deve",
     "//2": "ts not impl",
     "//3": "NODE_ENV=production node --max_old_space_size=400 src/server/main.js",

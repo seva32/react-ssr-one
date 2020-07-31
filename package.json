@@ -162,9 +162,10 @@
     "yup": "^0.29.1"
   },
   "scripts": {
-    "start": "NODE_ENV=production node --max_old_space_size=400 src/server/main.js",
+    "start": "NODE_ENV=production node src/server/main.js",
     "//1": "prod & deve",
     "//2": "ts not impl",
+    "//3": "NODE_ENV=production node --max_old_space_size=400 src/server/main.js",
     "pro": "concurrently --kill-others \"yarn run server\" \"yarn run prod\"",
     "prod": "NODE_ENV=production node src/server/main.js",
     "server": "node src/auth-server/main.js",

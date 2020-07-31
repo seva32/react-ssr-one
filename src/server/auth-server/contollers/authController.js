@@ -8,6 +8,8 @@ const User = db.user;
 const Role = db.role;
 const Token = db.token;
 
+const isProd = process.env.NODE_ENV === 'production';
+
 export const signup = (req, res) => {
   const user = new User({
     email: req.body.email,
@@ -42,9 +44,9 @@ export const signup = (req, res) => {
             getRefreshToken(user.id, req.fingerprint)
               .then((refreshToken) => {
                 const cookiesOptions = {
-                  secure: false,
-                  httpOnly: false,
-                  domain: 'localhost',
+                  secure: isProd,
+                  httpOnly: isProd,
+                  domain: isProd ? process.env.SERVER_URL : 'localhost',
                 };
                 res.cookie('refreshToken', refreshToken, cookiesOptions);
                 res.send({
@@ -78,9 +80,9 @@ export const signup = (req, res) => {
           getRefreshToken(user.id, req.fingerprint)
             .then((refreshToken) => {
               const cookiesOptions = {
-                secure: false,
-                httpOnly: false,
-                domain: 'localhost',
+                secure: isProd,
+                httpOnly: isProd,
+                domain: isProd ? process.env.SERVER_URL : 'localhost',
               };
               res.cookie('refreshToken', refreshToken, cookiesOptions);
               res.send({

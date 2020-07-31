@@ -71,10 +71,10 @@ export function verifyJWTToken(token) {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.secret, (err, decodedToken) => {
       if (err) {
-        return reject(new Error(err.message));
+        return reject(new Error(`Access token: ${err.message}`));
       }
       if (!decodedToken || !decodedToken.id) {
-        return reject(new Error('Token is invalid'));
+        return reject(new Error('Access token is invalid'));
       }
       return resolve(decodedToken.id);
     });
@@ -93,10 +93,10 @@ export function verifyRefreshToken(token, fingerprint) {
 
       jwt.verify(rToken.refreshToken, config.secret, (err, decodedToken) => {
         if (err) {
-          return reject(new Error(err.message));
+          return reject(new Error(`Refresh token: ${err.message}`));
         }
         if (!decodedToken || !decodedToken.id) {
-          return reject(new Error('Token is invalid'));
+          return reject(new Error('Refresh token is invalid'));
         }
 
         // si el refresh token es valido actualizarlo
@@ -128,7 +128,7 @@ export function processRefreshToken(token, fingerprint) {
       }
 
       if (!user.token.length) {
-        return reject(new Error('Access is forbidden'));
+        return reject(new Error('No refresh token, access forbidden'));
       }
 
       Token.findOne({ refreshToken: token }, (e, rToken) => {

@@ -3,6 +3,8 @@
 // the middleware attach the actual user to req
 import { verifyJWTToken, verifyRefreshToken } from '../jwt/jwt';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 // eslint-disable-next-line import/prefer-default-export
 export function jwtMiddleware(req, res, next) {
   // refresh token tiene que estar siempre presente si el
@@ -22,9 +24,9 @@ export function jwtMiddleware(req, res, next) {
     verifyRefreshToken(req.cookies.refreshToken, req.fingerprint)
       .then((newTokens) => {
         const cookiesOptions = {
-          secure: false,
-          httpOnly: false,
-          domain: 'localhost',
+          secure: isProd,
+          httpOnly: isProd,
+          domain: isProd ? process.env.SERVER_URL : 'localhost',
         };
 
         res.cookie('refreshToken', newTokens.refreshToken, cookiesOptions);

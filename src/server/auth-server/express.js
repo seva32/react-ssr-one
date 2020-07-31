@@ -135,10 +135,22 @@ server.use('/refresh-token', (req, res) => {
 server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
-  (req, res, next) => next(),
+  (req, res, next) => {
+    console.log('***** middle *****');
+    console.log(req.headers);
+    console.log(req.url);
+    console.log(req.originalUrl);
+    console.log(req.cookies);
+    next();
+  },
 );
 
 server.get('/api/users', (req, res, _next) => {
+  console.log('***** users *****');
+  console.log(req.headers);
+  console.log(req.url);
+  console.log(req.originalUrl);
+  console.log(req.cookies);
   res.send({ seb: 'data from seb' });
 });
 

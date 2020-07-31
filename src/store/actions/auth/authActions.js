@@ -23,9 +23,9 @@ export const signup = (formProps, callback) => async (dispatch) => {
   try {
     const response = await axios.post(`${apiUrl}/api/signup`, formProps, {
       withCredentials: true,
-      headers: {
-        crossorigin: true,
-      },
+      // headers: {
+      //   crossorigin: true,
+      // },
     });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
@@ -55,14 +55,14 @@ export const signout = (callback) => async (dispatch) => {
         { email: user.email },
         {
           withCredentials: true,
-          headers: {
-            crossorigin: true,
-          },
+          // headers: {
+          //   crossorigin: true,
+          // },
         },
       );
       console.log(`${user.email} signout success: ${response.data.ok}`);
     } catch (e) {
-      console.log(`${user.email} signout failure.`);
+      console.log(`${user.email} signout failure. ${e}`);
       dispatch({
         type: ACCESS_TOKEN_DELETE_ERROR,
         payload: { e, user }, // logging
@@ -96,9 +96,9 @@ export const signin = (formProps, callback) => async (dispatch) => {
   try {
     const response = await axios.post(`${apiUrl}/api/signin`, formProps, {
       withCredentials: true,
-      headers: {
-        crossorigin: true,
-      },
+      // headers: {
+      //   crossorigin: true,
+      // },
     });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
@@ -123,9 +123,9 @@ export const refreshToken = (callback) => async (dispatch) => {
   try {
     const response = await axios.post(`${apiUrl}/refresh-token`, {
       withCredentials: true,
-      headers: {
-        crossorigin: true,
-      },
+      // headers: {
+      //   crossorigin: true,
+      // },
     });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });

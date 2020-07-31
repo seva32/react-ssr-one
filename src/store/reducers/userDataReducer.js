@@ -16,6 +16,7 @@ function userDataReducer(state = initialState, action) {
     case GET_USER_DATA:
       return { ...state, userData: action.payload };
     case GET_USER_DATA_ERROR:
+      console.log('get user data error: ', action.payload);
       return { ...state, error: action.payload };
     case GET_CURRENT_USER:
       return { ...state, currentUser: action.payload };

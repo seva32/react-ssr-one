@@ -21,6 +21,8 @@ import config from './contollers/config';
 
 dotenv.config({ silent: true });
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const Role = db.role;
 db.mongoose
   .connect(process.env.MONGOOSE, {
@@ -54,7 +56,7 @@ server.use(
 );
 
 const corsOptions = {
-  origin: /localhost/, // origin: /\.your.domain\.com$/
+  origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
   credentials: true, // required to pass allowedHeaders
 };

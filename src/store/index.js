@@ -28,9 +28,12 @@ const configureStore = () => {
   let initialState;
 
   if (user !== null && user !== undefined && user) {
+    const expired =
+      Date.now() > user.startTime + (user.expiryToken + 1.5) * 1000;
+    // 1.5 delay for refresh token update on access token
     initialState = merge(preloadedState, {
       auth: {
-        authenticated: user.accessToken,
+        authenticated: expired ? '' : user.accessToken,
         errorMessageSignUp: '',
         errorMessageSignIn: '',
         expiry: { expiryToken: user.expiryToken, startTime: user.startTime },

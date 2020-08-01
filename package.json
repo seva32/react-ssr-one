@@ -20,10 +20,10 @@
     "website"
   ],
   "scripts": {
-    "start": "NODE_ENV=production node --gc_global --optimize_for_size --max_old_space_size=256 --use_idle_notification --always_compact --max_executable_size=64 --gc_interval=100 --expose_gc src/server/main.js",
+    "start": "NODE_ENV=production node --max_old_space_size=460 --gc_global --always_compact --gc_interval=100 --expose_gc src/server/main.js",
     "//1": "prod & deve",
     "//2": "ts not impl",
-    "//3": "NODE_ENV=production node --max_old_space_size=400 src/server/main.js",
+    "//3": "NODE_ENV=production node --max_old_space_size=400 --optimize_for_size src/server/main.js",
     "pro": "concurrently --kill-others \"yarn run server\" \"yarn run prod\"",
     "prod": "NODE_ENV=production node src/server/main.js",
     "server": "node src/auth-server/main.js",

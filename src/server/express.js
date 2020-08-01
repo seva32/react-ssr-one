@@ -19,6 +19,7 @@ const expressStaticGzip = require('express-static-gzip');
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
 const PORT = process.env.PORT || 8080;
+const HOST = process.env.SERVER_HOST || '0.0.0.0';
 let isBuilt = false;
 
 const done = () => {
@@ -26,7 +27,7 @@ const done = () => {
     server.listen(PORT, () => {
       isBuilt = true;
       console.log(
-        `Server listening on \x1b[42m\x1b[1mhttp://localhost:${PORT}\x1b[0m in \x1b[41m${process.env.NODE_ENV}\x1b[0m 🌎...`,
+        `Server listening on \x1b[42m\x1b[1mhttp://${HOST}:${PORT}\x1b[0m in \x1b[41m${process.env.NODE_ENV}\x1b[0m 🌎...`,
       );
     });
 };

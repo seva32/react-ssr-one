@@ -82,10 +82,11 @@ server.use(
     saveUninitialized: true,
     resave: true,
     cookie: {
-      httpOnly: false,
-      secure: false,
+      secure: isProd,
+      httpOnly: isProd,
     },
     name: 'seva',
+    path: '/',
   }),
 );
 

@@ -207,9 +207,9 @@ export const signin = (req, res) => {
           }
 
           const cookiesOptions = {
-            secure: false,
-            httpOnly: false,
-            domain: 'localhost',
+            secure: isProd,
+            httpOnly: isProd,
+            domain: isProd ? process.env.SERVER_URL : 'localhost',
           };
           res.cookie('refreshToken', refreshToken, cookiesOptions);
           res.status(200).send({

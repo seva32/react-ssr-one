@@ -116,9 +116,9 @@ server.use('/refresh-token', (req, res) => {
   processRefreshToken(refreshToken, req.fingerprint)
     .then((tokens) => {
       const cookiesOptions = {
-        secure: false,
-        httpOnly: false,
-        domain: 'localhost',
+        secure: isProd,
+        httpOnly: isProd,
+        domain: isProd ? process.env.SERVER_URL : 'localhost',
       };
 
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);

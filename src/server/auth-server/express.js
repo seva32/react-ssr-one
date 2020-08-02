@@ -14,8 +14,8 @@ import {
   checkRolesExisted,
 } from './middleware/verifySignUp';
 import { jwtMiddleware } from './middleware/jwtMiddleware';
-import db from './models';
-import initial from './models/initial';
+// import db from './models';
+// import initial from './models/initial';
 import { processRefreshToken } from './jwt/jwt';
 import config from './contollers/config';
 
@@ -23,20 +23,20 @@ dotenv.config({ silent: true });
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const Role = db.role;
-db.mongoose
-  .connect(process.env.MONGOOSE, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('Successfully connect to MongoDB.');
-    initial(Role);
-  })
-  .catch((err) => {
-    console.error('Connection error', err);
-    process.exit();
-  });
+// const Role = db.role;
+// db.mongoose
+//   .connect(process.env.MONGOOSE, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => {
+//     console.log('Successfully connect to MongoDB.');
+//     initial(Role);
+//   })
+//   .catch((err) => {
+//     console.error('Connection error', err);
+//     process.exit();
+//   });
 
 const server = express();
 server.set('x-powered-by', false);

@@ -12,6 +12,9 @@ import configProdServer from '../../config/webpack.prod-server';
 import storeMiddleware from './middleware/store';
 import server from './auth-server/express';
 
+import db from './auth-server/models';
+import initial from './auth-server/models/initial';
+
 const expressStaticGzip = require('express-static-gzip');
 const cluster = require('cluster');
 
@@ -46,6 +49,21 @@ if (cluster.isMaster) {
     cluster.fork();
   });
 } else {
+  const Role = db.role;
+  db.mongoose
+    .connect(process.env.MONGOOSE, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log('Successfully connect to MongoDB.');
+      initial(Role);
+    })
+    .catch((err) => {
+      console.error('Connection error', err);
+      process.exit();
+    });
+
   const done = () => {
     !isBuilt &&
       server.listen(PORT, () => {

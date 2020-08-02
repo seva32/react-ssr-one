@@ -4,7 +4,7 @@ import express from 'express';
 import path from 'path'; // eslint-disable-line
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
+// import cors from 'cors';
 import fingerprint from 'express-fingerprint';
 // import csrf from 'csurf';
 
@@ -55,13 +55,13 @@ server.use(
   }),
 );
 
-const corsOptions = {
-  origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
-  methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
-  credentials: true, // required to pass allowedHeaders
-};
+// const corsOptions = {
+//   origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
+//   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
+//   credentials: true, // required to pass allowedHeaders
+// };
 // intercept pre-flight check for all routes
-server.options('*', cors(corsOptions));
+// server.options('*', cors(corsOptions));
 
 // falta impl en cliente
 // const csrfProtection = csrf({
@@ -95,26 +95,40 @@ server.use(
 );
 
 server.use((req, res, next) => {
+  // res.header('Access-Control-Allow-Credentials', true);
+  // res.header(
+  //   'Access-Control-Allow-Headers',
+  //   'x-access-token, Origin, X-Requested-With, Content-Type, Accept',
+  // );
+
   res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+  );
   res.header(
     'Access-Control-Allow-Headers',
-    'x-access-token, Origin, X-Requested-With, Content-Type, Accept',
+    'x-access-token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
   );
+
   next();
 });
 
 // Authentication
 server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
-server.post('/api/signin', [cors(corsOptions)], signin);
-server.post('/api/signout', [cors(corsOptions)], signout);
+// server.post('/api/signin', [cors(corsOptions)], signin);
+// server.post('/api/signout', [cors(corsOptions)], signout);
+server.post('/api/signin', signin);
+server.post('/api/signout', signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
-  // console.log('********************************************');
-  // console.log('********************************************');
-  // console.log(req);
-  // console.log('********************************************');
-  // console.log('********************************************');
+  console.log('********************************************');
+  console.log('********************************************');
+  console.log(req);
+  console.log('********************************************');
+  console.log('********************************************');
   const refreshToken =
     req.headers.cookie
       .split(';')

@@ -3,7 +3,6 @@ import universal from 'react-universal-component';
 import { Route, Switch } from 'react-router';
 import { RedirectWithStatus, Loader } from '../Components';
 
-import '../assets/css/styles.css';
 import { loadDataPosts } from '../Views/Posts/Posts';
 import Layout from '../Views/Layout';
 

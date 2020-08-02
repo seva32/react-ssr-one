@@ -25,7 +25,7 @@ const isDev = !isProd;
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.SERVER_HOST || '0.0.0.0';
 let isBuilt = false;
-const numWorkers = process.env.WEB_CONCURRENCY || 2;
+const numWorkers = process.env.WEB_CONCURRENCY || 1;
 
 if (cluster.isMaster) {
   // const numWorkers = require('os').cpus().length;

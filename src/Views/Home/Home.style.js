@@ -7,5 +7,5 @@ export const StyledContainer = styled('div')`
   position: relative;
   margin: auto;
   border: 3px solid black;
-  background-color: pink;
+  background-color: grey;
 `;

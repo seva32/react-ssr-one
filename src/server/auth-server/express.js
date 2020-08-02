@@ -55,10 +55,19 @@ server.use(
   }),
 );
 
+// server.use(
+//   cors({
+//     credentials: true,
+//     origin: ['http://localhost:8080', 'http://your-production-website.com'],
+//   }),
+// );
+
 // const corsOptions = {
+// eslint-disable-next-line max-len
 //   origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
 //   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
 //   credentials: true, // required to pass allowedHeaders
+//   enablePreflight: true
 // };
 // intercept pre-flight check for all routes
 // server.options('*', cors(corsOptions));
@@ -102,7 +111,7 @@ server.use((req, res, next) => {
   // );
 
   res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Origin', req.headers.origin); // cambiar a api_server
   res.header(
     'Access-Control-Allow-Methods',
     'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
@@ -166,7 +175,8 @@ server.use('/refresh-token', (req, res) => {
 // Authorization
 server.get(
   ['/api/users', '/posts'],
-  [cors(corsOptions), jwtMiddleware],
+  [jwtMiddleware],
+  // [cors(corsOptions), jwtMiddleware],
   (req, res, next) => {
     // console.log('***** middle *****');
     // console.log(req.headers);

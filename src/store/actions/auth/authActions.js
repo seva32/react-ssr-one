@@ -23,9 +23,9 @@ export const signup = (formProps, callback) => async (dispatch) => {
   try {
     const response = await axios.post(`${apiUrl}/api/signup`, formProps, {
       withCredentials: true,
-      // headers: {
-      //   crossorigin: true,
-      // },
+      headers: {
+        crossorigin: false,
+      },
     });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
@@ -55,9 +55,9 @@ export const signout = (callback) => async (dispatch) => {
         { email: user.email },
         {
           withCredentials: true,
-          // headers: {
-          //   crossorigin: true,
-          // },
+          headers: {
+            crossorigin: false,
+          },
         },
       );
       console.log(`${user.email} signout success: ${response.data.ok}`);
@@ -96,9 +96,9 @@ export const signin = (formProps, callback) => async (dispatch) => {
   try {
     const response = await axios.post(`${apiUrl}/api/signin`, formProps, {
       withCredentials: true,
-      // headers: {
-      //   crossorigin: true,
-      // },
+      headers: {
+        crossorigin: false,
+      },
     });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
@@ -123,9 +123,9 @@ export const refreshToken = (callback) => async (dispatch) => {
   try {
     const response = await axios.post(`${apiUrl}/refresh-token`, {
       withCredentials: true,
-      // headers: {
-      //   crossorigin: true,
-      // },
+      headers: {
+        crossorigin: false,
+      },
     });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });

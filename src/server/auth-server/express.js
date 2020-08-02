@@ -75,6 +75,10 @@ server.options('*', cors(corsOptions));
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
+// tell express to trust the information in the X-Forwarded-Proto
+// header, i.e. that the original request was over https (4 heroku)
+server.set('trust proxy', 1);
+
 server.use(
   session({
     secret: process.env.LOGIN_SERVER_SECRET,
@@ -106,11 +110,11 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
-  console.log('********************************************');
-  console.log('********************************************');
-  console.log(req);
-  console.log('********************************************');
-  console.log('********************************************');
+  // console.log('********************************************');
+  // console.log('********************************************');
+  // console.log(req);
+  // console.log('********************************************');
+  // console.log('********************************************');
   const refreshToken =
     req.headers.cookie
       .split(';')
@@ -129,6 +133,11 @@ server.use('/refresh-token', (req, res) => {
       };
 
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
+      console.log('********************************************');
+      console.log('********************************************');
+      console.log(res);
+      console.log('********************************************');
+      console.log('********************************************');
       return res.send({
         accessToken: tokens.accessToken,
         expiryToken: config.expiryToken,
@@ -145,21 +154,21 @@ server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
   (req, res, next) => {
-    console.log('***** middle *****');
-    console.log(req.headers);
-    console.log(req.url);
-    console.log(req.originalUrl);
-    console.log(req.cookies);
+    // console.log('***** middle *****');
+    // console.log(req.headers);
+    // console.log(req.url);
+    // console.log(req.originalUrl);
+    // console.log(req.cookies);
     next();
   },
 );
 
 server.get('/api/users', (req, res, _next) => {
-  console.log('***** users *****');
-  console.log(req.headers);
-  console.log(req.url);
-  console.log(req.originalUrl);
-  console.log(req.cookies);
+  // console.log('***** users *****');
+  // console.log(req.headers);
+  // console.log(req.url);
+  // console.log(req.originalUrl);
+  // console.log(req.cookies);
   res.send({ seb: 'data from seb' });
 });
 

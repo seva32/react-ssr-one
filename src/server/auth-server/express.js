@@ -91,9 +91,10 @@ server.use(
 );
 
 server.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', true);
   res.header(
     'Access-Control-Allow-Headers',
-    'x-access-token, Origin, Content-Type, Accept',
+    'x-access-token, Origin, X-Requested-With, Content-Type, Accept',
   );
   next();
 });
@@ -105,6 +106,11 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
+  console.log('********************************************');
+  console.log('********************************************');
+  console.log(req);
+  console.log('********************************************');
+  console.log('********************************************');
   const refreshToken =
     req.headers.cookie
       .split(';')

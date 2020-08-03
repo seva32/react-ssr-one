@@ -84,26 +84,62 @@ export const signout = (callback) => async (dispatch) => {
 };
 
 // eslint-disable-next-line consistent-return
+// export const signin = (formProps, callback) => async (dispatch) => {
+// try {
+//   const response = await instance.post(`${apiUrl}/api/signin`, formProps);
+//   const dateNow = Date.now();
+//   dispatch({ type: AUTH_USER, payload: response.data.accessToken });
+//   dispatch({
+//     type: AUTH_EXPIRY_TOKEN,
+//     payload: {
+//       expiryToken: response.data.expiryToken,
+//       startTime: dateNow,
+//     },
+//   });
+//   localStorage.setItem(
+//     'user',
+//     JSON.stringify({ ...response.data, startTime: dateNow }),
+//   );
+//   return callback();
+// } catch (e) {
+//   dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });
+// }
+
 export const signin = (formProps, callback) => async (dispatch) => {
-  try {
-    const response = await instance.post(`${apiUrl}/api/signin`, formProps);
-    const dateNow = Date.now();
-    dispatch({ type: AUTH_USER, payload: response.data.accessToken });
-    dispatch({
-      type: AUTH_EXPIRY_TOKEN,
-      payload: {
-        expiryToken: response.data.expiryToken,
-        startTime: dateNow,
-      },
+  fetch(`${apiUrl}/api/signin`, {
+    method: 'POST', // or 'PUT'
+    body: JSON.stringify(formProps), // data can be `string` or {object}!
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    credentials: 'same-origin',
+    maxRedirects: 100,
+  })
+    .then((res) => res.json())
+    .catch((_error) =>
+      // eslint-disable-next-line implicit-arrow-linebreak
+      dispatch({
+        type: AUTH_ERROR_SIGNIN,
+        payload: 'Invalid login credentials',
+      }),
+    ) // eslint-disable-line
+    .then((response) => {
+      const dateNow = Date.now();
+      dispatch({ type: AUTH_USER, payload: response.accessToken });
+      dispatch({
+        type: AUTH_EXPIRY_TOKEN,
+        payload: {
+          expiryToken: response.expiryToken,
+          startTime: dateNow,
+        },
+      });
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ ...response, startTime: dateNow }),
+      );
+      return callback();
     });
-    localStorage.setItem(
-      'user',
-      JSON.stringify({ ...response.data, startTime: dateNow }),
-    );
-    return callback();
-  } catch (e) {
-    dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });
-  }
 };
 
 export const refreshToken = (callback) => async (dispatch) => {

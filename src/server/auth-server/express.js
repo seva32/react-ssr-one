@@ -4,7 +4,7 @@ import express from 'express';
 import path from 'path'; // eslint-disable-line
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-// import cors from 'cors';
+import cors from 'cors';
 import fingerprint from 'express-fingerprint';
 // import csrf from 'csurf';
 
@@ -14,29 +14,12 @@ import {
   checkRolesExisted,
 } from './middleware/verifySignUp';
 import { jwtMiddleware } from './middleware/jwtMiddleware';
-// import db from './models';
-// import initial from './models/initial';
 import { processRefreshToken } from './jwt/jwt';
 import config from './contollers/config';
 
 dotenv.config({ silent: true });
 
 const isProd = process.env.NODE_ENV === 'production';
-
-// const Role = db.role;
-// db.mongoose
-//   .connect(process.env.MONGOOSE, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .then(() => {
-//     console.log('Successfully connect to MongoDB.');
-//     initial(Role);
-//   })
-//   .catch((err) => {
-//     console.error('Connection error', err);
-//     process.exit();
-//   });
 
 const server = express();
 server.set('x-powered-by', false);
@@ -58,19 +41,19 @@ server.use(
 // server.use(
 //   cors({
 //     credentials: true,
-//     origin: ['http://localhost:8080', 'http://your-production-website.com'],
+//     origin: ['http://localhost:8080', process.env.SERVER_URL],
 //   }),
 // );
 
-// const corsOptions = {
-// eslint-disable-next-line max-len
-//   origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
-//   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
-//   credentials: true, // required to pass allowedHeaders
-//   enablePreflight: true
-// };
+const corsOptions = {
+  // eslint-disable-next-line max-len
+  origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
+  methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
+  credentials: true, // required to pass allowedHeaders
+  enablePreflight: true,
+};
 // intercept pre-flight check for all routes
-// server.options('*', cors(corsOptions));
+server.options('*', cors(corsOptions));
 
 // falta impl en cliente
 // const csrfProtection = csrf({
@@ -126,10 +109,8 @@ server.use((req, res, next) => {
 
 // Authentication
 server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
-// server.post('/api/signin', [cors(corsOptions)], signin);
-// server.post('/api/signout', [cors(corsOptions)], signout);
-server.post('/api/signin', signin);
-server.post('/api/signout', signout);
+server.post('/api/signin', [cors(corsOptions)], signin);
+server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
@@ -175,8 +156,7 @@ server.use('/refresh-token', (req, res) => {
 // Authorization
 server.get(
   ['/api/users', '/posts'],
-  [jwtMiddleware],
-  // [cors(corsOptions), jwtMiddleware],
+  [cors(corsOptions), jwtMiddleware],
   (req, res, next) => {
     // console.log('***** middle *****');
     // console.log(req.headers);

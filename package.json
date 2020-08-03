@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "//start": "NODE_ENV=production node --max_old_space_size=460 --optimize_for_size src/server/main.js",
-    "start1": "NODE_ENV=production node --max_semi_space_size=2 --max_old_space_size=256 src/server/main.js",
+    "//start1": "NODE_ENV=production node --max_semi_space_size=2 --max_old_space_size=256 src/server/main.js",
     "//1": "prod & deve",
     "//2": "ts not impl",
     "//3": "NODE_ENV=production node --max_old_space_size=400 --optimize_for_size --always_compact --gc_global --gc_interval=100 --expose_gc src/server/main.js",

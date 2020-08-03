@@ -50,6 +50,8 @@ const corsOptions = {
   origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
   credentials: true, // required to pass allowedHeaders
+  allowedHeaders:
+    'x-access-token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
   enablePreflight: true,
 };
 // intercept pre-flight check for all routes
@@ -81,8 +83,8 @@ server.use(
       secure: isProd,
       httpOnly: isProd,
     },
-    name: 'seva',
-    path: '/',
+    // name: 'seva',
+    // path: '/',
   }),
 );
 
@@ -101,7 +103,7 @@ server.use((req, res, next) => {
   );
   res.header(
     'Access-Control-Allow-Headers',
-    'x-access-token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
+    'x-access-token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
   );
 
   next();
@@ -116,7 +118,7 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 server.use('/refresh-token', (req, res) => {
   console.log('********************************************');
   console.log('********************************************');
-  console.log(req);
+  console.log(req.cookies);
   console.log('********************************************');
   console.log('********************************************');
   const refreshToken =
@@ -137,11 +139,11 @@ server.use('/refresh-token', (req, res) => {
       };
 
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
-      console.log('********************************************');
-      console.log('********************************************');
-      console.log(res);
-      console.log('********************************************');
-      console.log('********************************************');
+      // console.log('********************************************');
+      // console.log('********************************************');
+      // console.log(res);
+      // console.log('********************************************');
+      // console.log('********************************************');
       return res.send({
         accessToken: tokens.accessToken,
         expiryToken: config.expiryToken,

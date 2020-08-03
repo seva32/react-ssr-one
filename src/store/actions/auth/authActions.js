@@ -87,7 +87,6 @@ export const signout = (callback) => async (dispatch) => {
 export const signin = (formProps, callback) => async (dispatch) => {
   try {
     const response = await instance.post(`${apiUrl}/api/signin`, formProps);
-    console.log(response.headers);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -110,7 +109,6 @@ export const signin = (formProps, callback) => async (dispatch) => {
 export const refreshToken = (callback) => async (dispatch) => {
   try {
     const response = await instance.post(`${apiUrl}/refresh-token`);
-    console.log(response.headers);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({

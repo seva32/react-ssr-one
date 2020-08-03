@@ -17,16 +17,15 @@ import {
 // formProps = { email, password }
 // eslint-disable-next-line consistent-return
 
+const instance = axios.create({
+  withCredentials: true,
+});
+
 const apiUrl = process.env.SERVER_URL || '';
 
 export const signup = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post(`${apiUrl}/api/signup`, formProps, {
-      withCredentials: true,
-      // headers: {
-      //   crossorigin: true,
-      // },
-    });
+    const response = await instance.post(`${apiUrl}/api/signup`, formProps);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -50,16 +49,9 @@ export const signout = (callback) => async (dispatch) => {
   if (typeof window !== 'undefined') {
     const user = JSON.parse(localStorage.getItem('user'));
     try {
-      const response = await axios.post(
-        `${apiUrl}/api/signout`,
-        { email: user.email },
-        {
-          withCredentials: true,
-          // headers: {
-          //   crossorigin: true,
-          // },
-        },
-      );
+      const response = await instance.post(`${apiUrl}/api/signout`, {
+        email: user.email,
+      });
       console.log(`${user.email} signout success: ${response.data.ok}`);
     } catch (e) {
       console.log(`${user.email} signout failure. ${e}`);
@@ -94,12 +86,8 @@ export const signout = (callback) => async (dispatch) => {
 // eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await axios.post(`${apiUrl}/api/signin`, formProps, {
-      withCredentials: true,
-      // headers: {
-      //   crossorigin: true,
-      // },
-    });
+    const response = await instance.post(`${apiUrl}/api/signin`, formProps);
+    console.log(response.headers);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -121,12 +109,8 @@ export const signin = (formProps, callback) => async (dispatch) => {
 
 export const refreshToken = (callback) => async (dispatch) => {
   try {
-    const response = await axios.post(`${apiUrl}/refresh-token`, {
-      withCredentials: true,
-      // headers: {
-      //   crossorigin: true,
-      // },
-    });
+    const response = await instance.post(`${apiUrl}/refresh-token`);
+    console.log(response.headers);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({

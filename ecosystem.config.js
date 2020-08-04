@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'reactfondue',
+      name: 'seva32',
       script: './src/server/main.js',
       watch: false,
       wait_ready: true,

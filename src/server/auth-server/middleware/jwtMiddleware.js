@@ -13,19 +13,23 @@ export function jwtMiddleware(req, res, next) {
   const token = req.get('x-access-token');
 
   // cliente sin accesstoken ni refresh token
-  if (!token && !req.cookies.refreshToken) {
-    console.log('invalid credentials');
+  if (!token && !req.signedCookies.refreshToken) {
+    console.log('Invalid credentials');
     // return res.status(401).send({ message: 'Invalid credentials' });
     return res.redirect(301, '/signin');
   }
 
   // cliente se auth e hizo refresh/reload y/o api request
-  if (req.cookies.refreshToken) {
-    verifyRefreshToken(req.cookies.refreshToken, req.fingerprint)
+  if (req.signedCookies.refreshToken) {
+    verifyRefreshToken(req.signedCookies.refreshToken, req.fingerprint)
       .then((newTokens) => {
         const cookiesOptions = {
           secure: isProd,
           httpOnly: isProd,
+          maxAge: 5184000000, // 2m
+          path: '/',
+          sameSite: true,
+          signed: true,
           domain: isProd ? process.env.SERVER_URL : 'localhost',
         };
 

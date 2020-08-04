@@ -31,7 +31,7 @@ server.use(
     parameterLimit: 50000,
   }),
 );
-server.use(cookieParser());
+server.use(cookieParser(process.env.COOKIE_PARSER_SECRET || 'secret'));
 server.use(
   fingerprint({
     parameters: [fingerprint.useragent],
@@ -56,6 +56,17 @@ const corsOptions = {
 };
 // intercept pre-flight check for all routes
 server.options('*', cors(corsOptions));
+
+/* Redirect http to https */
+server.use('*', (req, res, next) => {
+  if (
+    req.headers['x-forwarded-proto'] !== 'https' &&
+    process.env.NODE_ENV === 'production'
+  ) {
+    res.redirect(`https://${req.hostname}${req.url}`);
+  }
+  next(); /* Continue to other routes if we're not redirecting */
+});
 
 // falta impl en cliente
 // const csrfProtection = csrf({
@@ -82,6 +93,11 @@ server.use(
     cookie: {
       secure: isProd,
       httpOnly: isProd,
+      maxAge: 5184000000, // 2m
+      path: '/',
+      sameSite: true,
+      signed: true,
+      domain: isProd ? process.env.SERVER_URL : 'localhost',
     },
     // name: 'seva',
     // path: '/',
@@ -116,16 +132,12 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
-  console.log('********************************************');
-  console.log('********************************************');
-  console.log(req.cookies);
-  console.log('********************************************');
-  console.log('********************************************');
-  const refreshToken =
-    req.headers.cookie
-      .split(';')
-      .filter((c) => c.includes('refreshToken'))[0]
-      .split('=')[1] || '';
+  // const refreshToken =
+  //   req.headers.cookie
+  //     .split(';')
+  //     .filter((c) => c.includes('refreshToken'))[0]
+  //     .split('=')[1] || '';
+  const { refreshToken } = req.signedCookies;
   if (!refreshToken) {
     return res.status(403).send({ message: 'Access is forbidden' });
   }
@@ -135,15 +147,14 @@ server.use('/refresh-token', (req, res) => {
       const cookiesOptions = {
         secure: isProd,
         httpOnly: isProd,
+        maxAge: 5184000000, // 2m
+        path: '/',
+        sameSite: true,
+        signed: true,
         domain: isProd ? process.env.SERVER_URL : 'localhost',
       };
 
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
-      // console.log('********************************************');
-      // console.log('********************************************');
-      // console.log(res);
-      // console.log('********************************************');
-      // console.log('********************************************');
       return res.send({
         accessToken: tokens.accessToken,
         expiryToken: config.expiryToken,
@@ -160,21 +171,17 @@ server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
   (req, res, next) => {
-    // console.log('***** middle *****');
-    // console.log(req.headers);
-    // console.log(req.url);
-    // console.log(req.originalUrl);
-    // console.log(req.cookies);
+    console.log('***** middle *****');
+    console.log(req.headers);
+    console.log(req.url);
+    console.log(req.originalUrl);
+    console.log(req.cookies);
+    console.log(req.signedCookies);
     next();
   },
 );
 
 server.get('/api/users', (req, res, _next) => {
-  // console.log('***** users *****');
-  // console.log(req.headers);
-  // console.log(req.url);
-  // console.log(req.originalUrl);
-  // console.log(req.cookies);
   res.send({ seb: 'data from seb' });
 });
 

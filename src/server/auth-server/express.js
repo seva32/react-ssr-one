@@ -15,7 +15,7 @@ import {
 } from './middleware/verifySignUp';
 import { jwtMiddleware } from './middleware/jwtMiddleware';
 import { processRefreshToken } from './jwt/jwt';
-import config from './contollers/config';
+import config, { cookiesOptions } from './contollers/config';
 
 dotenv.config({ silent: true });
 
@@ -82,8 +82,8 @@ const MongoStore = require('connect-mongo')(session);
 
 // tell express to trust the information in the X-Forwarded-Proto
 // header, i.e. that the original request was over https (4 heroku)
-// server.set('trust proxy', 1);
-server.enable('trust proxy');
+server.set('trust proxy', 1);
+// server.enable('trust proxy');
 
 server.use(
   session({
@@ -91,15 +91,7 @@ server.use(
     store: new MongoStore({ url: process.env.MONGOOSE }),
     saveUninitialized: true,
     resave: true,
-    cookie: {
-      // secure: isProd,
-      httpOnly: isProd,
-      maxAge: 5184000000, // 2m
-      path: '/',
-      sameSite: 'none',
-      signed: true,
-      domain: isProd ? process.env.SERVER_URL : 'localhost',
-    },
+    cookie: cookiesOptions,
     name: 'seva',
     path: '/',
   }),
@@ -145,16 +137,6 @@ server.use('/refresh-token', (req, res) => {
 
   processRefreshToken(refreshToken, req.fingerprint)
     .then((tokens) => {
-      const cookiesOptions = {
-        // secure: isProd,
-        httpOnly: isProd,
-        maxAge: 5184000000, // 2m
-        path: '/',
-        sameSite: 'none',
-        signed: true,
-        domain: isProd ? process.env.SERVER_URL : 'localhost',
-      };
-
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
       return res.send({
         accessToken: tokens.accessToken,

@@ -1,14 +1,12 @@
 /* eslint-disable no-shadow */
 import bcrypt from 'bcryptjs';
 import db from '../models/index';
-import config from './config';
+import config, { cookiesOptions } from './config';
 import { getAccessToken, getRefreshToken } from '../jwt/jwt';
 
 const User = db.user;
 const Role = db.role;
 const Token = db.token;
-
-const isProd = process.env.NODE_ENV === 'production';
 
 export const signup = (req, res) => {
   const user = new User({
@@ -43,15 +41,6 @@ export const signup = (req, res) => {
             const token = getAccessToken(user.id);
             getRefreshToken(user.id, req.fingerprint)
               .then((refreshToken) => {
-                const cookiesOptions = {
-                  // secure: isProd,
-                  httpOnly: isProd,
-                  maxAge: 5184000000, // 2m
-                  path: '/',
-                  sameSite: 'none',
-                  signed: true,
-                  domain: isProd ? process.env.SERVER_URL : 'localhost',
-                };
                 res.cookie('refreshToken', refreshToken, cookiesOptions);
                 res.send({
                   email: user.email,
@@ -83,15 +72,6 @@ export const signup = (req, res) => {
           const token = getAccessToken(user.id);
           getRefreshToken(user.id, req.fingerprint)
             .then((refreshToken) => {
-              const cookiesOptions = {
-                // secure: isProd,
-                httpOnly: isProd,
-                maxAge: 5184000000, // 2m
-                path: '/',
-                sameSite: 'none',
-                signed: true,
-                domain: isProd ? process.env.SERVER_URL : 'localhost',
-              };
               res.cookie('refreshToken', refreshToken, cookiesOptions);
               res.send({
                 email: user.email,
@@ -218,15 +198,6 @@ export const signin = (req, res) => {
             authorities.push(`ROLE_${user.roles[i].name.toUpperCase()}`);
           }
 
-          const cookiesOptions = {
-            // secure: isProd,
-            httpOnly: isProd,
-            maxAge: 5184000000, // 2m
-            path: '/',
-            sameSite: 'none',
-            signed: true,
-            domain: isProd ? process.env.SERVER_URL : 'localhost',
-          };
           res.cookie('refreshToken', refreshToken, cookiesOptions);
           res.status(200).send({
             email: user.email,

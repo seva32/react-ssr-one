@@ -2,8 +2,7 @@
 /* eslint-disable consistent-return */
 // the middleware attach the actual user to req
 import { verifyJWTToken, verifyRefreshToken } from '../jwt/jwt';
-
-const isProd = process.env.NODE_ENV === 'production';
+import { cookiesOptions } from '../contollers/config';
 
 // eslint-disable-next-line import/prefer-default-export
 export function jwtMiddleware(req, res, next) {
@@ -28,15 +27,6 @@ export function jwtMiddleware(req, res, next) {
     verifyRefreshToken(req.signedCookies.refreshToken, req.fingerprint)
       .then((newTokens) => {
         console.log('rT ok');
-        const cookiesOptions = {
-          // secure: isProd,
-          httpOnly: isProd,
-          maxAge: 5184000000, // 2m
-          path: '/',
-          sameSite: 'none',
-          signed: true,
-          domain: isProd ? process.env.SERVER_URL : 'localhost',
-        };
 
         res.cookie('refreshToken', newTokens.refreshToken, cookiesOptions);
         res.setHeader('x-update-token', newTokens.accessToken);

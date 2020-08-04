@@ -57,16 +57,16 @@ const corsOptions = {
 // intercept pre-flight check for all routes
 server.options('*', cors(corsOptions));
 
-/* Redirect http to https */
-server.use('*', (req, res, next) => {
-  if (
-    req.headers['x-forwarded-proto'] !== 'https' &&
-    process.env.NODE_ENV === 'production'
-  ) {
-    res.redirect(`https://${req.hostname}${req.url}`);
-  }
-  next(); /* Continue to other routes if we're not redirecting */
-});
+/* Redirect http to https in heroku */
+// server.use('*', (req, res, next) => {
+//   if (
+//     req.headers['x-forwarded-proto'] !== 'https' &&
+//     process.env.NODE_ENV === 'production'
+//   ) {
+//     res.redirect(`https://${req.hostname}${req.url}`);
+//   }
+//   next(); /* Continue to other routes if we're not redirecting */
+// });
 
 // falta impl en cliente
 // const csrfProtection = csrf({
@@ -82,7 +82,8 @@ const MongoStore = require('connect-mongo')(session);
 
 // tell express to trust the information in the X-Forwarded-Proto
 // header, i.e. that the original request was over https (4 heroku)
-server.set('trust proxy', 1);
+// server.set('trust proxy', 1);
+server.enable('trust proxy');
 
 server.use(
   session({
@@ -91,16 +92,16 @@ server.use(
     saveUninitialized: true,
     resave: true,
     cookie: {
-      secure: isProd,
+      // secure: isProd,
       httpOnly: isProd,
       maxAge: 5184000000, // 2m
       path: '/',
-      sameSite: true,
+      sameSite: 'none',
       signed: true,
       domain: isProd ? process.env.SERVER_URL : 'localhost',
     },
-    // name: 'seva',
-    // path: '/',
+    name: 'seva',
+    path: '/',
   }),
 );
 
@@ -145,11 +146,11 @@ server.use('/refresh-token', (req, res) => {
   processRefreshToken(refreshToken, req.fingerprint)
     .then((tokens) => {
       const cookiesOptions = {
-        secure: isProd,
+        // secure: isProd,
         httpOnly: isProd,
         maxAge: 5184000000, // 2m
         path: '/',
-        sameSite: true,
+        sameSite: 'none',
         signed: true,
         domain: isProd ? process.env.SERVER_URL : 'localhost',
       };

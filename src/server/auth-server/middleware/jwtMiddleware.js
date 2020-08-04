@@ -19,16 +19,21 @@ export function jwtMiddleware(req, res, next) {
     return res.redirect(301, '/signin');
   }
 
+  console.log('((((((((((((((((((((()))))))))))))))))))))');
+  console.log(token);
+  console.log(req.signedCookies.refreshToken);
+
   // cliente se auth e hizo refresh/reload y/o api request
   if (req.signedCookies.refreshToken) {
     verifyRefreshToken(req.signedCookies.refreshToken, req.fingerprint)
       .then((newTokens) => {
+        console.log('rT ok');
         const cookiesOptions = {
-          secure: isProd,
+          // secure: isProd,
           httpOnly: isProd,
           maxAge: 5184000000, // 2m
           path: '/',
-          sameSite: true,
+          sameSite: 'none',
           signed: true,
           domain: isProd ? process.env.SERVER_URL : 'localhost',
         };
@@ -39,6 +44,7 @@ export function jwtMiddleware(req, res, next) {
         if (token) {
           verifyJWTToken(token)
             .then((accessTokenUserId) => {
+              console.log('token ok');
               // esta situacion cuando consumo api no por navegacion api/users
               req.accessTokenUserId = accessTokenUserId;
               return next();
@@ -49,6 +55,9 @@ export function jwtMiddleware(req, res, next) {
               return res.status(401).send({ message: err.message });
             });
         } else {
+          console.log(
+            'no existe access token pero si refreshtoken (refresh/reload)',
+          );
           // no existe access token pero si refreshtoken (refresh/reload)
           return next();
         }

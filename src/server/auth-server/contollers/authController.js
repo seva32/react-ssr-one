@@ -44,11 +44,11 @@ export const signup = (req, res) => {
             getRefreshToken(user.id, req.fingerprint)
               .then((refreshToken) => {
                 const cookiesOptions = {
-                  secure: isProd,
+                  // secure: isProd,
                   httpOnly: isProd,
                   maxAge: 5184000000, // 2m
                   path: '/',
-                  sameSite: true,
+                  sameSite: 'none',
                   signed: true,
                   domain: isProd ? process.env.SERVER_URL : 'localhost',
                 };
@@ -84,11 +84,11 @@ export const signup = (req, res) => {
           getRefreshToken(user.id, req.fingerprint)
             .then((refreshToken) => {
               const cookiesOptions = {
-                secure: isProd,
+                // secure: isProd,
                 httpOnly: isProd,
                 maxAge: 5184000000, // 2m
                 path: '/',
-                sameSite: true,
+                sameSite: 'none',
                 signed: true,
                 domain: isProd ? process.env.SERVER_URL : 'localhost',
               };
@@ -219,11 +219,11 @@ export const signin = (req, res) => {
           }
 
           const cookiesOptions = {
-            secure: isProd,
+            // secure: isProd,
             httpOnly: isProd,
             maxAge: 5184000000, // 2m
             path: '/',
-            sameSite: true,
+            sameSite: 'none',
             signed: true,
             domain: isProd ? process.env.SERVER_URL : 'localhost',
           };

@@ -125,15 +125,19 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
-  // const refreshToken =
-  //   req.headers.cookie
-  //     .split(';')
-  //     .filter((c) => c.includes('refreshToken'))[0]
-  //     .split('=')[1] || '';
-  const { refreshToken } = req.signedCookies;
-  if (!refreshToken) {
-    return res.status(403).send({ message: 'Access is forbidden' });
-  }
+  const refreshToken =
+    req.headers.cookie
+      .split(';')
+      .filter((c) => c.includes('refreshToken'))[0]
+      .split('=')[1] || '';
+
+  console.log('1*************', req.cookies);
+  console.log('2&&&&&&&&&&&&&', req.headers.cookie);
+
+  // const { refreshToken } = req.signedCookies;
+  // if (!refreshToken) {
+  //   return res.status(403).send({ message: 'Access is forbidden' });
+  // }
 
   processRefreshToken(refreshToken, req.fingerprint)
     .then((tokens) => {

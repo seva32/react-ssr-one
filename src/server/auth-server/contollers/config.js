@@ -9,8 +9,7 @@ export const cookiesOptions = {
   httpOnly: isProd,
   maxAge: 5184000000, // 2m
   path: '/',
-  sameSite: 'none',
-  signed: true,
+  sameSite: 'lax',
   domain: isProd ? process.env.SERVER_URL : 'localhost',
 };
 

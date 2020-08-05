@@ -92,10 +92,10 @@ export const signup = (req, res) => {
 // signout controller to handle refreshToken deletion on singout redux action
 // eslint-disable-next-line consistent-return
 export const signout = (req, res) => {
-  if (req.signedCookies.refreshToken) {
+  if (req.cookies.refreshToken) {
     // eslint-disable-next-line consistent-return
     Token.findOne(
-      { refreshToken: req.signedCookies.refreshToken },
+      { refreshToken: req.cookies.refreshToken },
       // eslint-disable-next-line consistent-return
       (err, token) => {
         if (err) {

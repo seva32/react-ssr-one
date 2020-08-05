@@ -36,16 +36,8 @@ server.use(
   }),
 );
 
-// server.use(
-//   cors({
-//     credentials: true,
-//     origin: ['http://localhost:8080', process.env.SERVER_URL],
-//   }),
-// );
-
 const corsOptions = {
-  // eslint-disable-next-line max-len
-  origin: [process.env.SERVER_URL, 'localhost'], // origin: /\.your.domain\.com$/
+  origin: [process.env.SERVER_URL, 'localhost'],
   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
   credentials: true, // required to pass allowedHeaders
   allowedHeaders: [
@@ -89,7 +81,6 @@ const MongoStore = require('connect-mongo')(session);
 // tell express to trust the information in the X-Forwarded-Proto
 // header, i.e. that the original request was over https (4 heroku)
 server.set('trust proxy', 1);
-// server.enable('trust proxy');
 
 server.use(
   session({
@@ -104,20 +95,6 @@ server.use(
 );
 
 server.use((req, res, next) => {
-  // res.header('Access-Control-Allow-Credentials', true);
-  // res.header(
-  //   'Access-Control-Allow-Headers',
-  //   'X-Access-Token, Origin, X-Requested-With, Content-Type, Accept',
-  // );
-  console.log('*********************************************');
-  console.log('*********************************************');
-  console.log(':::::::::::', req.cookies);
-  console.log(':::::::::::', req.signedCookies);
-  console.log(':::::::::::', req.rawHeaders);
-  console.log(':::::::::::', req.headers);
-  console.log('*********************************************');
-  console.log('*********************************************');
-
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', process.env.SERVER_URL || '*'); // cambiar a api_server
   res.header(
@@ -148,11 +125,6 @@ server.use('/refresh-token', (req, res) => {
       .filter((c) => c.includes('refreshToken'))[0]
       .split('=')[1] || '';
 
-  // const { refreshToken } = req.signedCookies;
-  // if (!refreshToken) {
-  //   return res.status(403).send({ message: 'Access is forbidden' });
-  // }
-
   processRefreshToken(refreshToken, req.fingerprint)
     .then((tokens) => {
       res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
@@ -172,12 +144,6 @@ server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
   (req, res, next) => {
-    // console.log('***** middle *****');
-    // console.log(req.headers);
-    // console.log(req.url);
-    // console.log(req.originalUrl);
-    // console.log(req.cookies);
-    // console.log(req.signedCookies);
     next();
   },
 );

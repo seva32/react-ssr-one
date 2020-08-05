@@ -1,12 +1,12 @@
 /* eslint-disable consistent-return */
 import axios from 'axios';
 import {
-  AUTH_USER,
+  AUTH_USER, // para auth el user y para nuevo refreshToken
   AUTH_ERROR_SIGNUP,
   AUTH_ERROR_SIGNIN,
   AUTH_EXPIRY_TOKEN,
   REFRESH_TOKEN_ERROR,
-  REFRESH_TOKEN_RESTART_TIMEOUT, // para el nuevo token uso nuevamente AUTH_USER
+  REFRESH_TOKEN_RESTART_TIMEOUT,
   ACCESS_TOKEN_DELETE_ERROR,
 } from './authActionTypes';
 import {
@@ -24,18 +24,20 @@ const instance = axios.create({
   proxy: true,
 });
 
-instance.interceptors.request.use(
-  (request) => {
-    console.log('((((((((((( request )))))))))))', request);
-    return request;
-  },
-  (error) => Promise.reject(error),
-);
+if (process.env.NODE_ENV !== 'production') {
+  instance.interceptors.request.use(
+    (request) => {
+      console.log('((((((((((( request )))))))))))', request);
+      return request;
+    },
+    (error) => Promise.reject(error),
+  );
 
-instance.interceptors.response.use((response) => {
-  console.log('((((((((((( response )))))))))))', response);
-  return response;
-});
+  instance.interceptors.response.use((response) => {
+    console.log('((((((((((( response )))))))))))', response);
+    return response;
+  });
+}
 
 export const signup = (formProps, callback) => async (dispatch) => {
   try {

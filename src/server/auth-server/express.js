@@ -109,8 +109,14 @@ server.use((req, res, next) => {
   //   'Access-Control-Allow-Headers',
   //   'X-Access-Token, Origin, X-Requested-With, Content-Type, Accept',
   // );
-
-  console.log('::::::::::::::::::::::::::::::::::::::::::::', req);
+  console.log('*********************************************');
+  console.log('*********************************************');
+  console.log(':::::::::::', req.cookies);
+  console.log(':::::::::::', req.signedCookies);
+  console.log(':::::::::::', req.rawHeaders);
+  console.log(':::::::::::', req.headers);
+  console.log('*********************************************');
+  console.log('*********************************************');
 
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', process.env.SERVER_URL || '*'); // cambiar a api_server

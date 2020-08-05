@@ -19,23 +19,27 @@ import {
 
 const instance = axios.create({
   withCredentials: true,
+  timeout: 10000,
+  params: {},
+  proxy: true,
 });
 
-instance.interceptors.request.use((request) => {
-  console.log('Starting Request', request);
-  return request;
-});
+instance.interceptors.request.use(
+  (request) => {
+    console.log('((((((((((( request )))))))))))', request);
+    return request;
+  },
+  (error) => Promise.reject(error),
+);
 
 instance.interceptors.response.use((response) => {
-  console.log('Response:', response);
+  console.log('((((((((((( response )))))))))))', response);
   return response;
 });
 
-const apiUrl = process.env.SERVER_URL || '';
-
 export const signup = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await instance.post(`${apiUrl}/api/signup`, formProps);
+    const response = await instance.post('/api/signup', formProps);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -59,7 +63,7 @@ export const signout = (callback) => async (dispatch) => {
   if (typeof window !== 'undefined') {
     const user = JSON.parse(localStorage.getItem('user'));
     try {
-      const response = await instance.post(`${apiUrl}/api/signout`, {
+      const response = await instance.post('/api/signout', {
         email: user.email,
       });
       console.log(`${user.email} signout success: ${response.data.ok}`);
@@ -96,8 +100,7 @@ export const signout = (callback) => async (dispatch) => {
 // eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch) => {
   try {
-    const response = await instance.post(`${apiUrl}/api/signin`, formProps);
-    console.log('((((((((((( response )))))))))))', response);
+    const response = await instance.post('/api/signin', formProps);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -156,7 +159,7 @@ export const signin = (formProps, callback) => async (dispatch) => {
 
 export const refreshToken = (callback) => async (dispatch) => {
   try {
-    const response = await instance.post(`${apiUrl}/refresh-token`);
+    const response = await instance.post('/refresh-token');
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({

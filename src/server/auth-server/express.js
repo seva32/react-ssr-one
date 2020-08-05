@@ -51,7 +51,7 @@ const corsOptions = {
   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
   credentials: true, // required to pass allowedHeaders
   allowedHeaders:
-    'x-access-token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
+    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
   enablePreflight: true,
 };
 // intercept pre-flight check for all routes
@@ -101,7 +101,7 @@ server.use((req, res, next) => {
   // res.header('Access-Control-Allow-Credentials', true);
   // res.header(
   //   'Access-Control-Allow-Headers',
-  //   'x-access-token, Origin, X-Requested-With, Content-Type, Accept',
+  //   'X-Access-Token, Origin, X-Requested-With, Content-Type, Accept',
   // );
 
   res.header('Access-Control-Allow-Credentials', true);
@@ -112,7 +112,7 @@ server.use((req, res, next) => {
   );
   res.header(
     'Access-Control-Allow-Headers',
-    'x-access-token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
+    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
   );
 
   next();
@@ -158,12 +158,12 @@ server.get(
   ['/api/users', '/posts'],
   [cors(corsOptions), jwtMiddleware],
   (req, res, next) => {
-    console.log('***** middle *****');
-    console.log(req.headers);
-    console.log(req.url);
-    console.log(req.originalUrl);
-    console.log(req.cookies);
-    console.log(req.signedCookies);
+    // console.log('***** middle *****');
+    // console.log(req.headers);
+    // console.log(req.url);
+    // console.log(req.originalUrl);
+    // console.log(req.cookies);
+    // console.log(req.signedCookies);
     next();
   },
 );

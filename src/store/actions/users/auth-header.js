@@ -7,13 +7,13 @@
 //   return {};
 // }
 
-// para express usar x-access-token
+// para express usar X-Access-Token
 export default () => {
   const user = JSON.parse(localStorage.getItem('user'));
 
   if (user && user.accessToken) {
     // for Node.js Express back-end
-    return { 'x-access-token': user.accessToken };
+    return { 'X-Access-Token': user.accessToken };
   }
   return {};
 };

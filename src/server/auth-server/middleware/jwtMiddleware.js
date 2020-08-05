@@ -9,7 +9,7 @@ export function jwtMiddleware(req, res, next) {
   // refresh token tiene que estar siempre presente si el
   // cliente esta auth, en cambio access token puede faltar
   // en un reload/refresh
-  const token = req.get('x-access-token');
+  const token = req.get('X-Access-Token');
 
   // cliente sin accesstoken ni refresh token
   if (!token && !req.cookies.refreshToken) {

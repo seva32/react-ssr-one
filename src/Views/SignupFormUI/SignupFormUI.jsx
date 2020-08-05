@@ -15,6 +15,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import omit from 'lodash.omit';
+import has from 'lodash.has';
 import PropTypes from 'prop-types';
 import imagePath from '../../assets/img/logo192.png';
 import { GoogleLogin } from '../../Components/GoogleButton';
@@ -28,8 +29,13 @@ const SignupFormUI = ({ error, signup, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          // no puede haber opcion undefined
-          const emailAll = res.Ot.yu !== undefined ? res.Ot.yu : res.Pt.zu; // chrome opera
+          let emailAll = '';
+          if (has(res, 'Ot')) {
+            emailAll = res.Ot.yu;
+          }
+          if (has(res, 'Pt')) {
+            emailAll = res.Pt.zu;
+          }
           if (emailAll && res.googleId) {
             toggleShow(false);
             signup(

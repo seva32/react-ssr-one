@@ -23,6 +23,7 @@ const Posts = ({
   onLoadUserData,
 }) => {
   useEffect(() => {
+    let mounted = true; // eslint-disable-line
     if (!posts || posts.length < 1) {
       onDataLoad();
     }
@@ -33,9 +34,11 @@ const Posts = ({
     if (!currentUser || Object.keys(currentUser).length === 0) {
       onGetCurrentUser();
     }
-    return console.log('Exiting posts...'); // eslint-disable-line
+    return function cleanup() {
+      mounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // cuidado al agregar parametros, se va a llamar mas de una vez
+  }, []); // cuidado al agregar parametros, se va a montar con cada resultado
 
   return (
     <>

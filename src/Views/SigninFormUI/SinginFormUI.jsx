@@ -16,6 +16,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import has from 'lodash.has';
 import imagePath from '../../assets/img/logo192.png';
 import { GoogleLogin } from '../../Components/GoogleButton';
 import * as actions from '../../store/actions';
@@ -29,11 +30,13 @@ const SigninFormUI = ({ error, signin, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          // si alguno de los dos da undefined se cae la auth
-          if (res.Ot.yu === undefined && res.Pt.zu === undefined) {
-            alert(res);
+          let emailAll = '';
+          if (has(res, 'Ot')) {
+            emailAll = res.Ot.yu;
           }
-          const emailAll = res.Ot.yu !== undefined ? res.Ot.yu : res.Pt.zu; // chrome opera
+          if (has(res, 'Pt')) {
+            emailAll = res.Pt.zu;
+          }
           if (emailAll && res.googleId) {
             toggleShow(false);
             signin(

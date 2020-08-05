@@ -65,12 +65,13 @@ export const signout = (callback) => async (dispatch) => {
   if (typeof window !== 'undefined') {
     const user = JSON.parse(localStorage.getItem('user'));
     try {
+      // eslint-disable-next-line no-unused-vars
       const response = await instance.post('/api/signout', {
         email: user.email,
       });
-      console.log(`${user.email} signout success: ${response.data.ok}`);
+      // console.log(`${user.email} signout success: ${response.data.ok}`);
     } catch (e) {
-      console.log(`${user.email} signout failure. ${e}`);
+      // console.log(`${user.email} signout failure. ${e}`);
       dispatch({
         type: ACCESS_TOKEN_DELETE_ERROR,
         payload: { e, user }, // logging

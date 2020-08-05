@@ -22,15 +22,12 @@ export function jwtMiddleware(req, res, next) {
   if (req.cookies.refreshToken) {
     verifyRefreshToken(req.cookies.refreshToken, req.fingerprint)
       .then((newTokens) => {
-        console.log('rT ok');
-
         res.cookie('refreshToken', newTokens.refreshToken, cookiesOptions);
         res.setHeader('x-update-token', newTokens.accessToken);
         // si hay access token valido es api request
         if (token) {
           verifyJWTToken(token)
             .then((accessTokenUserId) => {
-              console.log('token ok');
               // esta situacion cuando consumo api no por navegacion api/users
               req.accessTokenUserId = accessTokenUserId;
               return next();

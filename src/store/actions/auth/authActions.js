@@ -21,6 +21,16 @@ const instance = axios.create({
   withCredentials: true,
 });
 
+instance.interceptors.request.use((request) => {
+  console.log('Starting Request', request);
+  return request;
+});
+
+instance.interceptors.response.use((response) => {
+  console.log('Response:', response);
+  return response;
+});
+
 const apiUrl = process.env.SERVER_URL || '';
 
 export const signup = (formProps, callback) => async (dispatch) => {
@@ -87,6 +97,7 @@ export const signout = (callback) => async (dispatch) => {
 export const signin = (formProps, callback) => async (dispatch) => {
   try {
     const response = await instance.post(`${apiUrl}/api/signin`, formProps);
+    console.log('((((((((((( response )))))))))))', response);
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({

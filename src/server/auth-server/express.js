@@ -110,6 +110,8 @@ server.use((req, res, next) => {
   //   'X-Access-Token, Origin, X-Requested-With, Content-Type, Accept',
   // );
 
+  console.log('::::::::::::::::::::::::::::::::::::::::::::', req);
+
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', process.env.SERVER_URL || '*'); // cambiar a api_server
   res.header(
@@ -118,7 +120,7 @@ server.use((req, res, next) => {
   );
   res.header(
     'Access-Control-Allow-Headers',
-    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
+    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization, refreshToken, seva',
   );
 
   next();

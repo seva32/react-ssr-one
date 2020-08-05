@@ -29,7 +29,7 @@ server.use(
     parameterLimit: 50000,
   }),
 );
-server.use(cookieParser(process.env.COOKIE_PARSER_SECRET || 'secret'));
+server.use(cookieParser());
 server.use(
   fingerprint({
     parameters: [fingerprint.useragent],
@@ -96,7 +96,7 @@ server.use(
 
 server.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Origin', process.env.SERVER_URL || '*'); // cambiar a api_server
+  res.header('Access-Control-Allow-Origin', process.env.SERVER_URL); // cambiar a api_server
   res.header(
     'Access-Control-Allow-Methods',
     'GET,PUT,POST,DELETE,UPDATE,OPTIONS',

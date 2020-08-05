@@ -116,9 +116,6 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
-  console.log('1*************', req.cookies);
-  console.log('2&&&&&&&&&&&&&', req.headers.cookie);
-
   const refreshToken =
     req.headers.cookie
       .split(';')

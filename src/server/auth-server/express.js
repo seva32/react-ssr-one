@@ -19,8 +19,6 @@ import config, { cookiesOptions } from './contollers/config';
 
 dotenv.config({ silent: true });
 
-const isProd = process.env.NODE_ENV === 'production';
-
 const server = express();
 server.set('x-powered-by', false);
 server.use(bodyParser.json({ type: '*/*', limit: '10mb' }));
@@ -47,12 +45,20 @@ server.use(
 
 const corsOptions = {
   // eslint-disable-next-line max-len
-  origin: isProd ? new RegExp(process.env.SERVER_URL, 'g') : /localhost/, // origin: /\.your.domain\.com$/
+  origin: [process.env.SERVER_URL, 'localhost'], // origin: /\.your.domain\.com$/
   methods: 'GET,HEAD,POST,PATCH,DELETE,OPTIONS',
   credentials: true, // required to pass allowedHeaders
-  allowedHeaders:
-    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
-  enablePreflight: true,
+  allowedHeaders: [
+    'X-Access-Token',
+    'X-Requested-With',
+    'X-HTTP-Method-Override',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'refreshToken',
+    'seva',
+  ],
+  exposedHeaders: ['refreshToken', 'X-Access-Token', 'seva'],
 };
 // intercept pre-flight check for all routes
 server.options('*', cors(corsOptions));
@@ -105,7 +111,7 @@ server.use((req, res, next) => {
   // );
 
   res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Origin', req.headers.origin); // cambiar a api_server
+  res.header('Access-Control-Allow-Origin', process.env.SERVER_URL || '*'); // cambiar a api_server
   res.header(
     'Access-Control-Allow-Methods',
     'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
@@ -125,14 +131,14 @@ server.post('/api/signout', [cors(corsOptions)], signout);
 
 // eslint-disable-next-line consistent-return
 server.use('/refresh-token', (req, res) => {
+  console.log('1*************', req.cookies);
+  console.log('2&&&&&&&&&&&&&', req.headers.cookie);
+
   const refreshToken =
     req.headers.cookie
       .split(';')
       .filter((c) => c.includes('refreshToken'))[0]
       .split('=')[1] || '';
-
-  console.log('1*************', req.cookies);
-  console.log('2&&&&&&&&&&&&&', req.headers.cookie);
 
   // const { refreshToken } = req.signedCookies;
   // if (!refreshToken) {

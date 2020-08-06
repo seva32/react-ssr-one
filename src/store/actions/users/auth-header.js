@@ -8,12 +8,15 @@
 // }
 
 // para express usar X-Access-Token
-export default () => {
+export default (csrfToken) => {
   const user = JSON.parse(localStorage.getItem('user'));
 
   if (user && user.accessToken) {
     // for Node.js Express back-end
-    return { 'X-Access-Token': user.accessToken };
+    return {
+      'X-Access-Token': user.accessToken,
+      'CSRF-Token': csrfToken,
+    };
   }
   return {};
 };

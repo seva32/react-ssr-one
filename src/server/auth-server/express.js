@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import fingerprint from 'express-fingerprint';
-// import csrf from 'csurf';
+import csurf from 'csurf';
 
 import { signin, signup, signout } from './contollers/authController';
 import {
@@ -49,8 +49,9 @@ const corsOptions = {
     'Authorization',
     'refreshToken',
     'seva',
+    'CSRF-Token',
   ],
-  exposedHeaders: ['refreshToken', 'X-Access-Token', 'seva'],
+  exposedHeaders: ['refreshToken', 'X-Access-Token', 'seva', 'CSRF-Token'],
 };
 // intercept pre-flight check for all routes
 server.options('*', cors(corsOptions));
@@ -66,14 +67,16 @@ server.options('*', cors(corsOptions));
 //   next(); /* Continue to other routes if we're not redirecting */
 // });
 
-// falta impl en cliente
-// const csrfProtection = csrf({
-//   cookie: true,
-// });
-// server.use(csrfProtection);
-// server.get('/csrf-token', (req, res) => {
-//   res.json({ csrfToken: req.csrfToken() });
-// });
+const csrfProtection = csurf({
+  cookie: {
+    key: '_csrf',
+    path: '/', // context route
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 3600, // 1-hour
+  },
+});
+server.use(csrfProtection);
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -103,43 +106,56 @@ server.use((req, res, next) => {
   );
   res.header(
     'Access-Control-Allow-Headers',
-    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization, refreshToken, seva',
+    'X-Access-Token, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization, refreshToken, seva, CSRF-Token',
   );
 
   next();
 });
 
 // Authentication
-server.post('/api/signup', [checkDuplicateEmail, checkRolesExisted], signup);
-server.post('/api/signin', [cors(corsOptions)], signin);
-server.post('/api/signout', [cors(corsOptions)], signout);
+server.post(
+  '/api/signup',
+  [checkDuplicateEmail, checkRolesExisted, csrfProtection],
+  signup,
+);
+server.post('/api/signin', [cors(corsOptions), csrfProtection], signin);
+server.post('/api/signout', [cors(corsOptions), csrfProtection], signout);
+
+server.use((req, res, next) => {
+  console.log(req.headers);
+  next();
+});
 
 // eslint-disable-next-line consistent-return
-server.use('/refresh-token', (req, res) => {
-  const refreshToken =
-    req.headers.cookie
-      .split(';')
-      .filter((c) => c.includes('refreshToken'))[0]
-      .split('=')[1] || '';
+server.post(
+  '/refresh-token',
+  [cors(corsOptions), csrfProtection],
+  (req, res) => {
+    const refreshToken =
+      req.headers.cookie
+        .split(';')
+        .filter((c) => c.includes('refreshToken'))[0]
+        .split('=')[1] || '';
 
-  processRefreshToken(refreshToken, req.fingerprint)
-    .then((tokens) => {
-      res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
-      return res.send({
-        accessToken: tokens.accessToken,
-        expiryToken: config.expiryToken,
+    processRefreshToken(refreshToken, req.fingerprint)
+      .then((tokens) => {
+        res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
+        return res.send({
+          accessToken: tokens.accessToken,
+          expiryToken: config.expiryToken,
+        });
+      })
+      .catch((err) => {
+        const message = (err && err.message) || err;
+        res.status(403).send(message);
       });
-    })
-    .catch((err) => {
-      const message = (err && err.message) || err;
-      res.status(403).send(message);
-    });
-});
+  },
+);
 
 // Authorization
 server.get(
   ['/api/users', '/posts'],
-  [cors(corsOptions), jwtMiddleware],
+  [cors(corsOptions), csrfProtection, jwtMiddleware],
   (req, res, next) => {
     next();
   },

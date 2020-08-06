@@ -39,9 +39,11 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-export const signup = (formProps, callback) => async (dispatch) => {
+export const signup = (formProps, callback) => async (dispatch, getState) => {
   try {
-    const response = await instance.post('/api/signup', formProps);
+    const response = await instance.post('/api/signup', formProps, {
+      headers: { 'CSRF-Token': getState().csrf },
+    });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -61,14 +63,20 @@ export const signup = (formProps, callback) => async (dispatch) => {
   }
 };
 
-export const signout = (callback) => async (dispatch) => {
+export const signout = (callback) => async (dispatch, getState) => {
   if (typeof window !== 'undefined') {
     const user = JSON.parse(localStorage.getItem('user'));
     try {
       // eslint-disable-next-line no-unused-vars
-      const response = await instance.post('/api/signout', {
-        email: user.email,
-      });
+      const response = await instance.post(
+        '/api/signout',
+        {
+          email: user.email,
+        },
+        {
+          headers: { 'CSRF-Token': getState().csrf },
+        },
+      );
       // console.log(`${user.email} signout success: ${response.data.ok}`);
     } catch (e) {
       // console.log(`${user.email} signout failure. ${e}`);
@@ -101,9 +109,11 @@ export const signout = (callback) => async (dispatch) => {
 };
 
 // eslint-disable-next-line consistent-return
-export const signin = (formProps, callback) => async (dispatch) => {
+export const signin = (formProps, callback) => async (dispatch, getState) => {
   try {
-    const response = await instance.post('/api/signin', formProps);
+    const response = await instance.post('/api/signin', formProps, {
+      headers: { 'CSRF-Token': getState().csrf },
+    });
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({
@@ -160,9 +170,15 @@ export const signin = (formProps, callback) => async (dispatch) => {
 //     });
 // };
 
-export const refreshToken = (callback) => async (dispatch) => {
+export const refreshToken = (callback) => async (dispatch, getState) => {
   try {
-    const response = await instance.post('/refresh-token');
+    const response = await instance.post(
+      '/refresh-token',
+      {},
+      {
+        headers: { 'CSRF-Token': getState().csrf },
+      },
+    );
     const dateNow = Date.now();
     dispatch({ type: AUTH_USER, payload: response.data.accessToken });
     dispatch({

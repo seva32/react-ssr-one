@@ -5,17 +5,19 @@ import storage from 'redux-persist/lib/storage';
 import posts from './postsReducer';
 import auth from './authReducer';
 import users from './userDataReducer';
+import csrf from './csrf';
 
 const rootPersistConfig = {
   key: 'root',
   storage,
-  blacklist: ['auth'],
+  blacklist: ['auth', 'csrf'],
 };
 
 const rootReducer = combineReducers({
   auth,
   posts,
   users,
+  csrf,
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);

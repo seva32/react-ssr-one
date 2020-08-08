@@ -31,7 +31,40 @@ server.use(
 
 server.options('*', cors);
 server.use(csrfProtection);
-process.env.NODE_ENV === 'production' && server.use(helmet());
+process.env.NODE_ENV === 'production' &&
+  server.use(
+    helmet({
+      frameguard: false,
+      // frameguard: {
+      //   action: 'deny',
+      // },
+      contentSecurityPolicy: false,
+      // contentSecurityPolicy: {
+      //   directives: {
+      //     defaultSrc: ["'self'"],
+      //     scriptSrc: ["'self'", 'seva32.tk'],
+      //     objectSrc: ["'none'"],
+      //     upgradeInsecureRequests: [],
+      //   },
+      // },
+      expectCt: false,
+      // expectCt: {
+      //   maxAge: 86400,
+      //   enforce: true,
+      // },
+      referrerPolicy: false,
+      // referrerPolicy: {
+      //   policy: ['origin', 'seva32.tk'],
+      // },
+      dnsPrefetchControl: false,
+      hidePoweredBy: false,
+      hsts: false,
+      ieNoOpen: false,
+      noSniff: false,
+      permittedCrossDomainPolicies: false,
+      xssFilter: false,
+    }),
+  );
 
 /* Redirect http to https in heroku */
 // server.use('*', (req, res, next) => {

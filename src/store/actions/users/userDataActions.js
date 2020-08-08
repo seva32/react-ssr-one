@@ -13,7 +13,7 @@ export const getCurrentUser = () => ({
 
 export const getUserData = () => async (dispatch, getSate) => {
   try {
-    const response = await axios.get('/api/users', {
+    const response = await axios.get('/users', {
       headers: authHeader(getSate().csrf),
     });
     dispatch({ type: GET_USER_DATA, payload: response.data });

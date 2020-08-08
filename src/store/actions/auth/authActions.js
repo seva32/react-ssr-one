@@ -41,7 +41,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const signup = (formProps, callback) => async (dispatch, getState) => {
   try {
-    const response = await instance.post('/api/signup', formProps, {
+    const response = await instance.post('/auth/signup', formProps, {
       headers: { 'CSRF-Token': getState().csrf },
     });
     const dateNow = Date.now();
@@ -69,7 +69,7 @@ export const signout = (callback) => async (dispatch, getState) => {
     try {
       // eslint-disable-next-line no-unused-vars
       const response = await instance.post(
-        '/api/signout',
+        '/auth/signout',
         {
           email: user.email,
         },
@@ -111,7 +111,7 @@ export const signout = (callback) => async (dispatch, getState) => {
 // eslint-disable-next-line consistent-return
 export const signin = (formProps, callback) => async (dispatch, getState) => {
   try {
-    const response = await instance.post('/api/signin', formProps, {
+    const response = await instance.post('/auth/signin', formProps, {
       headers: { 'CSRF-Token': getState().csrf },
     });
     const dateNow = Date.now();
@@ -134,7 +134,7 @@ export const signin = (formProps, callback) => async (dispatch, getState) => {
 };
 
 // export const signin = (formProps, callback) => async (dispatch) => {
-//   fetch(`${apiUrl}/api/signin`, {
+//   fetch(`${apiUrl}/auth/signin`, {
 //     method: 'POST', // or 'PUT'
 //     body: JSON.stringify(formProps), // data can be `string` or {object}!
 //     headers: {
@@ -173,7 +173,7 @@ export const signin = (formProps, callback) => async (dispatch, getState) => {
 export const refreshToken = (callback) => async (dispatch, getState) => {
   try {
     const response = await instance.post(
-      '/refresh-token',
+      '/auth/refresh-token',
       {},
       {
         headers: { 'CSRF-Token': getState().csrf },

@@ -8,10 +8,10 @@ import {
 import reduxThunk from 'redux-thunk';
 import reduxPromise from 'redux-promise';
 
-import auth from '../../store/reducers/authReducer';
-import posts from '../../store/reducers/postsReducer';
-import users from '../../store/reducers/userDataReducer';
-import csrf from '../../store/reducers/csrf';
+import auth from '../../../store/reducers/authReducer';
+import posts from '../../../store/reducers/postsReducer';
+import users from '../../../store/reducers/userDataReducer';
+import csrf from '../../../store/reducers/csrf';
 
 const storeMiddleware = () => async (req, res, next) => {
   const rootReducer = combineReducers({

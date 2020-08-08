@@ -1,7 +1,4 @@
 /* eslint-disable no-console */
-// import express from 'express';
-// import cookieParser from 'cookie-parser';
-import path from 'path'; // eslint-disable-line
 import webpack from 'webpack';
 import webpackHotServerMiddleware from 'webpack-hot-server-middleware';
 import throng from 'throng';
@@ -10,15 +7,12 @@ import configDevClient from '../../config/webpack.dev-client';
 import configDevServer from '../../config/webpack.dev-server';
 import configProdClient from '../../config/webpack.prod-client';
 import configProdServer from '../../config/webpack.prod-server';
-import storeMiddleware from './middleware/store';
-import server from './auth-server/express';
+import server from './api/express';
 
-import db from './auth-server/models';
-import initial from './auth-server/models/initial';
+import db from './api/models';
+import initial from './api/models/initial';
 
 const expressStaticGzip = require('express-static-gzip');
-
-// const server = require('./auth0/auth0');
 
 const isProd = process.env.NODE_ENV === 'production';
 const isDev = !isProd;
@@ -69,7 +63,6 @@ function start() {
       configDevClient.devServer,
     );
 
-    server.use(storeMiddleware());
     server.use(webpackDevMiddleware);
     server.use(webpackHotMiddlware);
     server.use(webpackHotServerMiddleware(compiler));
@@ -89,7 +82,6 @@ function start() {
           enableBrotli: true,
         }),
       );
-      server.use(storeMiddleware());
       server.use(render({ clientStats }));
       done();
     });

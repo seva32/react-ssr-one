@@ -7,7 +7,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { flushChunkNames } from 'react-universal-component/server';
 import flushChunks from 'webpack-flush-chunks';
 import serialize from 'serialize-javascript';
-import Routes, { routes } from '../App/Routes';
+import Routes, { routes } from '../../App/Routes';
 
 export default ({ clientStats }) => async (req, res) => {
   const { store } = req;

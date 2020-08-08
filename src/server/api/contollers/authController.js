@@ -6,7 +6,11 @@
 import bcrypt from 'bcryptjs';
 import db from '../models/index';
 import config, { cookiesOptions } from './config';
-import { getAccessToken, getRefreshToken } from '../jwt/jwt';
+import {
+  getAccessToken,
+  getRefreshToken,
+  processRefreshToken,
+} from '../jwt/jwt';
 
 const User = db.user;
 const Role = db.role;
@@ -202,5 +206,26 @@ export const signin = (req, res) => {
         .catch((error) => {
           res.status(500).send({ message: error });
         });
+    });
+};
+
+export const refreshTokenController = (req, res) => {
+  const refreshToken =
+    req.headers.cookie
+      .split(';')
+      .filter((c) => c.includes('refreshToken'))[0]
+      .split('=')[1] || '';
+
+  processRefreshToken(refreshToken, req.fingerprint)
+    .then((tokens) => {
+      res.cookie('refreshToken', tokens.refreshToken, cookiesOptions);
+      return res.send({
+        accessToken: tokens.accessToken,
+        expiryToken: config.expiryToken,
+      });
+    })
+    .catch((err) => {
+      const message = (err && err.message) || err;
+      res.status(403).send(message);
     });
 };

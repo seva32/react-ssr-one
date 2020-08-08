@@ -10,7 +10,7 @@ module.exports = {
   name: 'server',
   target: 'node',
   externals,
-  entry: './src/server/render.js',
+  entry: './src/server/render/render.js',
   mode: 'production',
   output: {
     filename: 'prod-server-bundle.js',

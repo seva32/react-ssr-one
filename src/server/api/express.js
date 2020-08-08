@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import dotenv from 'dotenv';
 import express from 'express';
-import path from 'path'; // eslint-disable-line
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import fingerprint from 'express-fingerprint';
+import helmet from 'helmet';
 
 import { cookiesOptions } from './contollers/config';
 import { cors, store, csurf as csrfProtection } from './middleware';
@@ -13,7 +13,7 @@ import { authRouter, authFilterRouter, usersRouter } from './router';
 dotenv.config({ silent: true });
 
 const server = express();
-server.set('x-powered-by', false);
+// server.disable('x-powered-by');
 server.use(bodyParser.json({ type: '*/*', limit: '10mb' }));
 server.use(
   bodyParser.urlencoded({
@@ -31,6 +31,7 @@ server.use(
 
 server.options('*', cors);
 server.use(csrfProtection);
+process.env.NODE_ENV === 'production' && server.use(helmet());
 
 /* Redirect http to https in heroku */
 // server.use('*', (req, res, next) => {

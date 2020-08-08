@@ -47,7 +47,7 @@ export default (urlmatch, callback) => {
 //   console.log(response);
 //   if (response.status === 401) {
 //     try {
-//       const res = await axios.post('/refresh-token', {
+//       const res = await axios.post('/auth/refresh-token', {
 //         withCredentials: true,
 //         headers: {
 //           crossorigin: true,

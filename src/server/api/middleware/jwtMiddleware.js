@@ -5,7 +5,7 @@ import { verifyJWTToken, verifyRefreshToken } from '../jwt/jwt';
 import { cookiesOptions } from '../contollers/config';
 
 // eslint-disable-next-line import/prefer-default-export
-export function jwtMiddleware(req, res, next) {
+function jwtMiddleware(req, res, next) {
   // refresh token tiene que estar siempre presente si el
   // cliente esta auth, en cambio access token puede faltar
   // en un reload/refresh
@@ -47,7 +47,7 @@ export function jwtMiddleware(req, res, next) {
       })
       .catch((err) => {
         console.log(err.message);
-        if (req.originalUrl === '/api/users') {
+        if (req.originalUrl === '/users') {
           // si fue llamada a api no puedo devolver redirect, sino el
           // response seria la pagina a la que redirijo
           return res.status(401).send({ message: err.message });
@@ -57,3 +57,5 @@ export function jwtMiddleware(req, res, next) {
       });
   }
 }
+
+export default jwtMiddleware;

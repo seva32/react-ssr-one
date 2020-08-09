@@ -13,7 +13,6 @@ import { authRouter, authFilterRouter, usersRouter } from './router';
 dotenv.config({ silent: true });
 
 const server = express();
-// server.disable('x-powered-by');
 server.use(bodyParser.json({ type: '*/*', limit: '10mb' }));
 server.use(
   bodyParser.urlencoded({
@@ -34,35 +33,7 @@ server.use(csrfProtection);
 process.env.NODE_ENV === 'production' &&
   server.use(
     helmet({
-      frameguard: false,
-      // frameguard: {
-      //   action: 'deny',
-      // },
       contentSecurityPolicy: false,
-      // contentSecurityPolicy: {
-      //   directives: {
-      //     defaultSrc: ["'self'"],
-      //     scriptSrc: ["'self'", 'seva32.tk'],
-      //     objectSrc: ["'none'"],
-      //     upgradeInsecureRequests: [],
-      //   },
-      // },
-      expectCt: false,
-      // expectCt: {
-      //   maxAge: 86400,
-      //   enforce: true,
-      // },
-      referrerPolicy: false,
-      // referrerPolicy: {
-      //   policy: ['origin', 'seva32.tk'],
-      // },
-      dnsPrefetchControl: false,
-      hidePoweredBy: false,
-      hsts: false,
-      ieNoOpen: false,
-      noSniff: false,
-      permittedCrossDomainPolicies: false,
-      xssFilter: false,
     }),
   );
 

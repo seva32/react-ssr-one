@@ -41,7 +41,10 @@ const NavBarMobile = ({
     >
       <Menu fixed="top" inverted>
         <Menu.Item>
-          <Image size="mini" src="https://react.semantic-ui.com/logo.png" />
+          <Image
+            size="mini"
+            src="https://res.cloudinary.com/seva32/image/upload/v1594750007/logo192_xustlx.png"
+          />
         </Menu.Item>
         <Menu.Item onClick={onToggle}>
           <Icon name="sidebar" />
@@ -84,7 +87,10 @@ NavBarMobile.propTypes = {
 const NavBarDesktop = ({ leftItems, rightItems }) => (
   <Menu fixed="top" inverted>
     <Menu.Item>
-      <Image size="mini" src="https://react.semantic-ui.com/logo.png" />
+      <Image
+        size="mini"
+        src="https://res.cloudinary.com/seva32/image/upload/v1594750007/logo192_xustlx.png"
+      />
     </Menu.Item>
     {map(leftItems, (item) => (
       <Menu.Item as={NavLink} exact {...item} />

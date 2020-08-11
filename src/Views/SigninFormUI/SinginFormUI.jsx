@@ -169,6 +169,10 @@ const SigninFormUI = ({ error, signin, history }) => {
           <Message>
             New to us? <Link to="/signup">Sign Up</Link>
           </Message>
+
+          <Message>
+            <Link to="/reset-password">Reset password</Link>
+          </Message>
         </Grid.Column>
       </Grid>
     </>

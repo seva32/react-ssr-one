@@ -8,6 +8,10 @@ import {
   REFRESH_TOKEN_ERROR,
   REFRESH_TOKEN_RESTART_TIMEOUT,
   ACCESS_TOKEN_DELETE_ERROR,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_ERROR,
+  CHANGE_PASSWORD_SUCCESS,
+  CHANGE_PASSWORD_ERROR,
 } from '../actions/auth/authActionTypes';
 
 const initialState = {
@@ -15,6 +19,10 @@ const initialState = {
   errorMessageSignUp: '',
   errorMessageSignIn: '',
   expiry: {},
+  resetPassword: {},
+  resetPasswordError: '',
+  changePassword: {},
+  changePasswordError: '',
 };
 
 export default (state = initialState, action) => {
@@ -38,6 +46,14 @@ export default (state = initialState, action) => {
       return state;
     case REFRESH_TOKEN_RESTART_TIMEOUT:
       return state;
+    case RESET_PASSWORD_SUCCESS:
+      return { ...state, resetPassword: action.payload };
+    case RESET_PASSWORD_ERROR:
+      return { ...state, resetPasswordError: action.payload };
+    case CHANGE_PASSWORD_SUCCESS:
+      return { ...state, changePassword: action.payload };
+    case CHANGE_PASSWORD_ERROR:
+      return { ...state, changePasswordError: action.payload };
     default:
       return state;
   }

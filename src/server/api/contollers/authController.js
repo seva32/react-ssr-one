@@ -279,7 +279,7 @@ export const resetPassword = (req, res) => {
           sgMail.setApiKey(process.env.SENDGRID_API_KEY);
           const hosting =
             process.env.NODE_ENV === 'production'
-              ? process.env.SERVER_URL
+              ? `https://${process.env.SERVER_URL}`
               : 'http://localhost:8080';
           const msg = {
             to: 'sebas.warsaw@gmail.com',

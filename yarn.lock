@@ -1065,6 +1065,30 @@
     exenv "^1.2.2"
     prop-types "^15.6.2"
 
+"@sendgrid/client@^7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@sendgrid/client/-/client-7.2.3.tgz#6cbd0648711eedd36d96507c46caf707c9dde4c1"
+  integrity sha512-HGU/vipv5i/j4Nm/HAXCrFi7gwEuaUukfqlF8SZ4A6jtyKJfa7emV2H4dMvMO/vzqcH4E7Gl+5sDdIi9v8j88g==
+  dependencies:
+    "@sendgrid/helpers" "^7.2.3"
+    axios "^0.19.2"
+
+"@sendgrid/helpers@^7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@sendgrid/helpers/-/helpers-7.2.3.tgz#0a6b803a2df81208f28505adb35e229d2a064e2d"
+  integrity sha512-MMi7AtCs0uMzoYeKkyKOoONRjGDWbEYFF05d7OAohKglWFfbphE1dULHazHRQ/AnHcJFXMzb5rWL/PaDjeZwxg==
+  dependencies:
+    chalk "^2.0.1"
+    deepmerge "^4.2.2"
+
+"@sendgrid/mail@^7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@sendgrid/mail/-/mail-7.2.3.tgz#e76b9b64a11030d7d0898c0dd0c8519bcfa519c0"
+  integrity sha512-ZuVYzXI+3M02w6Qsu562aJXzwhoymMJ589is0yaL+Y+VMMMdM/cFlgwLcNFbmuvsRw9qBrjy5S2HpdeB5E8vtA==
+  dependencies:
+    "@sendgrid/client" "^7.2.3"
+    "@sendgrid/helpers" "^7.2.3"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -4255,6 +4279,11 @@ crypto-random-string@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
   integrity sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==
+
+crypto@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
+  integrity sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==
 
 csrf@3.1.0:
   version "3.1.0"

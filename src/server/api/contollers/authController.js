@@ -4,6 +4,8 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-shadow */
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
+import sgMail from '@sendgrid/mail';
 import db from '../models/index';
 import config, { cookiesOptions } from './config';
 import {
@@ -227,5 +229,120 @@ export const refreshTokenController = (req, res) => {
     .catch((err) => {
       const message = (err && err.message) || err;
       res.status(403).send(message);
+    });
+};
+
+// export const resetPassword = (req, res) => {
+//   console.log(req.body.email);
+//   res.send({ success: 'ok', notsecure: 'sure' });
+// };
+
+export const resetPassword = (req, res) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log('Crypto error: ', err);
+      return res.status(500).send({
+        message: 'We couldnt process your request, please try again.',
+      });
+    }
+    const token = buffer.toString('hex');
+
+    User.findOne({
+      email: req.body.email,
+    })
+      .populate('roles', '-__v')
+      .exec(async (err, user) => {
+        if (err) {
+          res.status(500).send({ message: 'Internal server error' });
+          return;
+        }
+
+        if (!user) {
+          res.status(404).send({ message: 'User Email Not found.' });
+          return;
+          // main err handler
+          // const err = new Error('User Email Not found');
+          // err.status = 404;
+          // return next(err);
+        }
+
+        user.resetPasswordToken = token;
+        user.resetPasswordTokenExpiration = Date.now() + 3600000;
+
+        user.save((err) => {
+          if (err) {
+            res.status(500).send({ message: 'Internal server error' });
+            return;
+          }
+
+          res.redirect('/');
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+          const hosting =
+            process.env.NODE_ENV === 'production'
+              ? process.env.SERVER_URL
+              : 'http://localhost:8080';
+          const msg = {
+            to: 'sebas.warsaw@gmail.com',
+            from: 'contact@seva32.tk', // es el que registre en sendgrid, sino exception
+            subject: 'Password reset on seva32.tk',
+            text: 'and easy to do anywhere, even with Node.js',
+            html: `
+            <strong>You requested a password reset</strong>
+            <strong>Click this <a href="${hosting}/reset-password/${token}/${req.body.email}">link</a> to set a new password.</strong>
+          `,
+          };
+          sgMail.send(msg);
+        });
+      });
+  });
+};
+
+export const changePassword = (req, res) => {
+  const { newPassword, oldPassword, token, email } = req.body; // eslint-disable-line
+
+  if (!newPassword || !oldPassword || !token || !email) {
+    return res
+      .status(401)
+      .send({ message: "Imcomplete data, we couldn't reset your password" });
+  }
+
+  User.findOne({
+    email,
+    resetPasswordToken: token,
+    resetPasswordTokenExpiration: { $gt: Date.now() },
+  })
+    .populate('roles', '-__v')
+    .exec(async (err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      if (!user) {
+        res
+          .status(404)
+          .send({ message: 'Invalid data trying to change your password.' });
+        return;
+      }
+
+      const passwordIsValid = bcrypt.compareSync(oldPassword, user.password);
+
+      if (!passwordIsValid) {
+        return res.status(401).send({
+          message: "Your data didn't match, no change applied",
+        });
+      }
+
+      user.password = bcrypt.hashSync(req.body.newPassword, 8);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordTokenExpiration = undefined;
+
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: 'Internal server error' });
+          return;
+        }
+
+        return res.status(200).send({ message: 'changed!' });
+      });
     });
 };

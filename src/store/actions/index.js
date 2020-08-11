@@ -5,5 +5,7 @@ export {
   signup,
   refreshToken,
   resfreshTokenRestartTimeout,
+  resetPassword,
+  changePassword,
 } from './auth/authActions';
 export { getCurrentUser, getUserData } from './users/userDataActions';

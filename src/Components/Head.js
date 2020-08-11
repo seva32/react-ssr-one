@@ -3,8 +3,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const favicon = 'favicon.ico';
-const icon512 = '512.png';
-const icon192 = '192.png';
+const icon512 = './512.png';
+const icon192 = './192.png';
 
 // const isProd = process.env.NODE_ENV === 'production';
 

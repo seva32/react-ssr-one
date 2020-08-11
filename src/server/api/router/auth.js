@@ -10,6 +10,8 @@ import {
   signup,
   signout,
   refreshTokenController,
+  resetPassword,
+  changePassword,
 } from '../contollers/authController';
 
 const router = express.Router();
@@ -22,5 +24,7 @@ router.post(
 router.post('/signin', [cors, csrfProtection], signin);
 router.post('/signout', [cors, csrfProtection], signout);
 router.post('/refresh-token', [cors, csrfProtection], refreshTokenController);
+router.post('/reset-password', [cors, csrfProtection], resetPassword);
+router.post('/change-password', [cors, csrfProtection], changePassword);
 
 export default router;

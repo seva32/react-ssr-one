@@ -93,7 +93,7 @@ server.use((err, req, res, next) => {
     console.error(err.message);
     console.error(err.stack);
     const message = (err && err.message) || err;
-    return res.status(500).send(message);
+    return res.status(err.status || 500).send(message);
   }
   return next(); // never called =)
 });

@@ -8,6 +8,10 @@ import {
   REFRESH_TOKEN_ERROR,
   REFRESH_TOKEN_RESTART_TIMEOUT,
   ACCESS_TOKEN_DELETE_ERROR,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_ERROR,
+  CHANGE_PASSWORD_SUCCESS,
+  CHANGE_PASSWORD_ERROR,
 } from './authActionTypes';
 import {
   GET_USER_DATA,
@@ -105,6 +109,8 @@ export const signout = (callback) => async (dispatch, getState) => {
   dispatch({ type: GET_USER_DATA, payload: {} });
   dispatch({ type: GET_USER_DATA_ERROR, payload: '' });
   dispatch({ type: GET_CURRENT_USER, payload: {} });
+  dispatch({ type: RESET_PASSWORD_ERROR, payload: '' });
+  dispatch({ type: CHANGE_PASSWORD_ERROR, payload: '' });
   return callback(); // callback for token expire timeout countdownHOC
 };
 
@@ -212,3 +218,51 @@ export const refreshToken = (callback) => async (dispatch, getState) => {
 export const resfreshTokenRestartTimeout = () => ({
   type: REFRESH_TOKEN_RESTART_TIMEOUT,
 });
+
+// formProps == email, reset es solamente para el envio de mail/link para change
+export const resetPassword = (formProps, callback) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    const response = await instance.post('/auth/reset-password', formProps, {
+      headers: { 'CSRF-Token': getState().csrf },
+    });
+    if (response) {
+      dispatch({
+        type: RESET_PASSWORD_SUCCESS,
+        payload: formProps,
+      });
+    }
+    return callback();
+  } catch (e) {
+    dispatch({
+      type: RESET_PASSWORD_ERROR,
+      // res.status(404).send({ message: 'User Email Not found.' });
+      payload: e.response.data.message,
+    });
+  }
+};
+
+// formProps email, token, oldPassword, newPassword
+export const changePassword = (formProps, callback) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    console.log(formProps);
+    const response = await instance.post('/auth/change-password', formProps, {
+      headers: { 'CSRF-Token': getState().csrf },
+    });
+    dispatch({
+      type: CHANGE_PASSWORD_SUCCESS,
+      payload: response.data,
+    });
+    return callback();
+  } catch (e) {
+    dispatch({
+      type: CHANGE_PASSWORD_ERROR,
+      payload: e.response.data.message,
+    });
+  }
+};

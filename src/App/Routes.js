@@ -36,6 +36,16 @@ export const routes = [
     page: 'Signout',
   },
   {
+    exact: true,
+    path: '/reset-password',
+    page: 'ResetPassword',
+  },
+  {
+    exact: true,
+    path: '/reset-password/:token/:email',
+    page: 'ChangePassword',
+  },
+  {
     loadData: loadDataPosts,
     exact: true,
     path: '/posts',

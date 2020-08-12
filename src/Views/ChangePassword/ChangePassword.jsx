@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable object-curly-newline */
 /* eslint-disable indent */
 import React from 'react';
@@ -10,9 +9,31 @@ import { connect } from 'react-redux';
 import omit from 'lodash.omit';
 import { Container } from './ChangePassword.style';
 import * as actions from '../../store/actions';
+import { Modal } from '../../Components';
 
 // eslint-disable-next-line no-unused-vars
-function ChangePasswordUI({ success, error, changePassword, history, match }) {
+function ChangePasswordUI({
+  success,
+  error,
+  changePassword,
+  signout,
+  history,
+  match,
+}) {
+  const [showModal, setShowModal] = React.useState(false);
+  const [navigate, setNavigate] = React.useState(false);
+
+  const toggleModalState = (_e) => {
+    setShowModal(false);
+    setNavigate(true);
+  };
+
+  React.useEffect(() => {
+    if (navigate) {
+      history.push('/signin');
+    }
+  }, [navigate, history]);
+
   const formik = useFormik({
     initialValues: {
       oldPassword: '',
@@ -36,12 +57,15 @@ function ChangePasswordUI({ success, error, changePassword, history, match }) {
       const { token, email } = match.params;
       values = { ...values, token, email }; // eslint-disable-line
       changePassword(omit(values, ['repeatpassword']), () => {
-        history.push('/');
+        signout(() => {
+          setShowModal(true);
+        });
       });
       resetForm({});
       setStatus({ success: true });
     },
   });
+
   return (
     <Container>
       <Form onSubmit={formik.handleSubmit} size="large">
@@ -114,6 +138,16 @@ function ChangePasswordUI({ success, error, changePassword, history, match }) {
           )}
         </Segment>
       </Form>
+      {showModal && (
+        <Modal
+          id="modal"
+          isOpen={showModal}
+          onClose={toggleModalState}
+          title="Password Change"
+        >
+          <div className="box-body">{success.message}</div>
+        </Modal>
+      )}
     </Container>
   );
 }
@@ -122,6 +156,7 @@ ChangePasswordUI.propTypes = {
   error: PropTypes.string,
   success: PropTypes.object, // eslint-disable-line
   changePassword: PropTypes.func,
+  signout: PropTypes.func,
   history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
@@ -135,6 +170,7 @@ ChangePasswordUI.defaultProps = {
   error: '',
   success: {},
   changePassword: () => {},
+  signout: () => {},
   match: {},
 };
 

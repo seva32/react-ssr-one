@@ -70,26 +70,28 @@ export const signup = (formProps, callback) => async (dispatch, getState) => {
 export const signout = (callback) => async (dispatch, getState) => {
   if (typeof window !== 'undefined') {
     const user = JSON.parse(localStorage.getItem('user'));
-    try {
-      // eslint-disable-next-line no-unused-vars
-      const response = await instance.post(
-        '/auth/signout',
-        {
-          email: user.email,
-        },
-        {
-          headers: { 'CSRF-Token': getState().csrf },
-        },
-      );
-      // console.log(`${user.email} signout success: ${response.data.ok}`);
-    } catch (e) {
-      // console.log(`${user.email} signout failure. ${e}`);
-      dispatch({
-        type: ACCESS_TOKEN_DELETE_ERROR,
-        payload: { e, user }, // logging
-      });
-    } finally {
-      localStorage.removeItem('user');
+    if (user) {
+      try {
+        // eslint-disable-next-line no-unused-vars
+        const response = await instance.post(
+          '/auth/signout',
+          {
+            email: user.email,
+          },
+          {
+            headers: { 'CSRF-Token': getState().csrf },
+          },
+        );
+        // console.log(`${user.email} signout success: ${response.data.ok}`);
+      } catch (e) {
+        // console.log(`${user.email} signout failure. ${e}`);
+        dispatch({
+          type: ACCESS_TOKEN_DELETE_ERROR,
+          payload: { e, user }, // logging
+        });
+      } finally {
+        localStorage.removeItem('user');
+      }
     }
   }
   if (typeof window !== 'undefined' && window.gapi) {

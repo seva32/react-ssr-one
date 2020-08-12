@@ -77,6 +77,7 @@ export default ({ clientStats }) => async (req, res) => {
             </head>
             <body>
               <div id="react-root">${app}</div>
+              <div id="modal-root"></div>
               ${js}
               ${cssHash}
               <script>window.REDUX_DATA = ${reduxData}</script>

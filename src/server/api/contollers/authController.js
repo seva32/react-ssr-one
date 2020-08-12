@@ -342,7 +342,9 @@ export const changePassword = (req, res) => {
           return;
         }
 
-        return res.status(200).send({ message: 'changed!' });
+        return res
+          .status(200)
+          .send({ message: 'Password changed! Signin with your new password' });
       });
     });
 };

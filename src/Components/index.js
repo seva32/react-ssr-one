@@ -7,3 +7,5 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as Head } from './Head';
 export { default as countdownHOC } from './CountdownHOC';
 export { default as interceptorHOC } from './InterceptorHOC';
+export { default as ModalDimmer } from './ModalDimmer';
+export { default as Modal } from './Modal';

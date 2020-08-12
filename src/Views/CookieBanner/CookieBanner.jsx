@@ -15,7 +15,7 @@ function CookieBanner(props) {
   const consentAction = (accept) => {
     setClose(true);
     if (accept) {
-      setCookie('cookies-consent', 'accept', { path: '/' });
+      setCookie('cookies-consent', 'accept', { path: '/', sameSite: 'strict' });
       setHasStorage(true);
     } else {
       removeCookie('cookies-consent');

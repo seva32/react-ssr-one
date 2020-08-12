@@ -22,7 +22,8 @@
       {
         "ignoredNodes": [
           "TemplateLiteral"
-        ]
+        ],
+        "SwitchCase": 2
       }
     ],
     "react/jsx-filename-extension": [

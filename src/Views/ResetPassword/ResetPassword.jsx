@@ -8,9 +8,24 @@ import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import { Container } from './ResetPasswordUI.style';
 import * as actions from '../../store/actions';
+import { Modal } from '../../Components';
 
 // eslint-disable-next-line no-unused-vars
 function ResetPasswordUI({ success, error, resetPassword, history }) {
+  const [showModal, setShowModal] = React.useState(false);
+  const [navigate, setNavigate] = React.useState(false);
+
+  const toggleModalState = (_e) => {
+    setShowModal(false);
+    setNavigate(true);
+  };
+
+  React.useEffect(() => {
+    if (navigate) {
+      history.push('/');
+    }
+  }, [navigate, history]);
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -20,7 +35,7 @@ function ResetPasswordUI({ success, error, resetPassword, history }) {
     }),
     onSubmit: (values, { setStatus, resetForm }) => {
       resetPassword(values, () => {
-        history.push('/');
+        setShowModal(true);
       });
       resetForm({});
       setStatus({
@@ -65,6 +80,26 @@ function ResetPasswordUI({ success, error, resetPassword, history }) {
           )}
         </Segment>
       </Form>
+      {showModal && (
+        <Modal
+          id="modal"
+          isOpen={showModal}
+          onClose={toggleModalState}
+          title="Reset password"
+        >
+          <div className="box-body">
+            {`Check your registered email - ${success.email} - to reset your password`}
+          </div>
+        </Modal>
+      )}
+      {/* {showModal && (
+        <ModalDimmer
+          isOpen={showModal}
+          onClose={toggleModalState}
+          mainTitle="Reset password"
+          mainContent={`Check your registered email - ${success.email} - to reset your password`}
+        />
+      )} */}
     </Container>
   );
 }

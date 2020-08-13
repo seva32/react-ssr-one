@@ -6,7 +6,7 @@ const host = process.env.SERVER_URL;
 const url =
   process.env.NODE_ENV === 'production'
     ? `https://${host}/logserver`
-    : `http://${host}:9000`;
+    : `http://${host}:9000/logserver`;
 
 const customJSON = (logg) => ({
   msg: logg.message,
@@ -16,7 +16,7 @@ const customJSON = (logg) => ({
 
 remote.apply(log, {
   format: customJSON,
-  url: `${url}/seva32/log`,
+  url: `${url}/seva32tk/log`,
 });
 
 export default log;

@@ -8927,7 +8927,12 @@ log-symbols@^4.0.0:
   dependencies:
     chalk "^4.0.0"
 
-loglevel@^1.4.1:
+loglevel-plugin-remote@^0.6.8:
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/loglevel-plugin-remote/-/loglevel-plugin-remote-0.6.8.tgz#9234b75520491dc5b1a34abbbba0101f02dd2b39"
+  integrity sha512-EMhWUOAx4/Wtge1bNzYDvvXzv6PLt07emqTjA+Sc8WfViNSYXxe6kWYFyjcqGS6mqNeOqQ3+AG0xuasynHK0XA==
+
+loglevel@^1.4.1, loglevel@^1.6.8:
   version "1.6.8"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.8.tgz#8a25fb75d092230ecd4457270d80b54e28011171"
   integrity sha512-bsU7+gc9AJ2SqpzxwU3+1fedl8zAntbtC5XYlt3s2j1hJcn2PsXSmgN8TaLG/J1/2mod4+cE/3vNL70/c1RNCA==
@@ -11814,6 +11819,11 @@ range-parser@^1.0.3, range-parser@^1.2.1, range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
+
+rate-limiter-flexible@^2.1.10:
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-2.1.10.tgz#5bf7c841bd8cbddd483a95ab65f765efe652aabf"
+  integrity sha512-Pa+8TPD4xYaiCUB5K4a/+j2FHDUe4HP1g49JmKEmkOkhqPaeVqxJsZuuVaza/svSCOT+V73vtsyBiSFK/e1yXw==
 
 raw-body@2.4.0:
   version "2.4.0"

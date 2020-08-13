@@ -16,6 +16,7 @@ module.exports = {
     filename: 'prod-server-bundle.js',
     path: path.resolve(__dirname, '../build'),
     libraryTarget: 'commonjs2',
+    globalObject: 'this',
   },
   resolve: {
     extensions: ['.js', '.json', '.jsx', '.scss'],

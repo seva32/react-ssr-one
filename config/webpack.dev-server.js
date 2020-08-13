@@ -15,6 +15,7 @@ module.exports = {
     chunkFilename: '[name].js',
     path: path.resolve(__dirname, '../build'),
     libraryTarget: 'commonjs2',
+    globalObject: 'this',
   },
   module: {
     rules: [

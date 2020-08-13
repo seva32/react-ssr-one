@@ -120,6 +120,7 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
         WEBPACK: true,
+        SERVER_URL: JSON.stringify('localhost'),
       },
     }),
     new CopyWebpackPlugin({

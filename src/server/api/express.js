@@ -7,7 +7,12 @@ import fingerprint from 'express-fingerprint';
 import helmet from 'helmet';
 
 import { cookiesOptions } from './contollers/config';
-import { cors, store, csurf as csrfProtection } from './middleware';
+import {
+  cors,
+  store,
+  csurf as csrfProtection,
+  rateLimiterMiddleware,
+} from './middleware';
 import { authRouter, authFilterRouter, usersRouter } from './router';
 
 dotenv.config({ silent: true });
@@ -81,6 +86,8 @@ server.use((req, res, next) => {
 
   next();
 });
+
+server.use(rateLimiterMiddleware);
 
 server.use('/auth', authRouter);
 server.use(authFilterRouter);

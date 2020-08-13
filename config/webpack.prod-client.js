@@ -139,6 +139,7 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
         WEBPACK: true,
+        SERVER_URL: JSON.stringify('seva32.tk'),
       },
     }),
     new CopyWebpackPlugin({

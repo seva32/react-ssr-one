@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { cors, csurf as csrfProtection } from '../middleware';
+import { cors, csurf as csrfProtection, expressValidator } from '../middleware';
 import {
   checkDuplicateEmail,
   checkRolesExisted,
@@ -18,13 +18,46 @@ const router = express.Router();
 
 router.post(
   '/signup',
-  [checkDuplicateEmail, checkRolesExisted, csrfProtection],
+  [
+    expressValidator.authValidationRules(),
+    expressValidator.validate,
+    checkDuplicateEmail,
+    checkRolesExisted,
+    csrfProtection,
+  ],
   signup,
 );
-router.post('/signin', [cors, csrfProtection], signin);
+router.post(
+  '/signin',
+  [
+    expressValidator.authValidationRules(),
+    expressValidator.validate,
+    cors,
+    csrfProtection,
+  ],
+  signin,
+);
 router.post('/signout', [cors, csrfProtection], signout);
 router.post('/refresh-token', [cors, csrfProtection], refreshTokenController);
-router.post('/reset-password', [cors, csrfProtection], resetPassword);
-router.post('/change-password', [cors, csrfProtection], changePassword);
+router.post(
+  '/reset-password',
+  [
+    expressValidator.authValidationRules(),
+    expressValidator.validate,
+    cors,
+    csrfProtection,
+  ],
+  resetPassword,
+);
+router.post(
+  '/change-password',
+  [
+    expressValidator.authValidationRules(),
+    expressValidator.validate,
+    cors,
+    csrfProtection,
+  ],
+  changePassword,
+);
 
 export default router;

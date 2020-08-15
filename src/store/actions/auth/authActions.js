@@ -63,7 +63,8 @@ export const signup = (formProps, callback) => async (dispatch, getState) => {
     );
     return callback();
   } catch (e) {
-    dispatch({ type: AUTH_ERROR_SIGNUP, payload: 'Email in use' });
+    const message = e.response.data.message || 'Email in use';
+    dispatch({ type: AUTH_ERROR_SIGNUP, payload: message });
   }
 };
 
@@ -137,7 +138,8 @@ export const signin = (formProps, callback) => async (dispatch, getState) => {
     );
     return callback();
   } catch (e) {
-    dispatch({ type: AUTH_ERROR_SIGNIN, payload: 'Invalid login credentials' });
+    const message = e.response.data.message || 'Invalid login credentials';
+    dispatch({ type: AUTH_ERROR_SIGNIN, payload: message });
   }
 };
 
@@ -252,7 +254,6 @@ export const changePassword = (formProps, callback) => async (
   getState,
 ) => {
   try {
-    console.log(formProps);
     const response = await instance.post('/auth/change-password', formProps, {
       headers: { 'CSRF-Token': getState().csrf },
     });

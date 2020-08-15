@@ -179,7 +179,7 @@ const SignupFormUI = ({ error, signup, history }) => {
 
           {error && (
             <Message negative>
-              <Message.Header>{`You couldnt signup: ${error}`}</Message.Header>
+              <Message.Header>{`You couldnt signup. ${error}`}</Message.Header>
               <p>Try again</p>
             </Message>
           )}

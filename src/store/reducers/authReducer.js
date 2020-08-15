@@ -14,14 +14,14 @@ import {
   CHANGE_PASSWORD_ERROR,
 } from '../actions/auth/authActionTypes';
 
-let log = null;
-if (process.env.WEBPACK) {
-  log = require('../../utils/loglevel').default;
-  log.enableAll();
-  log.warn('loglevel');
-} else {
-  log = console.log; // eslint-disable-line
-}
+// let log = null;
+// if (process.env.WEBPACK) {
+//   log = require('../../utils/loglevel').default;
+//   log.enableAll();
+//   log.warn('loglevel');
+// } else {
+//   log = console.log; // eslint-disable-line
+// }
 
 const initialState = {
   authenticated: '',
@@ -45,14 +45,13 @@ export default (state = initialState, action) => {
     case AUTH_EXPIRY_TOKEN:
       return { ...state, expiry: action.payload };
     case REFRESH_TOKEN_ERROR:
-      log.warn(`refresh token expired|error: ${action.payload}`);
+      // log.warn(`refresh token expired|error: ${action.payload}`);
       return state;
     case ACCESS_TOKEN_DELETE_ERROR:
-      log.warn(`access token not found for delete action: ${action.payload.e}`);
+      // log.warn(`access token not found for delete action: ${action.payload.e}`);
       return state;
     case REFRESH_TOKEN_RESTART_TIMEOUT:
-      console.log(log);
-      log.warn('refresh token timeout...');
+      // log.warn('refresh token timeout...');
       return state;
     case RESET_PASSWORD_SUCCESS:
       return { ...state, resetPassword: action.payload };

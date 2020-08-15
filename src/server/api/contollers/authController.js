@@ -232,11 +232,6 @@ export const refreshTokenController = (req, res) => {
     });
 };
 
-// export const resetPassword = (req, res) => {
-//   console.log(req.body.email);
-//   res.send({ success: 'ok', notsecure: 'sure' });
-// };
-
 export const resetPassword = (req, res) => {
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {

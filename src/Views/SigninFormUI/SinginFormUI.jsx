@@ -161,7 +161,7 @@ const SigninFormUI = ({ error, signin, history }) => {
 
           {error && (
             <Message negative>
-              <Message.Header>{`You couldnt signin: ${error}`}</Message.Header>
+              <Message.Header>{`You couldnt signin. ${error}`}</Message.Header>
               <p>Try again</p>
             </Message>
           )}

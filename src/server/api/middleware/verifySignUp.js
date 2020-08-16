@@ -8,7 +8,8 @@ export const checkDuplicateEmail = (req, res, next) => {
     email: req.body.email,
   }).exec((err, user) => {
     if (err) {
-      res.status(500).send({ message: err });
+      console.log('Error on checkDuplicateEmail mongoose: ', err.message);
+      res.status(500).send({ message: 'Internal server error' });
       return;
     }
 
@@ -35,4 +36,28 @@ export const checkRolesExisted = (req, res, next) => {
   }
 
   next();
+};
+
+export const checkThirdPartyProvider = (req, res, next) => {
+  User.findOne({
+    email: req.body.email,
+  }).exec((err, user) => {
+    if (err) {
+      console.log('Error on checkThirdPartyProvider mongoose: ', err.message);
+      res.status(500).send({ message: 'Internal server error' });
+      return;
+    }
+
+    if (user.third_party_auth.length) {
+      res
+        .status(400)
+        .send({
+          message:
+            'You cannot change the password, you created this profile with your Google account data',
+        });
+      return;
+    }
+
+    next();
+  });
 };

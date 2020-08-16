@@ -99,7 +99,6 @@ const SignupFormUI = ({ error, signup, history }) => {
       }),
     }),
     onSubmit: (values, { setStatus, resetForm }) => {
-      values = { ...values, roles: ['admin', 'user'] }; // eslint-disable-line
       signup(omit(values, ['repeatpassword']), () => {
         history.push('/');
       });

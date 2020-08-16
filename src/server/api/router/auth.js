@@ -4,6 +4,7 @@ import { cors, csurf as csrfProtection, expressValidator } from '../middleware';
 import {
   checkDuplicateEmail,
   checkRolesExisted,
+  checkThirdPartyProvider,
 } from '../middleware/verifySignUp';
 import {
   signin,
@@ -45,6 +46,7 @@ router.post(
   [
     expressValidator.authValidationRules(),
     expressValidator.validate,
+    checkThirdPartyProvider,
     cors,
     csrfProtection,
   ],

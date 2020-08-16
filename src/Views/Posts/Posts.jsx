@@ -1,9 +1,12 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable react/no-danger */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable react/forbid-prop-types */
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'semantic-ui-react';
+import dompurify from 'dompurify';
 import * as Styles from './Posts.style';
 import { Loader, Head } from '../../Components';
 import * as actionCreators from '../../store/actions';
@@ -22,6 +25,8 @@ const Posts = ({
   onGetCurrentUser,
   onLoadUserData,
 }) => {
+  const sanitizer = dompurify.sanitize;
+
   useEffect(() => {
     let mounted = true; // eslint-disable-line
     if (!posts || posts.length < 1) {
@@ -75,12 +80,16 @@ const Posts = ({
       <Styles.Container>
         <Styles.Card>
           <div
-            dangerouslySetInnerHTML={{ __html: dataPost.__content }} // eslint-disable-line
+            dangerouslySetInnerHTML={{
+              __html: sanitizer(dataPost.__content),
+            }}
           />
         </Styles.Card>
         <Styles.Card>
           <div
-            dangerouslySetInnerHTML={{ __html: dataSidePost.__content }} // eslint-disable-line
+            dangerouslySetInnerHTML={{
+              __html: sanitizer(dataSidePost.__content),
+            }}
           />
         </Styles.Card>
       </Styles.Container>
@@ -89,7 +98,7 @@ const Posts = ({
 };
 
 Posts.propTypes = {
-  posts: PropTypes.array, // eslint-disable-line
+  posts: PropTypes.array,
   error: PropTypes.string,
   onDataLoad: PropTypes.func,
   userData: PropTypes.object,

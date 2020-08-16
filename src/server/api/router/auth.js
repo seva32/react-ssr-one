@@ -20,6 +20,7 @@ router.post(
   '/signup',
   [
     expressValidator.authValidationRules(),
+    expressValidator.profileValidationRules(),
     expressValidator.validate,
     checkDuplicateEmail,
     checkRolesExisted,

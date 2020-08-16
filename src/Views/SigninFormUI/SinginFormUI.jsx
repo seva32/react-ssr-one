@@ -16,7 +16,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import has from 'lodash.has';
+// import has from 'lodash.has';
 import imagePath from '../../assets/img/logo192.png';
 import { GoogleLogin } from '../../Components/GoogleButton';
 import * as actions from '../../store/actions';
@@ -30,18 +30,18 @@ const SigninFormUI = ({ error, signin, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          let emailAll = '';
-          if (has(res, 'Ot')) {
-            emailAll = res.Ot.yu;
-          }
-          if (has(res, 'Pt')) {
-            emailAll = res.Pt.zu;
-          }
-          if (emailAll && res.googleId) {
+          // let emailAll = '';
+          // if (has(res, 'Ot')) {
+          //   emailAll = res.Ot.yu;
+          // }
+          // if (has(res, 'Pt')) {
+          //   emailAll = res.Pt.zu;
+          // }
+          if (res.googleId && res.profileObj) {
             toggleShow(false);
             signin(
               {
-                email: emailAll,
+                email: res.profileObj.email,
                 password: res.googleId,
               },
               () => {

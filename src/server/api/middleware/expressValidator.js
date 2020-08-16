@@ -1,6 +1,17 @@
 /* eslint-disable no-useless-escape */
 import { body, validationResult } from 'express-validator';
 
+const regexInvalidChars = (value) => {
+  const re = /(\{|\}|'|"|\\|;|<|>|&)/g;
+  const invalidChars = [...value.matchAll(re)];
+  if (invalidChars.length) {
+    const invalidCharsMessage = [];
+    invalidChars.forEach((i) => invalidCharsMessage.push(i[0]));
+    throw new Error(`Invalid character/s: ${invalidCharsMessage.join('')}`);
+  }
+  return true;
+};
+
 const authValidationRules = () => [
   body('email')
     .not()
@@ -17,17 +28,8 @@ const authValidationRules = () => [
     })
     .isEmail(),
   body('password')
-    .if((_value, { req }) => req.body.password)
-    .custom((password) => {
-      const re = /(\{|\}|'|"|\\|;|<|>|&)/g;
-      const invalidChars = [...password.matchAll(re)];
-      if (invalidChars.length) {
-        const invalidCharsMessage = [];
-        invalidChars.forEach((i) => invalidCharsMessage.push(i[0]));
-        throw new Error(`Invalid character/s: ${invalidCharsMessage.join('')}`);
-      }
-      return true;
-    })
+    .if((_value, { req }) => req.body.password) // para el controller que no usa password
+    .custom(regexInvalidChars)
     .isLength({ min: 5 })
     .withMessage('Must be at least 5 chars long')
     .matches(/\d/)
@@ -36,16 +38,7 @@ const authValidationRules = () => [
     .isIn(['123', 'password', 'abc']),
   body(['oldPassword', 'newPassword'])
     .if((_value, { req }) => req.body.newPassword && req.body.oldPassword)
-    .custom((password) => {
-      const re = /(\{|\}|'|"|\\|;|<|>|&)/g;
-      const invalidChars = [...password.matchAll(re)];
-      if (invalidChars.length) {
-        const invalidCharsMessage = [];
-        invalidChars.forEach((i) => invalidCharsMessage.push(i[0]));
-        throw new Error(`Invalid character/s: ${invalidCharsMessage.join('')}`);
-      }
-      return true;
-    })
+    .custom(regexInvalidChars)
     .isLength({ min: 5 })
     .withMessage('Must be at least 5 chars long')
     .matches(/\d/)
@@ -56,6 +49,28 @@ const authValidationRules = () => [
     .if((_value, { req }) => req.body.token)
     .isHexadecimal()
     .isLength({ min: 64, max: 64 }),
+];
+
+const profileValidationRules = () => [
+  body('profile.email')
+    .if((_value, { req }) => req.body.profile.email)
+    .isEmail(),
+  body('profile.familyName')
+    .if((_value, { req }) => req.body.profile.familyName)
+    .custom(regexInvalidChars),
+  body('profile.givenName')
+    .if((_value, { req }) => req.body.profile.givenName)
+    .custom(regexInvalidChars),
+  body('profile.imageUrl')
+    .if((_value, { req }) => req.body.profile.imageUrl)
+    .custom(regexInvalidChars)
+    .isURL(),
+  body('profile.provider')
+    .if((_value, { req }) => req.body.profile.provider)
+    .custom(regexInvalidChars),
+  body('profile.id')
+    .if((_value, { req }) => req.body.profile.id)
+    .custom(regexInvalidChars),
 ];
 
 const validate = (req, res, next) => {
@@ -73,6 +88,7 @@ const validate = (req, res, next) => {
 
 export default {
   authValidationRules,
+  profileValidationRules,
   validate,
 };
 

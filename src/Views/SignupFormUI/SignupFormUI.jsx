@@ -15,7 +15,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import omit from 'lodash.omit';
-import has from 'lodash.has';
+// import has from 'lodash.has';
 import PropTypes from 'prop-types';
 import imagePath from '../../assets/img/logo192.png';
 import { GoogleLogin } from '../../Components/GoogleButton';
@@ -29,19 +29,31 @@ const SignupFormUI = ({ error, signup, history }) => {
     ((showButton || error) && ( // eslint-disable-line
       <GoogleLogin
         onSuccess={(res) => {
-          let emailAll = '';
-          if (has(res, 'Ot')) {
-            emailAll = res.Ot.yu;
-          }
-          if (has(res, 'Pt')) {
-            emailAll = res.Pt.zu;
-          }
-          if (emailAll && res.googleId) {
+          // let emailAll = '';
+          // if (has(res, 'Ot')) {
+          //   emailAll = res.Ot.yu;
+          // }
+          // if (has(res, 'Pt')) {
+          //   emailAll = res.Pt.zu;
+          // }
+          if (res.googleId && res.profileObj) {
             toggleShow(false);
+            // profileObj example:
+            // email: "sebas.warsaw@gmail.com"
+            // familyName: "Warsaw"
+            // givenName: "Sebas"
+            // googleId: "111241561161166960633"
+            // imageUrl: "https://lh6.googleusercontent.com/-ol4QRbGfYao/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuckLR1Guc_6DT9yx5TUPk3ofp6ZSHQ/s96-c/photo.jpg"
+            // name: "Sebas Warsaw"
             signup(
               {
-                email: emailAll,
+                email: res.profileObj.email,
                 password: res.googleId,
+                profile: {
+                  ...omit(res.profileObj, ['email', 'googleId', 'name']),
+                  provider: 'google',
+                  id: res.profileObj.googleId,
+                },
               },
               () => {
                 history.push('/');
@@ -87,6 +99,7 @@ const SignupFormUI = ({ error, signup, history }) => {
       }),
     }),
     onSubmit: (values, { setStatus, resetForm }) => {
+      values = { ...values, roles: ['admin', 'user'] }; // eslint-disable-line
       signup(omit(values, ['repeatpassword']), () => {
         history.push('/');
       });

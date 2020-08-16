@@ -6,6 +6,8 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import sgMail from '@sendgrid/mail';
+import omit from 'lodash.omit';
+import waterfall from 'async/waterfall';
 import db from '../models/index';
 import config, { cookiesOptions } from './config';
 import {
@@ -17,66 +19,58 @@ import {
 const User = db.user;
 const Role = db.role;
 const Token = db.token;
+const ThirdPartyProvider = db.thirdPartyProviderSchema;
 
-export const signup = (req, res) => {
-  const user = new User({
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-  });
-
-  user.save((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    if (req.body.roles) {
-      Role.find(
-        {
-          name: { $in: req.body.roles },
-        },
-        (err, roles) => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-
-          user.roles = roles.map((role) => role._id);
-          user.save((err) => {
-            if (err) {
-              res.status(500).send({ message: err });
-              return;
-            }
-
-            const token = getAccessToken(user.id);
-            getRefreshToken(user.id, req.fingerprint)
-              .then((refreshToken) => {
-                res.cookie('refreshToken', refreshToken, cookiesOptions);
-                res.send({
-                  email: user.email,
-                  roles: user.roles,
-                  accessToken: token,
-                  expiryToken: config.expiryToken,
-                });
-              })
-              .catch((error) => {
-                res.status(500).send({ message: error });
-              });
+export const signup = async (req, res) => {
+  waterfall(
+    [
+      (callback) => {
+        let rolesResult;
+        if (req.body.roles) {
+          Role.find(
+            {
+              name: { $in: req.body.roles },
+            },
+            (_err, roles) => {
+              rolesResult = roles.map((role) => role._id);
+              return callback(null, rolesResult);
+            },
+          );
+        } else {
+          Role.findOne({ name: 'user' }, (_err, role) => {
+            rolesResult = [role._id];
+            return callback(null, rolesResult);
           });
-        },
-      );
-    } else {
-      Role.findOne({ name: 'user' }, (err, role) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
+        }
+      },
+      (rolesResult, callback) => {
+        let provider;
+        if (req.body.profile) {
+          provider = new ThirdPartyProvider({
+            provider_name: req.body.profile.provider,
+            provider_id: req.body.profile.id,
+            provider_data: omit(req.body.profile, ['provider', 'id']),
+          });
+          provider.save();
+          return callback(null, { rolesResult, provider });
         }
 
-        user.roles = [role._id];
+        return callback(null, { rolesResult });
+      },
+      (results, callback) => {
+        const user = new User({
+          email: req.body.email,
+          password: bcrypt.hashSync(req.body.password, 8),
+        });
+        if (results.rolesResult) {
+          user.roles = results.rolesResult;
+        }
+        if (results.provider) {
+          user.third_party_auth.push(results.provider);
+        }
         user.save((err) => {
           if (err) {
-            res.status(500).send({ message: err });
-            return;
+            return callback(err);
           }
 
           const token = getAccessToken(user.id);
@@ -89,14 +83,18 @@ export const signup = (req, res) => {
                 accessToken: token,
                 expiryToken: config.expiryToken,
               });
+              callback(null);
             })
             .catch((error) => {
-              res.status(500).send({ message: error });
+              callback(error);
             });
         });
-      });
-    }
-  });
+      },
+    ],
+    (err) => {
+      if (err) res.status(500).send({ message: err });
+    },
+  );
 };
 
 // signout controller to handle refreshToken deletion on singout redux action

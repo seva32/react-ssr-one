@@ -42,21 +42,6 @@ process.env.NODE_ENV === 'production' &&
     }),
   );
 
-/* Redirect http to https in heroku */
-// server.use('*', (req, res, next) => {
-//   if (
-//     req.headers['x-forwarded-proto'] !== 'https' &&
-//     process.env.NODE_ENV === 'production'
-//   ) {
-//     res.redirect(`https://${req.hostname}${req.url}`);
-//   }
-//   next(); /* Continue to other routes if we're not redirecting */
-// });
-/* Proxy in heroku */
-// tell express to trust the information in the X-Forwarded-Proto
-// header, i.e. that the original request was over https (4 heroku)
-// server.set('trust proxy', 1);
-
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 

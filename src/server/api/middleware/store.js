@@ -23,7 +23,11 @@ const storeMiddleware = () => async (req, res, next) => {
 
   const enhancer = compose(applyMiddleware(reduxPromise, reduxThunk));
 
-  const store = createStore(rootReducer, { csrf: req.csrfToken() }, enhancer);
+  const store = createStore(
+    rootReducer,
+    { csrf: req.csrfToken ? req.csrfToken() : null },
+    enhancer,
+  );
 
   req.store = store;
   next();

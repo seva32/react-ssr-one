@@ -21,9 +21,10 @@ const Role = db.role;
 const Token = db.token;
 const ThirdPartyProvider = db.thirdPartyProviderSchema;
 
-export const signup = async (req, res) => {
+export const signup = (req, res) => {
   waterfall(
     [
+      // add user roles
       (callback) => {
         let rolesResult;
         if (req.body.roles) {
@@ -31,7 +32,10 @@ export const signup = async (req, res) => {
             {
               name: { $in: req.body.roles },
             },
-            (_err, roles) => {
+            (err, roles) => {
+              if (err) {
+                return callback(err);
+              }
               rolesResult = roles.map((role) => role._id);
               return callback(null, rolesResult);
             },
@@ -43,6 +47,7 @@ export const signup = async (req, res) => {
           });
         }
       },
+      // add profile data from 3rd party provider
       (rolesResult, callback) => {
         let provider;
         if (req.body.profile) {
@@ -57,6 +62,7 @@ export const signup = async (req, res) => {
 
         return callback(null, { rolesResult });
       },
+      // create user
       (results, callback) => {
         const user = new User({
           email: req.body.email,
@@ -68,31 +74,36 @@ export const signup = async (req, res) => {
         if (results.provider) {
           user.third_party_auth.push(results.provider);
         }
-        user.save((err) => {
-          if (err) {
-            return callback(err);
-          }
-
-          const token = getAccessToken(user.id);
-          getRefreshToken(user.id, req.fingerprint)
-            .then((refreshToken) => {
-              res.cookie('refreshToken', refreshToken, cookiesOptions);
-              res.send({
-                email: user.email,
-                roles: user.roles,
-                accessToken: token,
-                expiryToken: config.expiryToken,
-              });
-              callback(null);
-            })
-            .catch((error) => {
-              callback(error);
+        callback(null, user);
+      },
+      // send back accessToken, save/send refreshToken, save user
+      (user, callback) => {
+        const token = getAccessToken(user.id);
+        getRefreshToken(user, req.fingerprint)
+          .then((refreshToken) => {
+            res.cookie('refreshToken', refreshToken, cookiesOptions);
+            res.send({
+              email: user.email,
+              roles: user.roles,
+              accessToken: token,
+              expiryToken: config.expiryToken,
             });
-        });
+            callback(null);
+          })
+          .catch((error) => {
+            console.log(error);
+            callback(error);
+          });
       },
     ],
     (err) => {
-      if (err) res.status(500).send({ message: err });
+      if (err) {
+        console.log(
+          'Singup mongoose error: ',
+          err && err.message ? err.message : err,
+        );
+        res.status(500).send({ message: 'Internal server error' });
+      }
     },
   );
 };
@@ -102,7 +113,8 @@ export const signout = (req, res) => {
   if (req.cookies.refreshToken) {
     Token.findOne({ refreshToken: req.cookies.refreshToken }, (err, token) => {
       if (err) {
-        return res.status(500).send({ message: err });
+        console.log('Singout mongoose/token error: ', err.message);
+        return res.status(500).send({ message: 'Internal server error' });
       }
       if (!token) {
         return res.status(404).send({ message: 'Refresh token Not found.' });
@@ -111,8 +123,9 @@ export const signout = (req, res) => {
       if (req.body.email) {
         User.findOne({ email: req.body.email }, (err, user) => {
           if (err) {
+            console.log('Singout mongoose/user error: ', err.message);
             return res.status(500).send({
-              message: err,
+              message: 'Internal server error',
             });
           }
           if (!user) {
@@ -125,8 +138,9 @@ export const signout = (req, res) => {
 
           user.save((err) => {
             if (err) {
+              console.log('Singout mongoose/user error: ', err.message);
               return res.status(500).send({
-                message: err,
+                message: 'Internal server error',
               });
             }
             Token.deleteOne(
@@ -135,8 +149,9 @@ export const signout = (req, res) => {
               },
               (err) => {
                 if (err) {
+                  console.log('Singout mongoose/token error: ', err.message);
                   return res.status(500).send({
-                    message: err,
+                    message: 'Internal server error',
                   });
                 }
                 return res.send({
@@ -164,7 +179,8 @@ export const signin = (req, res) => {
     .populate('roles', '-__v')
     .exec(async (err, user) => {
       if (err) {
-        res.status(500).send({ message: err });
+        console.log('Singin mongoose/user error: ', err.message);
+        res.status(500).send({ message: 'Internal server error' });
         return;
       }
 
@@ -187,7 +203,7 @@ export const signin = (req, res) => {
       }
 
       const token = getAccessToken(user.id);
-      getRefreshToken(user.id, req.fingerprint)
+      getRefreshToken(user, req.fingerprint)
         .then((refreshToken) => {
           const authorities = [];
 
@@ -204,6 +220,7 @@ export const signin = (req, res) => {
           });
         })
         .catch((error) => {
+          // no es obj err de mongoose
           res.status(500).send({ message: error });
         });
     });
@@ -246,6 +263,7 @@ export const resetPassword = (req, res) => {
       .populate('roles', '-__v')
       .exec(async (err, user) => {
         if (err) {
+          console.log('Reset password mongoose/user error: ', err.message);
           res.status(500).send({ message: 'Internal server error' });
           return;
         }
@@ -264,6 +282,7 @@ export const resetPassword = (req, res) => {
 
         user.save((err) => {
           if (err) {
+            console.log('Reset password mongoose/user error: ', err.message);
             res.status(500).send({ message: 'Internal server error' });
             return;
           }
@@ -307,7 +326,8 @@ export const changePassword = (req, res) => {
     .populate('roles', '-__v')
     .exec(async (err, user) => {
       if (err) {
-        res.status(500).send({ message: err });
+        console.log('Change password mongoose/user error: ', err.message);
+        res.status(500).send({ message: 'Internal server error' });
         return;
       }
       if (!user) {
@@ -331,6 +351,7 @@ export const changePassword = (req, res) => {
 
       user.save((err) => {
         if (err) {
+          console.log('Change password mongoose/user error: ', err.message);
           res.status(500).send({ message: 'Internal server error' });
           return;
         }

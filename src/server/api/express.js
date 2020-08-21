@@ -13,7 +13,12 @@ import {
   csurf as csrfProtection,
   rateLimiterMiddleware,
 } from './middleware';
-import { authRouter, authFilterRouter, usersRouter } from './router';
+import {
+  authRouter,
+  authFilterRouter,
+  usersRouter,
+  paypalRouter,
+} from './router';
 
 dotenv.config({ silent: true });
 
@@ -32,7 +37,6 @@ server.use(
     parameters: [fingerprint.useragent],
   }),
 );
-
 server.options('*', cors);
 server.use(csrfProtection);
 process.env.NODE_ENV === 'production' &&
@@ -77,6 +81,7 @@ server.use(rateLimiterMiddleware);
 server.use('/auth', authRouter);
 server.use(authFilterRouter);
 server.use('/users', usersRouter);
+server.use('/paypal', paypalRouter);
 server.use(store());
 
 // error handler

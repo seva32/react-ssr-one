@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import posts from './postsReducer';
 import auth from './authReducer';
 import users from './userDataReducer';
+import payment from './paymentReducer';
 import csrf from './csrf';
 
 const rootPersistConfig = {
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   posts,
   users,
   csrf,
+  payment,
 });
 
 export default persistReducer(rootPersistConfig, rootReducer);

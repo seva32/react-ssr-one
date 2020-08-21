@@ -64,6 +64,7 @@ export default ({ clientStats }) => async (req, res) => {
           <html lang="en">
             <head>
               <meta name="theme-color" content="#000000"/>
+              <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <!-- Optimal Internet Explorer compatibility -->
               <link
                 rel="stylesheet"
                 href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"

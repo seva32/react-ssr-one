@@ -27,6 +27,7 @@ function start() {
     .connect(process.env.MONGOOSE, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      autoIndex: isDev,
     })
     .then(() => {
       console.log('Successfully connect to MongoDB.');

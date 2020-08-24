@@ -3152,7 +3152,7 @@ braintree-web-drop-in-react@^1.1.1:
     braintree-web-drop-in "^1.22.1"
     prop-types "^15.7.2"
 
-braintree-web-drop-in@^1.22.1:
+braintree-web-drop-in@^1.22.1, braintree-web-drop-in@^1.23.0:
   version "1.23.0"
   resolved "https://registry.yarnpkg.com/braintree-web-drop-in/-/braintree-web-drop-in-1.23.0.tgz#89b1cb819c513f7faa79bde1d15e0e36826e3353"
   integrity sha512-uP1z6UI9edwlwxto838awSX1tbRM+vqEErEtsLxk3TuC+XRxIn7u5F9IIILW+y/A0OXa7/2klIbjqy3RMgK7Lw==

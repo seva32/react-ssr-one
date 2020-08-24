@@ -2,15 +2,15 @@
 /* eslint-disable consistent-return */
 import express from 'express';
 import axios from 'axios';
-import braintree from 'braintree';
+
+import {
+  braintreeCheckout,
+  braintreeClientToken,
+} from '../contollers/paymentController';
+import { cors, csurf as csrfProtection } from '../middleware';
 
 const router = express.Router();
 const PAYPAL_API = 'https://api.sandbox.paypal.com';
-
-// router.post('/create-payment', (req, res) => {
-//   console.log('llego el req');
-//   res.send({ message: 'fun' });
-// });
 
 router.post('/create-payment/', (req, res) => {
   // try {
@@ -151,60 +151,38 @@ router.post('/execute-payment/', (req, res) => {
   );
 });
 
-const gateway = braintree.connect({
-  environment: braintree.Environment.Sandbox,
-  merchantId: process.env.BRAINTREE_MERCHANT_ID,
-  publicKey: process.env.BRAINTREE_PUBLIC_KEY,
-  privateKey: process.env.BRAINTREE_PRIVATE_KEY,
-});
+router.get(
+  '/braintree-client-token',
+  [cors, csrfProtection],
+  braintreeClientToken,
+);
 
-router.get('/client_token', (req, res) => {
-  try {
-    gateway.clientToken.generate({}, (err, response) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.send(response);
-      }
-    });
-  } catch (err) {
-    res.status(500).send(err);
-  }
-});
+// router.post('/braintree_checkout', (req, res) => {
+//   const nonceFromTheClient = req.body.payment_method_nonce;
+//   const { amount } = req.body;
+
+//   gateway.transaction.sale(
+//     {
+//       amount,
+//       paymentMethodNonce: nonceFromTheClient,
+//       options: {
+//         submitForSettlement: true,
+//       },
+//     },
+//     (err, result) => {
+//       if (err) {
+//         res.status(500).send({ message: 'Error on payment' });
+//       }
+//       res.send({ status: result.success });
+//     },
+//   );
+// });
 
 // Card number: 4111 1111 1111 1111
 // Expiry: 09/20
 // CVV: 400
 // Postal Code: 40000
 
-router.post('/sandbox', async (req, res) => {
-  try {
-    // Use the payment method nonce here
-    const nonceFromTheClient = req.body.paymentMethodNonce;
-    // Create a new transaction for $10
-    const newTransaction = gateway.transaction.sale(
-      {
-        amount: '10.00',
-        paymentMethodNonce: nonceFromTheClient,
-        options: {
-          // This option requests the funds from the transaction once it has been
-          // authorized successfully
-          submitForSettlement: true,
-        },
-      },
-      (error, result) => {
-        if (result) {
-          res.send(result);
-        } else {
-          res.status(500).send(error);
-        }
-      },
-    );
-  } catch (err) {
-    // Deal with an error
-    console.log(err);
-    res.send(err);
-  }
-});
+router.post('/braintree-checkout', [cors, csrfProtection], braintreeCheckout);
 
 export default router;

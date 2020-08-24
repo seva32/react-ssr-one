@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import * as Styles from './Paypal.style';
 import * as actions from '../../store/actions';
-import PaypalButton from '../../Components/paypal';
+// import PaypalButton from '../../Components/paypal';
 import BrainTree from '../../Components/BrainTree';
 
 function Paypal({ payment, error, paymentAction }) {
@@ -102,7 +102,7 @@ function Paypal({ payment, error, paymentAction }) {
           />
         </Form>
         {/* <PaypalButton /> */}
-        <BrainTree />
+        <BrainTree onButtonReady={() => console.log('esta listo el boton')} />
       </Styles.StyledContainer>
     </>
   );

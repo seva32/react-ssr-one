@@ -157,32 +157,6 @@ router.get(
   braintreeClientToken,
 );
 
-// router.post('/braintree_checkout', (req, res) => {
-//   const nonceFromTheClient = req.body.payment_method_nonce;
-//   const { amount } = req.body;
-
-//   gateway.transaction.sale(
-//     {
-//       amount,
-//       paymentMethodNonce: nonceFromTheClient,
-//       options: {
-//         submitForSettlement: true,
-//       },
-//     },
-//     (err, result) => {
-//       if (err) {
-//         res.status(500).send({ message: 'Error on payment' });
-//       }
-//       res.send({ status: result.success });
-//     },
-//   );
-// });
-
-// Card number: 4111 1111 1111 1111
-// Expiry: 09/20
-// CVV: 400
-// Postal Code: 40000
-
 router.post('/braintree-checkout', [cors, csrfProtection], braintreeCheckout);
 
 export default router;

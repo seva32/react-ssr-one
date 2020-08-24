@@ -23,6 +23,7 @@ export const braintreeClientToken = (req, res) => {
 
 export const braintreeCheckout = (req, res) => {
   const nonceFromTheClient = req.body.paymentMethodNonce;
+
   // eslint-disable-next-line no-unused-vars
   const newTransaction = gateway.transaction.sale(
     {
@@ -38,6 +39,7 @@ export const braintreeCheckout = (req, res) => {
       if (result) {
         res.send(result);
       } else {
+        console.log(error);
         res.status(500).send(error);
       }
     },

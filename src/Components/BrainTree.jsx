@@ -87,7 +87,7 @@ function BrainTree({ onButtonReady, csrf }) {
             // a los containers div si les puedo dar afuera
             styles: {
               input: {
-                'font-size': '14px',
+                'font-size': '16px',
                 color: '#3A3A3A',
                 'font-family': 'monospace',
                 transition: 'color 160ms linear',
@@ -190,7 +190,7 @@ function BrainTree({ onButtonReady, csrf }) {
   }
   return (
     <div className="background">
-      <form
+      {/* <form
         className={`ui ${!fieldsVisible ? 'loading' : ''} form`}
         id="hosted-fields-form"
         method="post"
@@ -219,8 +219,8 @@ function BrainTree({ onButtonReady, csrf }) {
           ref={inputEl}
           disabled={!fieldsVisible}
         />
-      </form>
-      {/* <form id="hosted-fields-form" method="post" ref={formEl}>
+      </form> */}
+      <form id="hosted-fields-form" method="post" ref={formEl}>
         <label htmlFor="card-number">Card Number</label>
         <div id="card-number" />
 
@@ -231,7 +231,7 @@ function BrainTree({ onButtonReady, csrf }) {
         <div id="expiration-date" />
 
         <input type="submit" value="Pay" ref={inputEl} disabled />
-      </form> */}
+      </form>
       {successMessage && (
         <>
           <h1>Success</h1>

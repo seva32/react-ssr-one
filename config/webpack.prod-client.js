@@ -59,12 +59,6 @@ module.exports = {
           },
           {
             loader: 'css-loader',
-            options: {
-              modules: {
-                mode: 'local',
-                localIdentName: '[hash:base64:5]',
-              },
-            },
           },
           {
             loader: 'postcss-loader',
@@ -86,12 +80,6 @@ module.exports = {
           },
           {
             loader: 'css-loader',
-            options: {
-              modules: {
-                mode: 'local',
-                localIdentName: '[hash:base64:5]',
-              },
-            },
           },
           {
             loader: 'sass-loader',

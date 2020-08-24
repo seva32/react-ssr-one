@@ -36,17 +36,18 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          'css-hot-loader',
-          MiniCssExtractPlugin.loader,
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: process.env.NODE_ENV === 'development',
+              reloadAll: true,
+            },
+          },
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
               importLoaders: 1,
-              modules: {
-                mode: 'local',
-                localIdentName: '[name]__[local]--[hash:base64:5]',
-              },
             },
           },
           {
@@ -61,17 +62,18 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          'css-hot-loader',
-          MiniCssExtractPlugin.loader,
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: process.env.NODE_ENV === 'development',
+              reloadAll: true,
+            },
+          },
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
               importLoaders: 1,
-              modules: {
-                mode: 'local',
-                localIdentName: '[name]__[local]--[hash:base64:5]',
-              },
             },
           },
           {

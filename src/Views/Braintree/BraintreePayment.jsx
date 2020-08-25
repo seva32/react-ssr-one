@@ -1,5 +1,5 @@
 import React from 'react';
-import BrainTree from '../../Components/Brain';
+import BrainTree from '../../Components/Braintree';
 
 function BraintreePayment() {
   const [visible, setVisible] = React.useState(false);

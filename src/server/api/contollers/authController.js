@@ -173,6 +173,7 @@ export const signout = (req, res) => {
 };
 
 export const signin = (req, res) => {
+  console.log(req.body);
   User.findOne({
     email: req.body.email,
   })

@@ -8,7 +8,12 @@ mongoose.set('useCreateIndex', true);
 // define model
 const userSchema = new Schema(
   {
-    email: { type: String, unique: true, lowercase: true },
+    email: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      dropDups: true,
+    },
     email_is_verified: {
       type: Boolean,
       default: false,

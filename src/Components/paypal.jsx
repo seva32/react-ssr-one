@@ -1,16 +1,17 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable implicit-arrow-linebreak */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import axios from 'axios';
+// import axios from 'axios';
 
-const PaypalButton = (props) => {
+const PaypalButton = ({ onButtonReady }) => {
   const [sdkReady, setSdkReady] = useState(false);
 
   const addPaypalSdk = () => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = 'https://www.paypalobjects.com/api/checkout.js';
+    script.src =
+      'https://www.paypal.com/sdk/js?client-id=AeppKdPmXFPtWDoU5izq8qNS_v2Wn1dWwdKHj0eAOGMkxA-nEruavRkOxxGDxhIg-eLx9pvoXPBPjVrO';
     script.async = true;
     script.onload = () => {
       setSdkReady(true);
@@ -21,31 +22,73 @@ const PaypalButton = (props) => {
     document.body.appendChild(script);
   };
 
-  let instance = null;
-  // eslint-disable-next-line react/destructuring-assignment
-  if (typeof window !== 'undefined' && props.csrf) {
-    const authHeader = require('../store/actions/users/auth-header').default;
-    const defaultOptions = {
-      baseURL: 'http://localhost:8080',
-      headers: authHeader(props.csrf),
-    };
-    instance = axios.create(defaultOptions);
-  }
-
   useEffect(() => {
     if (window !== undefined && window.paypal === undefined) {
       addPaypalSdk();
     } else if (
       window !== undefined &&
       window.paypal !== undefined &&
-      // eslint-disable-next-line react/prop-types
-      props.onButtonReady
+      sdkReady
     ) {
-      // eslint-disable-next-line react/prop-types
-      props.onButtonReady();
+      window.paypal
+        .Buttons({
+          createOrder(data, actions) {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: '0.01',
+                  },
+                },
+              ],
+            });
+          },
+          onApprove(data, actions) {
+            // Data:
+            // billingToken: null
+            // facilitatorAccessToken: "A21AAFOY8shskOucVHKS-vawmqLz7VE55TyD0eN4sgRwNMksoaHxKOATo8m3Icj9WxZW2OV9kxLranpSLIuEPVYPdZ-YGYUtQ"
+            // orderID: "64X33335KF5532355"
+            // payerID: "FV226882NKSMA"
+            // paymentID: null
+            return actions.order.capture().then((details) => {
+              // eslint-disable-next-line no-alert
+              alert(
+                `Transaction completed by ${details.payer.name.given_name}`,
+              );
+            });
+          },
+        })
+        .render('#paypal-button-container');
+      onButtonReady('Message for parent');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sdkReady]);
+
+  // let instance = null;
+  // // eslint-disable-next-line react/destructuring-assignment
+  // if (typeof window !== 'undefined' && props.csrf) {
+  //   const authHeader = require('../store/actions/users/auth-header').default;
+  //   const defaultOptions = {
+  //     baseURL: 'http://localhost:8080',
+  //     headers: authHeader(props.csrf),
+  //   };
+  //   instance = axios.create(defaultOptions);
+  // }
+
+  // useEffect(() => {
+  //   if (window !== undefined && window.paypal === undefined) {
+  //     addPaypalSdk();
+  //   } else if (
+  //     window !== undefined &&
+  //     window.paypal !== undefined &&
+  //     // eslint-disable-next-line react/prop-types
+  //     props.onButtonReady
+  //   ) {
+  //     // eslint-disable-next-line react/prop-types
+  //     props.onButtonReady();
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   // amount goes in the value field we will use props of the button for this
   //   const createOrder = (data, actions) =>
@@ -72,59 +115,67 @@ const PaypalButton = (props) => {
   //         console.log(err);
   //       });
 
-  if (
-    typeof window === 'undefined' ||
-    (!sdkReady && window.paypal === undefined)
-  ) {
-    return <div>Loading...</div>;
-  }
+  // if (
+  //   typeof window === 'undefined' ||
+  //   (!sdkReady && window.paypal === undefined)
+  // ) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (window.paypal && window.paypal.Button && instance) {
-    window.paypal.Button.render(
-      {
-        env: 'sandbox', // Or 'production'
-        // Set up the payment:
-        // 1. Add a payment callback
-        payment(data, _actions) {
-          // 2. Make a request to your server
-          return instance
-            .post('/paypal/create-payment')
-            .then(
-              (res) => console.log(res.id),
-              // 3. Return res.id from the response
-              //   res.id,
-            )
-            .catch((e) => console.log(e));
-        },
-        // Execute the payment:
-        // 1. Add an onAuthorize callback
-        onAuthorize(data, _actions) {
-          // 2. Make a request to your server
-          return axios
-            .post('/paypal/execute-payment/', {
-              paymentID: data.paymentID,
-              payerID: data.payerID,
-            })
-            .then((res) => {
-              // 3. Show the buyer a confirmation message.
-              console.log(res.body);
-            })
-            .catch((e) => console.log(e));
-        },
-      },
-      '#paypal-button',
-    );
-  }
+  // if (window.paypal && window.paypal.Button && instance) {
+  //   window.paypal.Button.render(
+  //     {
+  //       env: 'sandbox', // Or 'production'
+  //       // Set up the payment:
+  //       // 1. Add a payment callback
+  //       payment(data, _actions) {
+  //         // 2. Make a request to your server
+  //         return instance
+  //           .post('/paypal/create-payment')
+  //           .then(
+  //             (res) => console.log(res.id),
+  //             // 3. Return res.id from the response
+  //             //   res.id,
+  //           )
+  //           .catch((e) => console.log(e));
+  //       },
+  //       // Execute the payment:
+  //       // 1. Add an onAuthorize callback
+  //       onAuthorize(data, _actions) {
+  //         // 2. Make a request to your server
+  //         return axios
+  //           .post('/paypal/execute-payment/', {
+  //             paymentID: data.paymentID,
+  //             payerID: data.payerID,
+  //           })
+  //           .then((res) => {
+  //             // 3. Show the buyer a confirmation message.
+  //             console.log(res.body);
+  //           })
+  //           .catch((e) => console.log(e));
+  //       },
+  //     },
+  //     '#paypal-button',
+  //   );
+  // }
 
   return (
     // eslint-disable-next-line react/self-closing-comp
-    window.paypal.Button ? <div id="paypal-button"></div> : <></>
+    <div id="paypal-button-container"></div>
   );
 };
 
 const mapStateToProps = ({ csrf }) => ({
   csrf,
 });
+
+PaypalButton.propTypes = {
+  onButtonReady: PropTypes.func,
+};
+
+PaypalButton.defaultProps = {
+  onButtonReady: () => {},
+};
 
 export default connect(mapStateToProps, null)(PaypalButton);
 

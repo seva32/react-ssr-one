@@ -13,7 +13,12 @@ import {
   csurf as csrfProtection,
   rateLimiterMiddleware,
 } from './middleware';
-import { authRouter, authFilterRouter, usersRouter } from './router';
+import {
+  authRouter,
+  authFilterRouter,
+  usersRouter,
+  paymentRouter,
+} from './router';
 
 dotenv.config({ silent: true });
 
@@ -77,6 +82,7 @@ server.use(rateLimiterMiddleware);
 server.use('/auth', authRouter);
 server.use(authFilterRouter);
 server.use('/users', usersRouter);
+server.use('/payment', paymentRouter);
 server.use(store());
 
 // error handler

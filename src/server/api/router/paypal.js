@@ -6,6 +6,46 @@ import axios from 'axios';
 const router = express.Router();
 const PAYPAL_API = 'https://api.sandbox.paypal.com';
 
+router.get('/create-access-token', (req, res) => {
+  axios({
+    url: 'https://api.sandbox.paypal.com/v1/identity/generate-token',
+    method: 'post',
+    headers: {
+      Accept: 'application/json',
+      'Accept-Language': 'en_US',
+    },
+    auth: {
+      username: process.env.PAYPAL_CLIENT,
+      password: process.env.PAYPAL_SECRET,
+    },
+    data: { grant_type: 'client_credentials' },
+  })
+    .then(({ data }) => {
+      console.log(data);
+      res.send({ data });
+      // data { client_token: ..., expires_in: 3600 }
+      // axios({
+      //   url: 'https://api.sandbox.paypal.com/v1/identity/generate-token',
+      //   method: 'post',
+      //   headers: {
+      //     Accept: 'application/json',
+      //     Authorization: `Bearer ${data.client_token}`,
+      //     'Accept-Language': 'en_US',
+      //   },
+      // })
+      //   // eslint-disable-next-line no-shadow
+      //   .then(({ data }) => {
+      //     console.log(data);
+      //     return res.status(200).send({ data });
+      //   })
+      //   .catch((e) => res.status(401).send({ message: e.message }));
+    })
+    .catch((e) => {
+      console.log(e.message);
+      return res.status(401).send({ message: 'Unauthorized' });
+    });
+});
+
 router.post('/create-payment/', (req, res) => {
   // try {
   //   const {

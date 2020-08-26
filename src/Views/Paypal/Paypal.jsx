@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import * as Styles from './Paypal.style';
 import * as actions from '../../store/actions';
-import PaypalButton from '../../Components/PaypayButton';
+import PaypalCustomButton from '../../Components/Paypal';
 
 function Paypal({ payment, error, paymentAction }) {
   const [successState, setSuccessState] = useState(false);
@@ -106,7 +106,7 @@ function Paypal({ payment, error, paymentAction }) {
           />
         </Form>
         {/* <PaypalButton /> */}
-        <PaypalButton onButtonReady={onButtonReady} />
+        <PaypalCustomButton onButtonReady={onButtonReady} />
       </Styles.StyledContainer>
     </>
   );

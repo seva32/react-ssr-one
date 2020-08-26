@@ -17,7 +17,7 @@ import {
   authRouter,
   authFilterRouter,
   usersRouter,
-  paypalRouter,
+  paymentRouter,
 } from './router';
 
 dotenv.config({ silent: true });
@@ -81,7 +81,7 @@ server.use(rateLimiterMiddleware);
 server.use('/auth', authRouter);
 server.use(authFilterRouter);
 server.use('/users', usersRouter);
-server.use('/paypal', paypalRouter);
+server.use('/payment', paymentRouter);
 server.use(store());
 
 // error handler

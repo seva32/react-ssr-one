@@ -3,6 +3,9 @@
 import express from 'express';
 import axios from 'axios';
 
+// import paypalSdk from './paypalCheckoutSdk';
+// const { client, prettyPrint, request } = paypalSdk;
+
 const router = express.Router();
 const PAYPAL_API = 'https://api.sandbox.paypal.com';
 
@@ -21,7 +24,6 @@ router.get('/create-access-token', (req, res) => {
     data: { grant_type: 'client_credentials' },
   })
     .then(({ data }) => {
-      console.log(data);
       res.send({ data });
       // data { client_token: ..., expires_in: 3600 }
       // axios({

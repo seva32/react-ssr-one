@@ -15,6 +15,6 @@ export const cookiesOptions = {
 
 export default {
   secret: process.env.TOKEN_SECRET,
-  expiryToken: isProd ? 9000 : 60, // only in seconds!!!
-  expiryRefreshToken: isProd ? '15d' : 120, // seconds or not '15d'
+  expiryToken: isProd ? 9000 : 600, // only in seconds!!!
+  expiryRefreshToken: isProd ? '15d' : 1200, // seconds or not '15d'
 };

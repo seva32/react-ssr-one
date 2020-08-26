@@ -17,12 +17,12 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
     script['data-client-token'] = token;
     script.onload = () => {
       setSdkReady(true);
+      document.body.appendChild(script);
       return { ok: 'ok' };
     };
     script.onerror = () => {
-      throw new Error('Paypal SDK could not be loaded.');
+      throw new Error('Paypal SDK could not be loaded. Script.');
     };
-    document.body.appendChild(script);
   };
 
   const axiosinstance = React.useRef(null);
@@ -35,136 +35,158 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
         headers: authHeader(csrf),
       };
       axiosinstance.current = axios.create(defaultOptions);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [csrf]);
 
-  if (
-    typeof window !== 'undefined' &&
-    !sdkReady &&
-    axiosinstance.current !== null
-  ) {
-    // eslint-disable-next-line react/prop-types
-    axiosinstance.current
-      .get('http://localhost:8080/payment/create-access-token')
-      .then(async ({ data }) => {
-        console.log(data);
-
-        if (data.access_token) {
-          setSdkReady(true);
-        }
-        try {
-          const result = await addPaypalSdk(data.access_token);
-        } catch (e) {
-          throw new Error('Paypal SDK could not be loaded.');
-        }
-
-        console.log(result);
-        const submitEl = document.querySelector('#submit');
-
-        window.paypal
-          .Buttons({
-            commit: false,
-            // eslint-disable-next-line no-shadow
-            createOrder(data, actions) {
-              console.log('create order: ', data);
-              // This function sets up the details of the transaction, including the amount and line item details
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: '2',
-                    },
-                  },
-                ],
-              });
-            },
-            // eslint-disable-next-line no-shadow
-            onCancel(data) {
-              console.log('on cancel: ', data);
-              // Show a cancel page, or return to cart
-            },
-            // eslint-disable-next-line no-shadow
-            onApprove(data, actions) {
-              console.log('order data: ', data);
-              // This function captures the funds from the transaction
-              return actions.order.capture().then((details) => {
-                console.log(details);
-                // This function shows a transaction success message to your buyer
-                alert('Thanks for your purchase!');
-              });
-            },
+      // get access token from server
+      if (!sdkReady) {
+        axiosinstance.current
+          .get('http://localhost:8080/payment/create-access-token')
+          .then(async ({ data: { data } }) => {
+            if (data.client_token) {
+              let result;
+              try {
+                result = await addPaypalSdk(data.access_token);
+              } catch (e) {
+                throw new Error('Paypal SDK could not be loaded.');
+              }
+              setSdkReady(true);
+              console.log(result);
+            } else {
+              throw new Error('Paypal SDK could not be loaded. Token.');
+            }
           })
-          .render('#paypal-button-container');
-        // Eligibility check for advanced credit and debit card payments
-        if (window.paypal.HostedFields.isEligible()) {
-          window.paypal.HostedFields.render({
-            createOrder() {
-              return 'order-ID';
-            }, // replace order-ID with the order ID
-            styles: {
-              input: {
-                'font-size': '17px',
-                'font-family': 'helvetica, tahoma, calibri, sans-serif',
-                color: '#3a3a3a',
-              },
-              ':focus': {
-                color: 'black',
-              },
-            },
-            fields: {
-              number: {
-                selector: '#card-number',
-                placeholder: 'card number',
-              },
-              cvv: {
-                selector: '#cvv',
-                placeholder: 'card security number',
-              },
-              expirationDate: {
-                selector: '#expiration-date',
-                placeholder: 'mm/yy',
-              },
-            },
-          }).then((hf) => {
-            submitEl.submit((event) => {
-              event.preventDefault();
-              hf.submit({
-                // Cardholder Name
-                cardholderName: document.getElementById('card-holder-name')
-                  .value,
-                // Billing Address
-                billingAddress: {
-                  streetAddress: document.getElementById(
-                    'card-billing-address-street',
-                  ).value, // address_line_1 - street
-                  extendedAddress: document.getElementById(
-                    'card-billing-address-unit',
-                  ).value, // address_line_2 - unit
-                  region: document.getElementById('card-billing-address-state')
-                    .value, // admin_area_1 - state
-                  locality: document.getElementById('card-billing-address-city')
-                    .value, // admin_area_2 - town / city
-                  postalCode: document.getElementById(
-                    'card-billing-address-zip',
-                  ).value, // postal_code - postal_code
-                  countryCodeAlpha2: document.getElementById(
-                    'card-billing-address-country',
-                  ).value, // country_code - country
-                },
-              });
-            });
+          .catch((e) => {
+            console.log(e.message);
           });
-        } else {
-          submitEl.disabled = true;
-          throw new Error('Paypal could not be loaded. Unauthorized.');
-        }
-      })
-      .catch((e) => {
-        console.log(e.message);
-        throw new Error('Paypal could not be loaded. Unauthorized.');
-      });
-  }
+      }
+    }
+  }, [csrf, sdkReady]);
+
+  // if (
+  //   typeof window !== 'undefined' &&
+  //   !sdkReady &&
+  //   axiosinstance.current !== null
+  // ) {
+  //   // eslint-disable-next-line react/prop-types
+  //   axiosinstance.current
+  //     .get('http://localhost:8080/payment/create-access-token')
+  //     .then(async ({ data }) => {
+  //       console.log(data);
+
+  //       if (data.access_token) {
+  //         setSdkReady(true);
+  //       }
+  //       try {
+  //         const result = await addPaypalSdk(data.access_token);
+  //       } catch (e) {
+  //         throw new Error('Paypal SDK could not be loaded.');
+  //       }
+
+  //       console.log(result);
+  //       const submitEl = document.querySelector('#submit');
+
+  //       window.paypal
+  //         .Buttons({
+  //           commit: false,
+  //           // eslint-disable-next-line no-shadow
+  //           createOrder(data, actions) {
+  //             console.log('create order: ', data);
+  //             // This function sets up the details of the transaction, including the amount and line item details
+  //             return actions.order.create({
+  //               purchase_units: [
+  //                 {
+  //                   amount: {
+  //                     value: '2',
+  //                   },
+  //                 },
+  //               ],
+  //             });
+  //           },
+  //           // eslint-disable-next-line no-shadow
+  //           onCancel(data) {
+  //             console.log('on cancel: ', data);
+  //             // Show a cancel page, or return to cart
+  //           },
+  //           // eslint-disable-next-line no-shadow
+  //           onApprove(data, actions) {
+  //             console.log('order data: ', data);
+  //             // This function captures the funds from the transaction
+  //             return actions.order.capture().then((details) => {
+  //               console.log(details);
+  //               // This function shows a transaction success message to your buyer
+  //               alert('Thanks for your purchase!');
+  //             });
+  //           },
+  //         })
+  //         .render('#paypal-button-container');
+  //       // Eligibility check for advanced credit and debit card payments
+  //       if (window.paypal.HostedFields.isEligible()) {
+  //         window.paypal.HostedFields.render({
+  //           createOrder() {
+  //             return 'order-ID';
+  //           }, // replace order-ID with the order ID
+  //           styles: {
+  //             input: {
+  //               'font-size': '17px',
+  //               'font-family': 'helvetica, tahoma, calibri, sans-serif',
+  //               color: '#3a3a3a',
+  //             },
+  //             ':focus': {
+  //               color: 'black',
+  //             },
+  //           },
+  //           fields: {
+  //             number: {
+  //               selector: '#card-number',
+  //               placeholder: 'card number',
+  //             },
+  //             cvv: {
+  //               selector: '#cvv',
+  //               placeholder: 'card security number',
+  //             },
+  //             expirationDate: {
+  //               selector: '#expiration-date',
+  //               placeholder: 'mm/yy',
+  //             },
+  //           },
+  //         }).then((hf) => {
+  //           submitEl.submit((event) => {
+  //             event.preventDefault();
+  //             hf.submit({
+  //               // Cardholder Name
+  //               cardholderName: document.getElementById('card-holder-name')
+  //                 .value,
+  //               // Billing Address
+  //               billingAddress: {
+  //                 streetAddress: document.getElementById(
+  //                   'card-billing-address-street',
+  //                 ).value, // address_line_1 - street
+  //                 extendedAddress: document.getElementById(
+  //                   'card-billing-address-unit',
+  //                 ).value, // address_line_2 - unit
+  //                 region: document.getElementById('card-billing-address-state')
+  //                   .value, // admin_area_1 - state
+  //                 locality: document.getElementById('card-billing-address-city')
+  //                   .value, // admin_area_2 - town / city
+  //                 postalCode: document.getElementById(
+  //                   'card-billing-address-zip',
+  //                 ).value, // postal_code - postal_code
+  //                 countryCodeAlpha2: document.getElementById(
+  //                   'card-billing-address-country',
+  //                 ).value, // country_code - country
+  //               },
+  //             });
+  //           });
+  //         });
+  //       } else {
+  //         submitEl.disabled = true;
+  //         throw new Error('Paypal could not be loaded. Unauthorized.');
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       console.log(e.message);
+  //       throw new Error('Paypal could not be loaded. Unauthorized.');
+  //     });
+  // }
 
   // amount goes in the value field we will use props of the button for this
   // const createOrder = (data, actions) =>

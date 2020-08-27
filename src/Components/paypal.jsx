@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable implicit-arrow-linebreak */
 import React, { useState, useEffect } from 'react';
@@ -8,7 +9,7 @@ import './paypal.css';
 
 const PaypalButton = ({ onButtonReady, csrf }) => {
   const [sdkReady, setSdkReady] = useState(false);
-  const [hfieldsElegible, setHfieldsElegible] = useState(false);
+  // const [hfieldsElegible, setHfieldsElegible] = useState(false);
   const submitEl = React.createRef(null);
 
   const addPaypalSdk = (token) => {
@@ -58,9 +59,7 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
       window.paypal
         .Buttons({
           commit: false,
-          // eslint-disable-next-line no-shadow
           createOrder(data, actions) {
-            console.log('create order: ', data);
             // This function sets up the details of the transaction,
             // including the amount and line item details
             return actions.order.create({
@@ -73,17 +72,40 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
               ],
             });
           },
-          // eslint-disable-next-line no-shadow
           onCancel(data) {
             console.log('on cancel: ', data);
             // Show a cancel page, or return to cart
           },
-          // eslint-disable-next-line no-shadow
+          // aqui paypal recibe la order solo del cliente, no puedo guardarla en db
           onApprove(data, actions) {
-            console.log('order data: ', data);
+            // data:
+            // billingToken: null
+            // facilitatorAccessToken: "A21AAFA1vtHjek2i329pL...UlVoycO16BxLfwPkX3EDRu4xuw"
+            // orderID: "3XN16909EC3087418"
+            // payerID: "FV226882NKSMA"
+            // paymentID: null
             // This function captures the funds from the transaction
-            return actions.order.capture().then((details) => {
-              console.log(details);
+            return actions.order.capture().then((_details) => {
+              // details
+              // create_time: "2020-08-27T00:23:27Z"
+              // id: "3XN16909EC3087418"
+              // intent: "CAPTURE"
+              // links: (1) […] 0: {…} href: "https://api.sandbox.paypal.com/v2/checkout/orders/3XN16909EC3087418"
+              // method: "GET"
+              // payer: {…}
+              // address: Object { country_code: "US" }
+              // email_address: "person@sebastianfantini.com"
+              // name: Object { given_name: "hola", surname: "chau" }
+              // payer_id: "FV226882NKSMA"
+              // purchase_units: (1) […] 0: {…} amount: Obj { value: "2.00", currency_code: "USD" }
+              // payee: Obj{ email_address: "business@seb...", merchant_id: "8WTP5WQJUEMSW" }
+              // payments: Object { captures: (1) […] }
+              // reference_id: "default"
+              // shipping: Object { name: {…}, address: {…} }
+              // soft_descriptor: "PAYPAL *SUSILUSTEST"
+              // status: "COMPLETED"
+              // update_time: "2020-08-27T00:26:11Z"
+
               // This function shows a transaction success message to your buyer
               alert('Thanks for your purchase!');
             });
@@ -91,17 +113,80 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
         })
         .render('#paypal-button-container');
 
-      // Eligibility check for advanced credit and debit card payments
-      // const submitEl = document.getElementById('submit');
-      console.log(submitEl.current);
-      console.log(window.paypal.HostedFields);
-      console.log(window.paypal.HostedFields.isEligible());
+      // Eligibility check for advanced credit and debit card payments (no 4 Arg)
       if (window.paypal.HostedFields.isEligible() && submitEl) {
-        setHfieldsElegible(true);
+        // setHfieldsElegible(true);
         window.paypal.HostedFields.render({
           createOrder() {
-            return 'order-ID';
-          }, // replace order-ID with the order ID
+            // pedir order/transaction con la auth que tiene paypal cuando el cliente pago
+            // return axiosinstance.current('/payment/create-paypal-transaction-auth', {
+
+            // pedir solo la transaction
+            return axiosinstance
+              .current('/payment/create-paypal-transaction', {
+                method: 'post',
+                headers: {
+                  'content-type': 'application/json',
+                },
+              })
+              .then((res) => res.data)
+              .then(
+                (data) => data.orderID, // Use same key name for order ID on the client and server
+              );
+          },
+
+          // server call to save order data to db
+          // onApprove(data) {
+          //   return axiosinstance
+          //     .current('/payment/get-paypal-transaction', {
+          //       headers: {
+          //         'content-type': 'application/json',
+          //       },
+          //       body: JSON.stringify({
+          //         orderID: data.orderID,
+          //       }),
+          //     })
+          //     .then((res) => res.json())
+          //     .then((details) => {
+          //       alert(`Transaction approved by ${details.payer_given_name}`);
+          //     });
+          // },
+
+          // Calls PayPal to capture the order and save to db y no directamente de cliente a paypal
+          // onApprove(data) {
+          //   return fetch('/payment/capture-paypal-transaction', {
+          //     headers: {
+          //       'content-type': 'application/json',
+          //     },
+          //     body: JSON.stringify({
+          //       orderID: data.orderID,
+          //     }),
+          //   })
+          //     .then((res) => res.json())
+          //     .then((details) => {
+          //       alert(
+          //         `Transaction funds captured from ${details.payer_given_name}`,
+          //       );
+          //     });
+          // },
+
+          // Calls paypal to get the auth transaction od
+          // onApprove: function(data) {
+          //   return fetch('/payment/authorize-paypal-transaction', {
+          //     method: 'post',
+          //     headers: {
+          //       'content-type': 'application/json'
+          //     },
+          //     body: JSON.stringify({
+          //       orderID: data.orderID
+          //     })
+          //   }).then(function(res) {
+          //     return res.json();
+          //   }).then(function(details) {
+          //     alert('Authorization created for ' + details.payer_given_name);
+          //   });
+          // }
+
           styles: {
             input: {
               'font-size': '17px',
@@ -156,75 +241,6 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
       }
     }
   }, [csrf, sdkReady, onButtonReady, submitEl]);
-
-  // amount goes in the value field we will use props of the button for this
-  // const createOrder = (data, actions) =>
-  //   actions.order.create({
-  //     purchase_units: [
-  //       {
-  //         amount: {
-  //           currency_code: 'USD',
-  //           value: props.amount,
-  //         },
-  //       },
-  //     ],
-  //   });
-
-  // const onApprove = (data, actions) =>
-  //   actions.order
-  //     .capture()
-  //     .then((details) => {
-  //       if (props.onSuccess) {
-  //         return props.onSuccess(data);
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-
-  // if (
-  //   typeof window === 'undefined' ||
-  //   (!sdkReady && window.paypal === undefined)
-  // ) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (window.paypal && window.paypal.Button && instance) {
-  //   window.paypal.Button.render(
-  //     {
-  //       env: 'sandbox', // Or 'production'
-  //       // Set up the payment:
-  //       // 1. Add a payment callback
-  //       payment(data, _actions) {
-  //         // 2. Make a request to your server
-  //         return instance
-  //           .post('/paypal/create-payment')
-  //           .then(
-  //             (res) => console.log(res.id),
-  //             // 3. Return res.id from the response
-  //             //   res.id,
-  //           )
-  //           .catch((e) => console.log(e));
-  //       },
-  //       // Execute the payment:
-  //       // 1. Add an onAuthorize callback
-  //       onAuthorize(data, _actions) {
-  //         // 2. Make a request to your server
-  //         return axios
-  //           .post('/paypal/execute-payment/', {
-  //             paymentID: data.paymentID,
-  //             payerID: data.payerID,
-  //           })
-  //           .then((res) => {
-  //             // 3. Show the buyer a confirmation message.
-  //             console.log(res.body);
-  //           })
-  //           .catch((e) => console.log(e));
-  //       },
-  //     },
-  //     '#paypal-button-container',
-  //   );
-  // }
 
   return (
     <div>
@@ -363,122 +379,3 @@ PaypalButton.defaultProps = {
 };
 
 export default connect(mapStateToProps, null)(PaypalButton);
-
-// import React, { useState, useEffect } from 'react';
-// import ReactDOM from 'react-dom';
-
-// const PaypalButton = (props) => {
-//   const [sdkReady, setSdkReady] = useState(false);
-
-//   const addPaypalSdk = () => {
-//     const clientID = 'Your-Paypal-Client-ID';
-//     const script = document.createElement('script');
-//     script.type = 'text/javascript';
-//     script.src = `https://www.paypal.com/sdk/js?client-id=${clientID}`;
-//     script.async = true;
-//     script.onload = () => {
-//       setSdkReady(true);
-//     };
-//     script.onerror = () => {
-//       throw new Error('Paypal SDK could not be loaded.');
-//     };
-
-//     document.body.appendChild(script);
-//   };
-
-//   useEffect(() => {
-//     if (window !== undefined && window.paypal === undefined) {
-//       addPaypalSdk();
-//     } else if (
-//       window !== undefined &&
-//       window.paypal !== undefined &&
-//       props.onButtonReady
-//     ) {
-//       props.onButtonReady();
-//     }
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//   }, []);
-
-//   //amount goes in the value field we will use props of the button for this
-//   const createOrder = (data, actions) => {
-//     return actions.order.create({
-//       purchase_units: [
-//         {
-//           amount: {
-//             currency_code: 'USD',
-//             value: props.amount,
-//           },
-//         },
-//       ],
-//     });
-//   };
-
-//   const onApprove = (data, actions) => {
-//     return actions.order
-//       .capture()
-//       .then((details) => {
-//         if (props.onSuccess) {
-//           return props.onSuccess(data);
-//         }
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   };
-
-//   if (!sdkReady && window.paypal === undefined) {
-//     return <div>Loading...</div>;
-//   }
-
-//   const Button = window.paypal.Buttons.driver('react', {
-//     React,
-//     ReactDOM,
-//   });
-
-// you can set your style to whatever read the documentation
-// for different styles I have put some examples in the style tag
-//   return (
-//     <Button
-//       {...props}
-//       createOrder={
-//         amount && !createOrder
-//           ? (data, actions) => createOrder(data, actions)
-//           : (data, actions) => createOrder(data, actions)
-//       }
-//       onApprove={
-//         onSuccess
-//           ? (data, actions) => onApprove(data, actions)
-//           : (data, actions) => onApprove(data, actions)
-//       }
-//       style={{
-//         layout: 'vertical',
-//         color: 'blue',
-//         shape: 'rect',
-//         label: 'paypal',
-//       }}
-//     />
-//   );
-// };
-
-// export default PaypalButton;
-
-// Then you can use this in your component like so:
-
-// const onSuccess = payment => {
-//   console.log(payment)
-// }
-
-// const onCancel = data => {
-//   console.log(data)
-// };
-
-// const onError = err => {
-//   console.log(err);
-// };
-
-// <PaypalButton
-//   amount="1.00"
-//   onError={onError}
-//   onSuccess={onSuccess}
-//   onCancel={onCancel}
-// />

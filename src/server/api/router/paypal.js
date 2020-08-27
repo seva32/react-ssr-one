@@ -3,78 +3,28 @@
 import express from 'express';
 import axios from 'axios';
 
-// import paypalSdk from './paypalCheckoutSdk';
-// const { client, prettyPrint, request } = paypalSdk;
+import {
+  createAccessToken,
+  handleRequest,
+  handleRequestAuth,
+  handleRequestTransactionDetails,
+  handleRequestCaptureFunds,
+  handleRequestAuthTransactionId,
+} from './paypalOrderController';
 
 const router = express.Router();
 const PAYPAL_API = 'https://api.sandbox.paypal.com';
 
-router.get('/create-access-token', (req, res) => {
-  axios({
-    url: 'https://api.sandbox.paypal.com/v1/identity/generate-token',
-    method: 'post',
-    headers: {
-      Accept: 'application/json',
-      'Accept-Language': 'en_US',
-    },
-    auth: {
-      username: process.env.PAYPAL_CLIENT,
-      password: process.env.PAYPAL_SECRET,
-    },
-    data: { grant_type: 'client_credentials' },
-  })
-    .then(({ data }) => {
-      res.send({ data });
-      // data { client_token: ..., expires_in: 3600 }
-      // axios({
-      //   url: 'https://api.sandbox.paypal.com/v1/identity/generate-token',
-      //   method: 'post',
-      //   headers: {
-      //     Accept: 'application/json',
-      //     Authorization: `Bearer ${data.client_token}`,
-      //     'Accept-Language': 'en_US',
-      //   },
-      // })
-      //   // eslint-disable-next-line no-shadow
-      //   .then(({ data }) => {
-      //     console.log(data);
-      //     return res.status(200).send({ data });
-      //   })
-      //   .catch((e) => res.status(401).send({ message: e.message }));
-    })
-    .catch((e) => {
-      console.log(e.message);
-      return res.status(401).send({ message: 'Unauthorized' });
-    });
-});
+router.get('/create-access-token', createAccessToken);
+
+// for advanced card manage not available in Argentina
+router.post('/create-paypal-transaction', handleRequest);
+router.post('/create-paypal-transaction-auth', handleRequestAuth);
+router.post('/get-paypal-transaction', handleRequestTransactionDetails);
+router.post('/capture-paypal-transaction', handleRequestCaptureFunds);
+router.post('/authorize-paypal-transaction', handleRequestAuthTransactionId);
 
 router.post('/create-payment/', (req, res) => {
-  // try {
-  //   const {
-  //     // eslint-disable-next-line camelcase
-  //     data: { access_token },
-  //   } = await axios({
-  //     url: 'https://api.sandbox.paypal.com/v1/oauth2/token',
-  //     method: 'post',
-  //     headers: {
-  //       Accept: 'application/json',
-  //       'Accept-Language': 'en_US',
-  //       'content-type': 'application/x-www-form-urlencoded',
-  //     },
-  //     auth: {
-  //       username: process.env.PAYPAL_CLIENT,
-  //       password: process.env.PAYPAL_SECRET,
-  //     },
-  //     params: {
-  //       grant_type: 'client_credentials',
-  //     },
-  //   });
-
-  //   console.log('access_token: ', access_token);
-  // } catch (error) {
-  //   console.error('error: ', error);
-  // }
-
   axios({
     url: 'https://api.sandbox.paypal.com/v1/oauth2/token',
     method: 'post',

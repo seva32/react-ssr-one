@@ -5,9 +5,6 @@ request.headers.prefer = 'return=representation';
 // request.headers['PayPal-Partner-Attribution-Id'] =
 //   'PARTNER_ID_ASSIGNED_BY_YOUR_PARTNER_MANAGER';
 
-function client() {
-  return new checkoutNodeJssdk.core.PayPalHttpClient(environment());
-}
 function environment() {
   const clientId = process.env.PAYPAL_CLIENT || 'PAYPAL-SANDBOX-CLIENT-ID';
   const clientSecret =
@@ -16,7 +13,11 @@ function environment() {
   return new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
 }
 
-async function prettyPrint(jsonData, pre = '') {
+export function client() {
+  return new checkoutNodeJssdk.core.PayPalHttpClient(environment());
+}
+
+export async function prettyPrint(jsonData, pre = '') {
   let pretty = '';
   function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -43,4 +44,4 @@ async function prettyPrint(jsonData, pre = '') {
   }
   return pretty;
 }
-export default { client, prettyPrint, request };
+export default { request };

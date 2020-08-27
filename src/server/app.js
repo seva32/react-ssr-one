@@ -96,3 +96,16 @@ throng(
   },
   start,
 );
+
+if (process.env.NODE_ENV !== 'production') {
+  const nodemon = require('nodemon'); // eslint-disable-line
+
+  process.on('exit', (code) => {
+    nodemon.emit('quit');
+    process.exit(code);
+  });
+  process.on('SIGINT', () => {
+    nodemon.emit('quit');
+    process.exit(0);
+  });
+}

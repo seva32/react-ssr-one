@@ -3,7 +3,7 @@
 // 1a. Import the SDK package
 import paypal from '@paypal/checkout-server-sdk';
 import axios from 'axios';
-import { client } from './paypalCheckoutSdk';
+import { client } from '../functions/paypalCheckoutSdk';
 
 // 1b. Import the PayPal SDK client that was created in `Set up Server-Side SDK`.
 /**

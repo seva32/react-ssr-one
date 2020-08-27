@@ -14,7 +14,7 @@ import {
   getAccessToken,
   getRefreshToken,
   processRefreshToken,
-} from '../jwt/jwt';
+} from '../functions/jwt';
 
 const User = db.user;
 const Role = db.role;

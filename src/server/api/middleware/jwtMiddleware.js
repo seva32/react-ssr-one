@@ -1,7 +1,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable consistent-return */
 // the middleware attach the actual user to req
-import { verifyJWTToken, verifyRefreshToken } from '../jwt/jwt';
+import { verifyJWTToken, verifyRefreshToken } from '../functions/jwt';
 import { cookiesOptions } from '../contollers/config';
 
 // eslint-disable-next-line import/prefer-default-export

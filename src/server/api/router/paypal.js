@@ -10,7 +10,7 @@ import {
   handleRequestTransactionDetails,
   handleRequestCaptureFunds,
   handleRequestAuthTransactionId,
-} from './paypalOrderController';
+} from '../contollers/paypalOrderController';
 
 const router = express.Router();
 const PAYPAL_API = 'https://api.sandbox.paypal.com';

@@ -37,7 +37,6 @@ server.use(
     parameters: [fingerprint.useragent],
   }),
 );
-
 server.options('*', cors);
 server.use(csrfProtection);
 process.env.NODE_ENV === 'production' &&

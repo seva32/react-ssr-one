@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 import * as Styles from './Paypal.style';
 import * as actions from '../../store/actions';
+
 // import PaypalButton from '../../Components/paypal';
 import BrainTree from '../../Components/Braintree';
 
@@ -32,6 +33,11 @@ function Paypal({ payment, error, paymentAction }) {
       setSuccessState(true);
     },
   });
+
+  const onButtonReady = (m) => {
+    console.log(m);
+  };
+
   return (
     <>
       <h1>Checkout</h1>
@@ -102,7 +108,7 @@ function Paypal({ payment, error, paymentAction }) {
           />
         </Form>
         {/* <PaypalButton /> */}
-        <BrainTree onButtonReady={() => console.log('esta listo el boton')} />
+        <PaypalCustomButton onButtonReady={onButtonReady} />
       </Styles.StyledContainer>
     </>
   );

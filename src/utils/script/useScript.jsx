@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
-const useScript = (url, position, async) => {
+// eslint-disable-next-line no-unused-vars
+const useScript = (url, position, async, instance) => {
   useEffect(() => {
     const placement = document.querySelector(position);
     const script = document.createElement('script');
@@ -9,6 +10,7 @@ const useScript = (url, position, async) => {
     script.async = typeof async === 'undefined' ? true : async;
 
     placement.appendChild(script);
+    instance = true; // eslint-disable-line
 
     return () => {
       placement.removeChild(script);

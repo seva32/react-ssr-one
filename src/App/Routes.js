@@ -51,6 +51,11 @@ export const routes = [
     page: 'Paypal',
   },
   {
+    exact: true,
+    path: '/braintree',
+    page: 'Braintree',
+  },
+  {
     loadData: loadDataPosts,
     exact: true,
     path: '/posts',

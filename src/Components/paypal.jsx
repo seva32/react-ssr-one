@@ -379,3 +379,4 @@ PaypalButton.defaultProps = {
 };
 
 export default connect(mapStateToProps, null)(PaypalButton);
+        

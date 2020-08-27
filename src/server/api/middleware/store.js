@@ -11,7 +11,6 @@ import reduxPromise from 'redux-promise';
 import auth from '../../../store/reducers/authReducer';
 import posts from '../../../store/reducers/postsReducer';
 import users from '../../../store/reducers/userDataReducer';
-import payment from '../../../store/reducers/paymentReducer';
 import csrf from '../../../store/reducers/csrf';
 
 const storeMiddleware = () => async (req, res, next) => {
@@ -20,7 +19,6 @@ const storeMiddleware = () => async (req, res, next) => {
     posts,
     users,
     csrf,
-    payment,
   });
 
   const enhancer = compose(applyMiddleware(reduxPromise, reduxThunk));

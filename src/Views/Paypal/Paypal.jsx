@@ -1,19 +1,15 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable indent */
 /* eslint-disable operator-linebreak */
 import React, { useState } from 'react';
 import { Form, Input, Button, Message } from 'semantic-ui-react'; // eslint-disable-line
 import { useFormik } from 'formik';
-import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import PropTypes from 'prop-types';
 
 import * as Styles from './Paypal.style';
-import * as actions from '../../store/actions';
+import Paypal from '../../Components/Paypal';
 
-// import PaypalButton from '../../Components/paypal';
-import BrainTree from '../../Components/Braintree';
-
-function Paypal({ payment, error, paymentAction }) {
+function PaypalButton() {
   const [successState, setSuccessState] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -27,7 +23,6 @@ function Paypal({ payment, error, paymentAction }) {
       // .required("Required"),
     }),
     onSubmit: (values, { setStatus, resetForm }) => {
-      paymentAction(values);
       resetForm({});
       setStatus({ success: true });
       setSuccessState(true);
@@ -81,23 +76,6 @@ function Paypal({ payment, error, paymentAction }) {
                 : null
             }
           />
-          {/* {successState && (
-            <Message
-              success={successState}
-              header="Form Completed"
-              content="You're all signed up for the newsletter"
-            />
-          )} */}
-          {error && error.length && (
-            <Message success={false} header="Error" content={error} />
-          )}
-          {Object.keys(payment).length > 0 && (
-            <Message
-              success
-              header="Payment Completed"
-              content={payment.message}
-            />
-          )}
           <Form.Field
             formNoValidate
             id="buttonForm"
@@ -107,22 +85,10 @@ function Paypal({ payment, error, paymentAction }) {
             label="Label with htmlFor"
           />
         </Form>
-        {/* <PaypalButton /> */}
-        <PaypalCustomButton onButtonReady={onButtonReady} />
+        <Paypal onButtonReady={onButtonReady} />
       </Styles.StyledContainer>
     </>
   );
 }
 
-const mapStateToProps = ({ payment }) => ({
-  payment: payment.paymentData,
-  error: payment.error,
-});
-
-Paypal.propTypes = {
-  payment: PropTypes.object, // eslint-disable-line
-  error: PropTypes.string, // eslint-disable-line
-  paymentAction: PropTypes.func, // eslint-disable-line
-};
-
-export default connect(mapStateToProps, actions)(Paypal);
+export default PaypalButton;

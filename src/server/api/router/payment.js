@@ -6,39 +6,40 @@ import axios from 'axios';
 import {
   braintreeCheckout,
   braintreeClientToken,
-} from '../contollers/paymentController';
+} from '../contollers/paymentBraintreeController';
+import {
+  createAccessToken,
+  handleRequest,
+  handleRequestAuth,
+  handleRequestTransactionDetails,
+  handleRequestCaptureFunds,
+  handleRequestAuthTransactionId,
+} from '../contollers/paymentPaypalController';
 import { cors, csurf as csrfProtection } from '../middleware';
 
 const router = express.Router();
 const PAYPAL_API = 'https://api.sandbox.paypal.com';
 
+// braintree
+router.get(
+  '/braintree-client-token',
+  [cors, csrfProtection],
+  braintreeClientToken,
+);
+
+router.post('/braintree-checkout', [cors, csrfProtection], braintreeCheckout);
+
+// paypal
+router.get('/create-access-token', createAccessToken);
+
+// for advanced card manage not available in Argentina
+router.post('/create-paypal-transaction', handleRequest);
+router.post('/create-paypal-transaction-auth', handleRequestAuth);
+router.post('/get-paypal-transaction', handleRequestTransactionDetails);
+router.post('/capture-paypal-transaction', handleRequestCaptureFunds);
+router.post('/authorize-paypal-transaction', handleRequestAuthTransactionId);
+
 router.post('/create-payment/', (req, res) => {
-  // try {
-  //   const {
-  //     // eslint-disable-next-line camelcase
-  //     data: { access_token },
-  //   } = await axios({
-  //     url: 'https://api.sandbox.paypal.com/v1/oauth2/token',
-  //     method: 'post',
-  //     headers: {
-  //       Accept: 'application/json',
-  //       'Accept-Language': 'en_US',
-  //       'content-type': 'application/x-www-form-urlencoded',
-  //     },
-  //     auth: {
-  //       username: process.env.PAYPAL_CLIENT,
-  //       password: process.env.PAYPAL_SECRET,
-  //     },
-  //     params: {
-  //       grant_type: 'client_credentials',
-  //     },
-  //   });
-
-  //   console.log('access_token: ', access_token);
-  // } catch (error) {
-  //   console.error('error: ', error);
-  // }
-
   axios({
     url: 'https://api.sandbox.paypal.com/v1/oauth2/token',
     method: 'post',
@@ -150,13 +151,5 @@ router.post('/execute-payment/', (req, res) => {
     },
   );
 });
-
-router.get(
-  '/braintree-client-token',
-  [cors, csrfProtection],
-  braintreeClientToken,
-);
-
-router.post('/braintree-checkout', [cors, csrfProtection], braintreeCheckout);
 
 export default router;

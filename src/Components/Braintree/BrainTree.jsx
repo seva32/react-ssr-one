@@ -196,7 +196,7 @@ function Braintree({ onButtonReady, csrf }) {
             console.error(err);
           }
           if (csrf) {
-            const authHeader = require('../store/actions/users/auth-header')
+            const authHeader = require('../../store/actions/users/auth-header')
               .default;
             const defaultOptions = {
               baseURL: 'http://localhost:8080',

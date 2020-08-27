@@ -32,7 +32,8 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
 
   useEffect(() => {
     if (window !== undefined && csrf) {
-      const authHeader = require('../store/actions/users/auth-header').default;
+      const authHeader = require('../../store/actions/users/auth-header')
+        .default;
       const defaultOptions = {
         // baseURL: 'http://localhost:8080',
         headers: authHeader(csrf),
@@ -379,4 +380,3 @@ PaypalButton.defaultProps = {
 };
 
 export default connect(mapStateToProps, null)(PaypalButton);
-        

@@ -9,4 +9,3 @@ export {
   changePassword,
 } from './auth/authActions';
 export { getCurrentUser, getUserData } from './users/userDataActions';
-export { paymentAction } from './payment/payActions';

@@ -69,7 +69,7 @@ export const signup = (formProps, callback) => async (dispatch, getState) => {
 };
 
 export const signout = (callback) => async (dispatch, getState) => {
-  if (typeof window !== 'undefined') {
+  if (process.env.WEBPACK) {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
       try {
@@ -95,7 +95,7 @@ export const signout = (callback) => async (dispatch, getState) => {
       }
     }
   }
-  if (typeof window !== 'undefined' && window.gapi) {
+  if (process.env.WEBPACK && window.gapi) {
     const auth2 = window.gapi.auth2.getAuthInstance();
     if (auth2 != null) {
       auth2.signOut().then(

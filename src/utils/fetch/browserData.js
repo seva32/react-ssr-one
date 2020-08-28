@@ -1,5 +1,5 @@
 export default () => {
-  if (typeof window !== 'undefined') {
+  if (process.env.WEBPACK) {
     return {
       timezone: new Date().getTimezoneOffset() / 60,
       browserEngine: window.navigator.product,

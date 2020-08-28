@@ -60,7 +60,7 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
       }
     }
 
-    if (typeof window !== 'undefined' && sdkReady) {
+    if (process.env.WEBPACK && sdkReady) {
       onButtonReady('Message for parent component.');
 
       window.paypal

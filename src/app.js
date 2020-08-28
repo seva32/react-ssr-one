@@ -9,8 +9,7 @@ import storeConfig from './store';
 
 const { store, persistor } = storeConfig;
 
-const renderApp =
-  typeof window === 'undefined' ? ReactDOM.render : ReactDOM.hydrate;
+const renderApp = !process.env.WEBPACK ? ReactDOM.render : ReactDOM.hydrate;
 
 function render(Component) {
   renderApp(

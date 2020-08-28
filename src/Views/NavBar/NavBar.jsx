@@ -147,7 +147,7 @@ const NavBar = ({ children, leftItems, rightItems }) => {
       {/* prettier-ignore */}
       <Responsive
         fireOnMount
-        getWidth={() => (typeof window === 'undefined' ? 768 : window.innerWidth)}
+        getWidth={() => (!process.env.WEBPACK ? 768 : window.innerWidth)}
         maxWidth={Responsive.onlyMobile.maxWidth}
       >
         <NavBarMobile
@@ -163,7 +163,7 @@ const NavBar = ({ children, leftItems, rightItems }) => {
       {/* prettier-ignore */}
       <Responsive
         fireOnMount
-        getWidth={() => (typeof window === 'undefined' ? 768 : window.innerWidth)}
+        getWidth={() => (!process.env.WEBPACK ? 768 : window.innerWidth)}
         minWidth={Responsive.onlyTablet.minWidth}
       >
         <NavBarDesktop leftItems={leftItems} rightItems={rightItems} />

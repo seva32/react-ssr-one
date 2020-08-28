@@ -8,6 +8,12 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import './Braintree.scss';
 
+const serverURL = process.env.SERVER_URL || 'localhost:8080';
+const baseURL =
+  process.env.NODE_ENV === 'production'
+    ? `https://${serverURL}`
+    : `http://${serverURL}`;
+
 function Braintree({ onButtonReady, csrf }) {
   // const [loading, setLoading] = React.useState(true);
   const [successMessage, setSuccessMessage] = React.useState(false);
@@ -199,7 +205,7 @@ function Braintree({ onButtonReady, csrf }) {
             const authHeader = require('../../store/actions/users/auth-header')
               .default;
             const defaultOptions = {
-              baseURL: 'http://localhost:8080',
+              baseURL,
               headers: authHeader(csrf),
             };
             const axiosInstance = axios.create(defaultOptions);

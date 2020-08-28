@@ -5,7 +5,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import './paypal.css';
+import './Paypal.css';
+
+const serverURL = process.env.SERVER_URL || 'localhost';
+const baseURL =
+  process.env.NODE_ENV === 'production'
+    ? `https://${serverURL}`
+    : `http://${serverURL}:8080`;
 
 const PaypalButton = ({ onButtonReady, csrf }) => {
   const [sdkReady, setSdkReady] = useState(false);
@@ -43,7 +49,7 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
       // get access token from server
       if (!sdkReady) {
         axiosinstance.current
-          .get('http://localhost:8080/payment/create-access-token')
+          .get(`${baseURL}/payment/create-access-token`)
           .then(({ data: { data } }) => data.client_token)
           .then((token) => {
             addPaypalSdk(token);

@@ -12,6 +12,7 @@ const baseURL =
   process.env.NODE_ENV === 'production'
     ? `https://${serverURL}`
     : `http://${serverURL}:8080`;
+const clientId = process.env.PAYPAL_CLIENT;
 
 const PaypalButton = ({ onButtonReady, csrf }) => {
   const [sdkReady, setSdkReady] = useState(false);
@@ -21,8 +22,7 @@ const PaypalButton = ({ onButtonReady, csrf }) => {
   const addPaypalSdk = (token) => {
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src =
-      'https://www.paypal.com/sdk/js?components=hosted-fields,buttons&client-id=AeppKdPmXFPtWDoU5izq8qNS_v2Wn1dWwdKHj0eAOGMkxA-nEruavRkOxxGDxhIg-eLx9pvoXPBPjVrO';
+    script.src = `https://www.paypal.com/sdk/js?components=hosted-fields,buttons&client-id=${clientId}`;
     script.async = true;
     script['data-client-token'] = token;
     script.onload = () => {

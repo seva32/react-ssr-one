@@ -1,3 +1,4 @@
+require('dotenv').config({ silent: true });
 const path = require('path');
 const webpack = require('webpack');
 const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
@@ -6,6 +7,11 @@ const CompressionPlugin = require('compression-webpack-plugin');
 const BrotliPlugin = require('brotli-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
+const paypalClient = process.env.PAYPAL_CLIENT || '';
+const braintreeAuth = process.env.BRAINTREE_AUTHORIZATION || '';
+const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
+const serverUrl = process.env.SERVER_URL;
 
 module.exports = {
   name: 'client',
@@ -127,7 +133,10 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
         WEBPACK: true,
-        SERVER_URL: JSON.stringify('seva32.tk'),
+        SERVER_URL: JSON.stringify(serverUrl),
+        PAYPAL_CLIENT: JSON.stringify(paypalClient),
+        BRAINTREE_AUTHORIZATION: JSON.stringify(braintreeAuth),
+        GOOGLE_CLIENT_ID: JSON.stringify(googleClientId),
       },
     }),
     new CopyWebpackPlugin({

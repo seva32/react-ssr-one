@@ -8,11 +8,12 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import './Braintree.scss';
 
-const serverURL = process.env.SERVER_URL || 'localhost:8080';
+const serverURL = process.env.SERVER_URL || 'localhost';
 const baseURL =
   process.env.NODE_ENV === 'production'
     ? `https://${serverURL}`
-    : `http://${serverURL}`;
+    : `http://${serverURL}:8080`;
+const authorization = process.env.BRAINTREE_AUTHORIZATION;
 
 function Braintree({ onButtonReady, csrf }) {
   // const [loading, setLoading] = React.useState(true);
@@ -29,7 +30,7 @@ function Braintree({ onButtonReady, csrf }) {
     if (!transactionInCourse) {
       brainclient.create(
         {
-          authorization: 'sandbox_s9kgnqvj_cqxswk83c3wbnj99',
+          authorization,
         },
         clientDidCreate,
       );

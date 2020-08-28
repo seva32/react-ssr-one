@@ -1,7 +1,12 @@
+require('dotenv').config({ silent: true });
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const paypalClient = process.env.PAYPAL_CLIENT || '';
+const braintreeAuth = process.env.BRAINTREE_AUTHORIZATION || '';
+const googleClientId = process.env.GOOGLE_CLIENT_ID || '';
 
 module.exports = {
   name: 'client',
@@ -123,6 +128,9 @@ module.exports = {
         NODE_ENV: JSON.stringify('development'),
         WEBPACK: true,
         SERVER_URL: JSON.stringify('localhost'),
+        PAYPAL_CLIENT: JSON.stringify(paypalClient),
+        BRAINTREE_AUTHORIZATION: JSON.stringify(braintreeAuth),
+        GOOGLE_CLIENT_ID: JSON.stringify(googleClientId),
       },
     }),
     new CopyWebpackPlugin({

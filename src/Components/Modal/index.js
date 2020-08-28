@@ -6,7 +6,7 @@ import StyledModal from './Modal.style';
 import useScape from './useScape';
 
 let modalRoot = null;
-if (typeof window !== 'undefined') {
+if (process.env.WEBPACK) {
   modalRoot = document.getElementById('modal-root');
 }
 

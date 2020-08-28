@@ -21,6 +21,8 @@ import imagePath from '../../assets/img/logo192.png';
 import { GoogleLogin } from '../../Components/GoogleButton';
 import * as actions from '../../store/actions';
 
+const clientId = process.env.GOOGLE_CLIENT_ID;
+
 const SignupFormUI = ({ error, signup, history }) => {
   // eslint-disable-next-line no-unused-vars
   const [showButton, toggleShow] = useState(true);
@@ -71,7 +73,7 @@ const SignupFormUI = ({ error, signup, history }) => {
         )}
         // use REACT_APP_GOOGLE_ID
         // eslint-disable-next-line max-len
-        clientId="337014600692-84c6cvbn4370f08b6cdp8jkc2ndjln84.apps.googleusercontent.com"
+        clientId={clientId || ''}
       >
         Singup
       </GoogleLogin>
